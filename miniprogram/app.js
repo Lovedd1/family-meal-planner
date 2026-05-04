@@ -38,6 +38,13 @@ App({
   onShow() {
     // 每次进入小程序尝试同步
     storageAdapter.syncAll()
+    // 启动伴侣轮询
+    storageAdapter.startPartnerPolling()
+  },
+
+  onHide() {
+    // 停止伴侣轮询
+    storageAdapter.stopPartnerPolling()
   },
 
   checkLogin() {
