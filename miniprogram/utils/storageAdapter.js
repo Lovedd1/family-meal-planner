@@ -23,6 +23,8 @@ class StorageAdapter {
     this.isSyncing = false
     this.db = null
     this._networkListenerRegistered = false
+    this.partnerPollingTimer = null
+    this.partnerUpdateListeners = []
   }
 
   /**
@@ -32,6 +34,8 @@ class StorageAdapter {
     if (!this.db) {
       this.db = wx.cloud.database()
     }
+    // 启动伴侣轮询
+    this.startPartnerPolling()
     return this.db
   }
 
@@ -70,6 +74,12 @@ class StorageAdapter {
 
     // 尝试同步到云端
     this.trySync(key)
+
+    // 尝试同步到伴侣（共享数据）
+    const sharedKeys = ['fridgeItems', 'customFoods', 'todayMenu']
+    if (sharedKeys.includes(key)) {
+      this.syncToPartner(key, value)
+    }
   }
 
   /**
@@ -442,6 +452,142 @@ class StorageAdapter {
     wx.removeStorageSync('partnerNickname')
 
     return { success: true }
+  }
+
+  /**
+   * 获取Storage Key对应的Collection名称
+   */
+  getCollectionName(key) {
+    const map = {
+      fridgeItems: 'fridge_items',
+      customFoods: 'menu_items',
+      todayMenu: null
+    }
+    return map[key]
+  }
+
+  /**
+   * 拉取伴侣数据
+   */
+  async pullPartnerData(key) {
+    if (!this.db) this.initCloudDB()
+
+    const partnerId = wx.getStorageSync('partnerId')
+    if (!partnerId) return null
+
+    const collectionName = this.getCollectionName(key)
+    if (!collectionName) return null
+
+    try {
+      const collection = this.db.collection(collectionName)
+      const result = await collection.doc(partnerId).get()
+
+      if (result.data) {
+        const { _id, _openid, userId, updatedAt, ...data } = result.data
+        return data.items || data
+      }
+    } catch (err) {
+      console.error('拉取伴侣数据失败:', key, err)
+    }
+    return null
+  }
+
+  /**
+   * 同步数据到伴侣
+   */
+  async syncToPartner(key, data) {
+    if (!this.db) this.initCloudDB()
+
+    const partnerId = wx.getStorageSync('partnerId')
+    if (!partnerId) return
+
+    const collectionName = this.getCollectionName(key)
+    if (!collectionName) return
+
+    try {
+      const collection = this.db.collection(collectionName)
+
+      const partnerData = await collection.doc(partnerId).get()
+
+      if (partnerData.data) {
+        await collection.doc(partnerId).update({
+          data: {
+            ...this.prepareForCloud(data),
+            updatedAt: Date.now()
+          }
+        })
+      } else {
+        await collection.doc(partnerId).set({
+          data: {
+            ...this.prepareForCloud(data),
+            userId: partnerId,
+            updatedAt: Date.now()
+          }
+        })
+      }
+    } catch (err) {
+      console.error('同步到伴侣失败:', key, err)
+    }
+  }
+
+  /**
+   * 伴侣更新事件监听器
+   */
+  onPartnerUpdate(callback) {
+    this.partnerUpdateListeners.push(callback)
+  }
+
+  /**
+   * 触发伴侣更新事件
+   */
+  emitPartnerUpdate(key, data) {
+    this.partnerUpdateListeners.forEach(cb => cb(key, data))
+  }
+
+  /**
+   * 启动伴侣数据轮询
+   */
+  startPartnerPolling() {
+    if (this.partnerPollingTimer) return
+
+    this.partnerPollingTimer = setInterval(() => {
+      this.checkPartnerUpdates()
+    }, 30000) // 30秒轮询
+  }
+
+  /**
+   * 停止伴侣数据轮询
+   */
+  stopPartnerPolling() {
+    if (this.partnerPollingTimer) {
+      clearInterval(this.partnerPollingTimer)
+      this.partnerPollingTimer = null
+    }
+  }
+
+  /**
+   * 检查伴侣数据更新
+   */
+  async checkPartnerUpdates() {
+    const partnerId = wx.getStorageSync('partnerId')
+    if (!partnerId) return
+
+    const sharedKeys = ['fridgeItems', 'customFoods']
+
+    for (const key of sharedKeys) {
+      try {
+        const partnerData = await this.pullPartnerData(key)
+        if (partnerData) {
+          const localData = wx.getStorageSync(key)
+          if (JSON.stringify(partnerData) !== JSON.stringify(localData)) {
+            wx.setStorageSync(key, partnerData)
+            this.emitPartnerUpdate(key, partnerData)
+          }
+        }
+      } catch (err) {
+        console.error('检查伴侣更新失败:', key, err)
+      }
+    }
   }
 
   /**
