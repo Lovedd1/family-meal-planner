@@ -1,0 +1,11 @@
+<svg width="81" height="81" viewBox="0 0 81 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 齿轮外圈 -->
+  <circle cx="40.5" cy="40.5" r="18" stroke="#07c160" stroke-width="2"/>
+  <!-- 齿轮齿 -->
+  <path d="M40.5 17 L43 22 M40.5 64 L43 59 M17 40.5 L22 43 M64 40.5 L59 43" stroke="#07c160" stroke-width="2" stroke-linecap="round"/>
+  <path d="M24 24 L28 27 M57 57 L53 54 M24 57 L28 54 M57 24 L53 27" stroke="#07c160" stroke-width="2" stroke-linecap="round"/>
+  <!-- 齿轮内圈 -->
+  <circle cx="40.5" cy="40.5" r="8" stroke="#07c160" stroke-width="2"/>
+  <!-- 中心孔 -->
+  <circle cx="40.5" cy="40.5" r="3" fill="#07c160"/>
+</svg>

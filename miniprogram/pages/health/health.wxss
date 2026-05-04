@@ -479,3 +479,224 @@
   margin-top: 12rpx;
   color: #666;
 }
+
+/* 饮食计划弹窗（新设计） */
+.diet-plan-modal {
+  width: 95%;
+  max-height: 85vh;
+}
+
+.plan-tabs {
+  display: flex;
+  padding: 0 30rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.plan-tab {
+  flex: 1;
+  padding: 20rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+}
+
+.plan-tab.active {
+  color: #722ed1;
+  font-weight: 600;
+}
+
+.plan-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60rpx;
+  height: 4rpx;
+  background: #722ed1;
+  border-radius: 2rpx;
+}
+
+.phase-info {
+  display: flex;
+  gap: 30rpx;
+  margin-bottom: 16rpx;
+}
+
+.phase-info-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.phase-info-item .info-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.phase-info-item .info-value {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #722ed1;
+}
+
+.phase-focus-text {
+  font-size: 26rpx;
+  color: #666;
+  background: #f9f9f9;
+  padding: 16rpx;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+/* 周计划 */
+.weekly-plans {
+  margin-bottom: 30rpx;
+}
+
+.week-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16rpx;
+  padding-left: 8rpx;
+  border-left: 4rpx solid #722ed1;
+}
+
+.day-plans {
+  background: #f9f9f9;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+}
+
+.day-plan-header {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 16rpx;
+}
+
+.meal-item {
+  display: flex;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.meal-item:last-child {
+  border-bottom: none;
+}
+
+.meal-label {
+  width: 120rpx;
+  font-size: 26rpx;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.meal-content {
+  flex: 1;
+}
+
+.meal-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.meal-effect {
+  font-size: 24rpx;
+  color: #07c160;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.meal-ingredients {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.ing-label {
+  color: #666;
+}
+
+.meal-item.snacks {
+  border-top: 1rpx dashed #ddd;
+  margin-top: 8rpx;
+  padding-top: 16rpx;
+}
+
+.snack-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.snack-list text {
+  font-size: 24rpx;
+  color: #666;
+  background: #fff;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+/* 采购清单 */
+.shopping-section {
+  margin-top: 30rpx;
+  border-top: 1rpx solid #eee;
+  padding-top: 20rpx;
+}
+
+.shopping-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+
+.shopping-list {
+  background: #f9f9f9;
+  border-radius: 12rpx;
+  padding: 16rpx;
+}
+
+.shopping-item {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #eee;
+  font-size: 26rpx;
+}
+
+.shopping-item:last-child {
+  border-bottom: none;
+}
+
+.shopping-icon {
+  margin-right: 12rpx;
+  font-size: 28rpx;
+}
+
+.shopping-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.shopping-amount {
+  color: #722ed1;
+  margin-right: 16rpx;
+}
+
+.shopping-period {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.shopping-item.need-buy .shopping-name {
+  color: #ff4d4f;
+}
+
+.shopping-item.sufficient .shopping-icon {
+  color: #07c160;
+}

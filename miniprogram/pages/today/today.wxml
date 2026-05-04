@@ -135,6 +135,19 @@
             <text>{{menu.dinner.length}} 道菜</text>
           </view>
         </view>
+        <view class="deduction-list">
+          <view
+            class="deduction-item {{item.sufficient ? 'sufficient' : 'insufficient'}}"
+            wx:for="{{deductionList}}"
+            wx:key="name"
+          >
+            <text class="deduction-icon">{{item.sufficient ? '✅' : '⚠️'}}</text>
+            <text class="deduction-name">{{item.name}}</text>
+            <text class="deduction-need">-{{item.need}}{{item.unit}}</text>
+            <text class="deduction-stock" wx:if="{{item.sufficient}}">（剩余{{item.afterStock}}{{item.unit}}）</text>
+            <text class="deduction-stock insufficient" wx:else>（需要补充{{item.needMore}}{{item.unit}}，冰箱只有{{item.stock}}{{item.unit}}）</text>
+          </view>
+        </view>
         <view class="confirm-tips">
           <text>确认后将自动扣减冰箱库存</text>
         </view>

@@ -1,0 +1,15 @@
+<svg width="81" height="81" viewBox="0 0 81 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 汉堡上半部分 -->
+  <path d="M18 32 C18 26 25 22 40.5 22 C56 22 63 26 63 32" stroke="#999" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 面包顶 -->
+  <line x1="18" y1="32" x2="63" y2="32" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+  <!-- 生菜 -->
+  <path d="M16 38 Q28 34 40.5 38 Q53 42 65 38" stroke="#999" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 肉饼 -->
+  <rect x="18" y="44" width="45" height="6" rx="2" stroke="#999" stroke-width="2" fill="none"/>
+  <!-- 芝士 -->
+  <path d="M18 54 L22 58 L26 54 L30 58 L34 54 L38 58 L42 54 L46 58 L50 54 L54 58 L58 54 L62 58 L63 54" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- 汉堡下半部分 -->
+  <path d="M18 60 Q40.5 68 63 60" stroke="#999" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <line x1="18" y1="60" x2="63" y2="60" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+</svg>

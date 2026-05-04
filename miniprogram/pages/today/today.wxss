@@ -314,3 +314,55 @@
   font-size: 26rpx;
   color: #999;
 }
+
+.deduction-list {
+  margin-top: 20rpx;
+  background: #f9f9f9;
+  border-radius: 12rpx;
+  padding: 20rpx;
+}
+
+.deduction-item {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #eee;
+  font-size: 26rpx;
+}
+
+.deduction-item:last-child {
+  border-bottom: none;
+}
+
+.deduction-icon {
+  margin-right: 12rpx;
+  font-size: 28rpx;
+}
+
+.deduction-name {
+  font-weight: 500;
+  margin-right: 8rpx;
+}
+
+.deduction-need {
+  color: #07c160;
+  margin-right: 8rpx;
+}
+
+.deduction-stock {
+  color: #666;
+  flex: 1;
+  text-align: right;
+}
+
+.deduction-stock.insufficient {
+  color: #ff4d4f;
+}
+
+.deduction-item.sufficient .deduction-need {
+  color: #07c160;
+}
+
+.deduction-item.insufficient .deduction-need {
+  color: #ff4d4f;
+}

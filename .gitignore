@@ -1,0 +1,13 @@
+# Generated files
+create-icons.html
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak

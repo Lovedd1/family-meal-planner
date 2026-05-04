@@ -38,6 +38,7 @@ Page({
     // 饮食计划
     dietPlan: null,
     showDietPlan: false,
+    currentPlanPhase: 0,
 
     // 平台期提醒
     showPlateauAlert: false
@@ -243,43 +244,92 @@ Page({
   },
 
   generateDietPlan() {
-    // TODO: 调用云函数生成饮食计划
-    wx.showToast({ title: '正在生成...', icon: 'loading' })
-
-    // 模拟计划内容
-    const plan = {
-      phases: [
-        {
-          name: '适应期',
-          duration: '1-2周',
-          calories: '1800-2000kcal',
-          focus: '调整饮食结构，逐步减少高热量食物'
-        },
-        {
-          name: '强化期',
-          duration: '3-8周',
-          calories: '1400-1600kcal',
-          focus: '严格控制热量，增加蛋白质摄入'
-        },
-        {
-          name: '巩固期',
-          duration: '2-4周',
-          calories: '1600-1800kcal',
-          focus: '稳定体重，养成健康饮食习惯'
+    // 检查健康档案是否完整
+    if (!this.data.currentWeight || !this.data.targetWeight) {
+      wx.showModal({
+        title: '提示',
+        content: '请先完善健康档案（当前体重和目标体重），然后再生成饮食计划',
+        showCancel: true,
+        confirmText: '去完善',
+        success: (res) => {
+          if (res.confirm) {
+            this.showEditProfile()
+          }
         }
-      ],
-      recommendations: [
-        '增加蔬菜摄入量',
-        '选择低脂蛋白质',
-        '适量补充复合碳水'
-      ]
+      })
+      return
     }
 
-    this.setData({ dietPlan: plan, showDietPlan: true })
+    wx.showLoading({ title: '正在生成饮食计划...' })
+
+    // 调用云函数生成饮食计划
+    wx.cloud.callFunction({
+      name: 'generateDietPlan',
+      data: {
+        dietGoal: this.data.dietGoal,
+        activityLevel: this.data.activityLevel,
+        allergies: this.data.allergies,
+        currentPhase: this.data.currentPhase,
+        targetWeight: this.data.targetWeight
+      },
+      success: (res) => {
+        wx.hideLoading()
+        if (res.result && res.result.success) {
+          const plan = res.result.data
+          // 为每个阶段的购物清单检查库存
+        if (plan.phases) {
+          plan.phases.forEach(phase => {
+            if (phase.shoppingList) {
+              phase.shoppingList = this.checkFridgeStock(phase.shoppingList)
+            }
+          })
+        }
+
+        this.setData({ dietPlan: plan, showDietPlan: true, currentPlanPhase: 0 })
+          // 保存到本地
+          wx.setStorageSync('dietPlan', plan)
+          wx.showToast({ title: '生成成功', icon: 'success' })
+        } else {
+          wx.showModal({
+            title: '生成失败',
+            content: res.result?.error || '请稍后重试',
+            showCancel: false
+          })
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        wx.showModal({
+          title: '生成失败',
+          content: '网络错误，请检查网络连接后重试',
+          showCancel: false
+        })
+        console.error('调用云函数失败:', err)
+      }
+    })
   },
 
   closeDietPlan() {
-    this.setData({ showDietPlan: false })
+    this.setData({ showDietPlan: false, currentPlanPhase: 0 })
+  },
+
+  switchPlanPhase(e) {
+    const index = e.currentTarget.dataset.index
+    this.setData({ currentPlanPhase: index })
+  },
+
+  // 检查冰箱库存，返回购物清单是否充足
+  checkFridgeStock(shoppingList) {
+    const fridgeItems = wx.getStorageSync('fridgeItems') || []
+    const fridgeNames = fridgeItems.map(item => item.name)
+
+    return shoppingList.map(item => {
+      // 简单检查：冰箱是否有同名食材
+      const inStock = fridgeNames.some(name =>
+        item.name.includes(name) || name.includes(item.name)
+      )
+      return { ...item, inStock }
+    })
   },
 
   getPhaseLabel(phase) {

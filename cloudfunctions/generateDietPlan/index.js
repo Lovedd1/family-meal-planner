@@ -1,0 +1,147 @@
+// 云函数：generateDietPlan
+// 生成AI个性化饮食计划
+
+const cloud = require('wx-server-sdk')
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
+
+// DeepSeek API配置 - 环境变量方式存储
+const API_KEY = 'sk-4d6e79ef904a423fb64e8821d6617f22'
+const API_URL = 'https://api.deepseek.com/v1/chat/completions'
+
+exports.main = async (event, context) => {
+  const { dietGoal, activityLevel, allergies, currentPhase, targetWeight } = event
+
+  // 构建Prompt
+  const prompt = `你是专业营养师，请为用户生成个性化饮食计划。
+
+用户信息：
+- 目标：${dietGoal === 'lose' ? '减脂' : dietGoal === 'maintain' ? '维持体重' : '增肌'}
+- 活动水平：${activityLevel === 'sedentary' ? '久坐少动' : activityLevel === 'moderate' ? '适度活动' : '运动较多'}
+- 过敏食物：${allergies || '无'}
+- 生理期阶段：${currentPhase === 'menstruation' ? '经期' : currentPhase === 'follicular' ? '卵泡期' : currentPhase === 'ovulation' ? '排卵期' : '黄体期'}
+- 目标体重：${targetWeight || '未设定'}kg
+
+请按以下JSON格式返回（必须严格遵守格式，不要添加任何额外文字）：
+{
+  "phases": [
+    {
+      "name": "适应期",
+      "duration": "1-2周",
+      "calories": "1800-2000kcal",
+      "focus": "调整饮食结构，逐步减少高热量食物",
+      "weeklyMenus": [
+        {
+          "week": 1,
+          "days": [
+            {
+              "breakfast": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "lunch": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "dinner": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "snacks": [{"name": "xxx", "time": "上午/下午/睡前"}]
+            },
+            {
+              "breakfast": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "lunch": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "dinner": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "snacks": [{"name": "xxx", "time": "上午/下午/睡前"}]
+            }
+          ]
+        }
+      ],
+      "shoppingList": [
+        {"name": "食材名", "amount": "数量+单位", "period": "2天"}
+      ]
+    },
+    {
+      "name": "强化期",
+      "duration": "3-8周",
+      "calories": "1400-1600kcal",
+      "focus": "严格控制热量，增加蛋白质摄入",
+      "weeklyMenus": [
+        {
+          "week": 1,
+          "days": [
+            {
+              "breakfast": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "lunch": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "dinner": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "snacks": [{"name": "xxx", "time": "上午/下午/睡前"}]
+            }
+          ]
+        }
+      ],
+      "shoppingList": [
+        {"name": "食材名", "amount": "数量+单位", "period": "2天"}
+      ]
+    },
+    {
+      "name": "巩固期",
+      "duration": "2-4周",
+      "calories": "1600-1800kcal",
+      "focus": "稳定体重，养成健康饮食习惯",
+      "weeklyMenus": [
+        {
+          "week": 1,
+          "days": [
+            {
+              "breakfast": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "lunch": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "dinner": {"name": "xxx", "effect": "功效说明", "ingredients": ["食材1", "食材2"]},
+              "snacks": [{"name": "xxx", "time": "上午/下午/睡前"}]
+            }
+          ]
+        }
+      ],
+      "shoppingList": [
+        {"name": "食材名", "amount": "数量+单位", "period": "2天"}
+      ]
+    }
+  ]
+}`
+
+  try {
+    // 调用DeepSeek API
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: '你是一位专业营养师，擅长根据用户身体状况和目标制定个性化饮食计划。' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 4000
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`API调用失败: ${response.status}`)
+    }
+
+    const result = await response.json()
+    const content = result.choices?.[0]?.message?.content
+
+    if (!content) {
+      throw new Error('API返回内容为空')
+    }
+
+    // 解析JSON响应
+    // 尝试提取JSON（处理可能的前后缀文字）
+    let jsonStr = content
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      jsonStr = jsonMatch[0]
+    }
+
+    const plan = JSON.parse(jsonStr)
+    return { success: true, data: plan }
+
+  } catch (error) {
+    console.error('生成饮食计划失败:', error)
+    return { success: false, error: error.message }
+  }
+}

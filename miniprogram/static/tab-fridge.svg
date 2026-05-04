@@ -1,0 +1,13 @@
+<svg width="81" height="81" viewBox="0 0 81 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 冰箱主体 -->
+  <rect x="20" y="15" width="41" height="51" rx="4" stroke="#999" stroke-width="2"/>
+  <!-- 冷冻室门线 -->
+  <line x1="20" y1="32" x2="61" y2="32" stroke="#999" stroke-width="2"/>
+  <!-- 冷冻室把手 -->
+  <line x1="52" y1="22" x2="56" y2="22" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+  <!-- 冷藏室把手 -->
+  <line x1="52" y1="40" x2="56" y2="40" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+  <!-- 冰箱腿 -->
+  <line x1="26" y1="66" x2="26" y2="70" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+  <line x1="55" y1="66" x2="55" y2="70" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+</svg>

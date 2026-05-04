@@ -1,0 +1,11 @@
+<svg width="81" height="81" viewBox="0 0 81 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 日历主体 -->
+  <rect x="12" y="20" width="57" height="49" rx="4" stroke="#999" stroke-width="2"/>
+  <!-- 日历顶部 -->
+  <line x1="12" y1="32" x2="69" y2="32" stroke="#999" stroke-width="2"/>
+  <!-- 日历挂钉 -->
+  <line x1="26" y1="15" x2="26" y2="25" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+  <line x1="55" y1="15" x2="55" y2="25" stroke="#999" stroke-width="2" stroke-linecap="round"/>
+  <!-- 勾选 -->
+  <path d="M30 48 L38 56 L54 40" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
