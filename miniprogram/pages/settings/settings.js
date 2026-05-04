@@ -23,6 +23,7 @@ Page({
       currentPhase: '',
       cycleDays: 28
     },
+    isLoggedIn: false,
     version: 'V2.1.0',
     showPrivacyModal: false,
     showResetConfirm: false,
@@ -48,12 +49,17 @@ Page({
   },
 
   loadSettings() {
-    // 用户信息
+    // 检查登录状态
     const userProfile = storageAdapter.get('userProfile') || {}
+    const isLoggedIn = !!(userProfile.nickname && userProfile.localAvatarPath)
+
+    // 用户信息
     this.setData({
+      isLoggedIn,
       userInfo: {
         nickname: userProfile.nickname || '我',
-        avatar: userProfile.nickname?.charAt(0) || '我'
+        avatar: userProfile.localAvatarPath || userProfile.nickname?.charAt(0) || '我',
+        localAvatarPath: userProfile.localAvatarPath || ''
       }
     })
 
@@ -79,6 +85,103 @@ Page({
     // 生理期设置
     const menstrualSettings = storageAdapter.get('menstrualSettings') || {}
     this.setData({ menstrualSettings })
+  },
+
+  handleUserCardTap() {
+    // 如果已登录，点击用户卡片无特殊操作
+    // 如果未登录，触发登录按钮点击
+    if (!this.data.isLoggedIn) {
+      // 查找登录按钮并触发点击
+      const loginBtn = this.selectComponent('.btn-login')
+      // 实际上不需要，因为 button 的 open-type 会自动处理
+    }
+  },
+
+  onGetUserProfile(e) {
+    if (!e.detail || !e.detail.userInfo) {
+      wx.showToast({ title: '需要授权才能登录', icon: 'none' })
+      return
+    }
+    const { nickName, avatarUrl } = e.detail.userInfo
+    this.saveUserProfile(nickName, avatarUrl)
+  },
+
+  async saveUserProfile(nickname, avatarUrl) {
+    wx.showLoading({ title: '登录中...' })
+
+    try {
+      // 1. 下载头像
+      const localPath = await this.downloadAvatar(avatarUrl)
+
+      // 2. 保存到本地
+      const profile = {
+        nickname,
+        localAvatarPath: localPath,
+        wechatAvatarUrl: avatarUrl,
+        updateTime: Date.now()
+      }
+      storageAdapter.set('userProfile', profile)
+
+      // 3. 同步到云端
+      await this.syncToCloud(profile)
+
+      // 4. 更新页面
+      this.setData({
+        userInfo: {
+          nickname,
+          avatar: localPath || nickname.charAt(0),
+          localAvatarPath: localPath
+        },
+        isLoggedIn: true
+      })
+
+      wx.hideLoading()
+      wx.showToast({ title: '登录成功', icon: 'success' })
+    } catch (err) {
+      wx.hideLoading()
+      console.error('登录失败', err)
+      wx.showToast({ title: '登录失败，请重试', icon: 'none' })
+    }
+  },
+
+  downloadAvatar(url) {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve('')
+        return
+      }
+      wx.downloadFile({
+        url,
+        filePath: wx.env.USER_DATA_PATH + '/avatar',
+        success: res => {
+          if (res.statusCode === 200) {
+            resolve(res.filePath)
+          } else {
+            resolve('')
+          }
+        },
+        fail: err => {
+          console.error('下载头像失败', err)
+          resolve('')
+        }
+      })
+    })
+  },
+
+  async syncToCloud(profile) {
+    const app = getApp()
+    if (!app.globalData.userId) {
+      console.warn('userId 未准备好，跳过云端同步')
+      return
+    }
+    try {
+      const db = wx.cloud.database()
+      await db.collection('user_profiles').doc(app.globalData.userId).set({
+        data: profile
+      })
+    } catch (err) {
+      console.error('同步到云端失败', err)
+    }
   },
 
   showEditNickname() {
