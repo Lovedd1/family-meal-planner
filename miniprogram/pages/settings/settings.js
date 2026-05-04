@@ -53,7 +53,9 @@ Page({
     this.setData({
       userInfo: {
         nickname: userProfile.nickname || '我',
-        avatar: userProfile.nickname?.charAt(0) || '我'
+        avatar: userProfile.nickname?.charAt(0) || '我',
+        avatarUrl: userProfile.avatarUrl || '',
+        hasLogin: !!userProfile.avatarUrl
       }
     })
 
@@ -212,6 +214,31 @@ Page({
 
   preventBubble() {
     // 阻止冒泡
+  },
+
+  loginWithWechat() {
+    wx.getUserProfile({
+      desc: '用于展示头像和昵称',
+      success: (res) => {
+        const userProfile = storageAdapter.get('userProfile') || {}
+        userProfile.nickname = res.userInfo.nickName
+        userProfile.avatarUrl = res.userInfo.avatarUrl
+        storageAdapter.set('userProfile', userProfile)
+        this.setData({
+          userInfo: {
+            nickname: res.userInfo.nickName,
+            avatar: res.userInfo.nickName.charAt(0),
+            avatarUrl: res.userInfo.avatarUrl,
+            hasLogin: true
+          }
+        })
+        wx.showToast({ title: '登录成功', icon: 'success' })
+      },
+      fail: (err) => {
+        console.error('getUserProfile failed:', err)
+        wx.showToast({ title: '请允许授权', icon: 'none' })
+      }
+    })
   },
 
   async generateInviteCode() {

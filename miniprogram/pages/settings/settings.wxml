@@ -7,16 +7,20 @@
 
   <!-- 用户信息 -->
   <view class="section">
-    <view class="user-card">
-      <view class="avatar">{{userInfo.avatar}}</view>
+    <view class="user-card" bindtap="{{userInfo.hasLogin ? 'showEditNickname' : 'loginWithWechat'}}">
+      <view class="avatar" wx:if="{{userInfo.avatarUrl}}">
+        <image src="{{userInfo.avatarUrl}}" mode="aspectFill" class="avatar-img"/>
+      </view>
+      <view class="avatar" wx:else>{{userInfo.avatar}}</view>
       <view class="user-info">
         <text class="nickname">{{userInfo.nickname}}</text>
-        <text class="collab-status">
+        <text class="login-hint" wx:if="{{!userInfo.hasLogin}}">点击登录微信账号</text>
+        <text class="collab-status" wx:else>
           <text class="status-dot {{partnerInfo.connected ? 'connected' : ''}}"></text>
           与{{partnerInfo.connected ? partnerInfo.nickname : '未连接'}}协作中
         </text>
       </view>
-      <view class="edit-btn" bindtap="showEditNickname">编辑</view>
+      <view class="edit-btn" wx:if="{{userInfo.hasLogin}}">编辑</view>
     </view>
   </view>
 
