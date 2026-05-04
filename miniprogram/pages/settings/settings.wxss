@@ -34,6 +34,14 @@
   background: #fff;
   padding: 30rpx;
   border-radius: 20rpx;
+  width: 100%;
+  border: none;
+  text-align: left;
+}
+
+.user-card.login-btn {
+  background: linear-gradient(135deg, #07c160, #10b266);
+  color: white;
 }
 
 .avatar {
