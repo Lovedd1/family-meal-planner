@@ -53,48 +53,34 @@ Page({
     const userProfile = storageAdapter.get('userProfile') || {}
     const isLoggedIn = !!(userProfile.nickname && userProfile.localAvatarPath)
 
-    // 用户信息
-    this.setData({
-      isLoggedIn,
-      userInfo: {
-        nickname: userProfile.nickname || '我',
-        avatar: userProfile.localAvatarPath || userProfile.nickname?.charAt(0) || '我',
-        localAvatarPath: userProfile.localAvatarPath || ''
-      }
-    })
-
     // 同步状态
     const partnerId = wx.getStorageSync('partnerId')
-    this.setData({
-      partnerInfo: {
-        nickname: wx.getStorageSync('partnerNickname') || 'TA',
-        connected: !!partnerId
-      },
-      syncStatus: partnerId ? 'connected' : 'disconnected',
-      lastSyncTime: wx.getStorageSync('lastSyncTime') || ''
-    })
 
     // 数据统计
     const fridgeItems = storageAdapter.get('fridgeItems')?.length || 0
     const customFoods = storageAdapter.get('customFoods')?.length || 0
     const weightRecords = storageAdapter.get('weightRecords')?.length || 0
-    this.setData({
-      dataStats: { fridgeItems, customFoods, weightRecords }
-    })
 
     // 生理期设置
     const menstrualSettings = storageAdapter.get('menstrualSettings') || {}
-    this.setData({ menstrualSettings })
-  },
 
-  handleUserCardTap() {
-    // 如果已登录，点击用户卡片无特殊操作
-    // 如果未登录，触发登录按钮点击
-    if (!this.data.isLoggedIn) {
-      // 查找登录按钮并触发点击
-      const loginBtn = this.selectComponent('.btn-login')
-      // 实际上不需要，因为 button 的 open-type 会自动处理
-    }
+    // 合并所有 setData 调用
+    this.setData({
+      isLoggedIn,
+      userInfo: {
+        nickname: userProfile.nickname || '我',
+        avatar: userProfile.localAvatarPath || userProfile.nickname?.charAt(0) || '',
+        localAvatarPath: userProfile.localAvatarPath || ''
+      },
+      partnerInfo: {
+        nickname: wx.getStorageSync('partnerNickname') || 'TA',
+        connected: !!partnerId
+      },
+      syncStatus: partnerId ? 'connected' : 'disconnected',
+      lastSyncTime: wx.getStorageSync('lastSyncTime') || '',
+      dataStats: { fridgeItems, customFoods, weightRecords },
+      menstrualSettings
+    })
   },
 
   onGetUserProfile(e) {
@@ -152,7 +138,7 @@ Page({
       }
       wx.downloadFile({
         url,
-        filePath: wx.env.USER_DATA_PATH + '/avatar',
+        filePath: wx.env.USER_DATA_PATH + '/avatar_' + Date.now() + '.jpg',
         success: res => {
           if (res.statusCode === 200) {
             resolve(res.filePath)
