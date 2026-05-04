@@ -5,7 +5,8 @@
       "mcp__cloudbase__writeNoSqlDatabaseStructure",
       "mcp__cloudbase__managePermissions",
       "mcp__weapp__weapp_cloud_functions_deploy",
-      "mcp__cloudbase__queryFunctions"
+      "mcp__cloudbase__queryFunctions",
+      "mcp__cloudbase__readNoSqlDatabaseContent"
     ]
   },
   "enabledPlugins": {

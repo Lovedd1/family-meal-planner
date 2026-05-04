@@ -19,11 +19,12 @@
 │   │   └── storageAdapter.js  # 离线优先存储适配层
 │   └── static/           # TabBar图标 (SVG/PNG)
 ├── cloudfunctions/       # 云函数
+│   ├── login/            # 用户登录（获取openid）
 │   └── generateDietPlan/ # AI饮食计划生成
 └── doc/                  # 文档
 ```
 
-## 开发进度 (2026-05-04)
+## 开发进度 (2026-05-05)
 
 ### 已完成 ✅
 - [x] 方案设计 (方案.md)
@@ -38,9 +39,12 @@
 - [x] 食材扣减逻辑（部分扣减，库存不足提示补充数量）
 - [x] AI智能饮食计划（3阶段计划，每周菜单，2天采购清单）
 - [x] 云函数 generateDietPlan（调用DeepSeek API，已部署至云端）
+- [x] 云函数 login（自动登录，已部署至云端）
 - [x] Git 提交
 - [x] 云开发数据库集成（离线优先存储适配层 + 7个Collection）
 - [x] 双人实时同步（邀请码配对、冰箱菜单双向共享）
+- [x] 修复 Modal 输入框关闭问题（catchtap preventBubble）
+- [x] 修复邀请码生成等待登录完成问题
 
 ### 待开发 📋
 
@@ -48,7 +52,7 @@
 - 双人同步策略：最后写入获胜（MVP阶段）
 - DeepSeek调用：云函数中转，限流+缓存
 - 菜品数据：12道固定家常菜 + 用户自定义
-- 存储方案：本地 wx.setStorageSync (暂未对接云开发)
+- 存储方案：本地 storageAdapter（离线优先，云端同步）
 
 ## 已安装 Skills
 - `cloudbase` - 腾讯云开发全套能力 (MCP工具)
@@ -70,6 +74,7 @@
 | 蒸饺 | 主食 | 仅蒸制 |
 
 ## 云函数
+- `login` - 用户登录，获取openid（已部署至 `cloud1` 环境）
 - `generateDietPlan` - AI饮食计划生成（DeepSeek API，已部署至 `cloud1` 环境）
 
 ## 云环境
@@ -108,4 +113,12 @@
 | `menstrualSettings` | 生理期设置 |
 | `userProfile` | 用户信息 |
 | `partnerId` | 伴侣ID |
+| `partnerNickname` | 伴侣昵称 |
 | `dietPlan` | AI饮食计划 |
+| `userId` | 用户ID（openid） |
+
+## 双人同步机制
+- 邀请码：6位字母数字，24小时有效
+- 共享数据：`fridgeItems`、`customFoods`、`todayMenu`
+- 同步方式：30秒轮询检查伴侣数据变更
+- 冲突处理：最后写入获胜

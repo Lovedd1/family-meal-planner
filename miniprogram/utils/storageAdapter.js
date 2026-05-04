@@ -274,6 +274,21 @@ class StorageAdapter {
   }
 
   /**
+   * 获取用户ID（异步版本，确保登录完成）
+   */
+  async getUserIdAsync() {
+    let userId = this.getUserId()
+    if (userId) return userId
+
+    // 等待登录完成
+    const app = getApp()
+    if (app.globalData.loginPromise) {
+      await app.globalData.loginPromise
+    }
+    return this.getUserId()
+  }
+
+  /**
    * 设置用户ID
    */
   setUserId(userId) {
@@ -337,7 +352,7 @@ class StorageAdapter {
       this.initCloudDB()
     }
 
-    const userId = this.getUserId()
+    const userId = await this.getUserIdAsync()
     if (!userId) {
       return null
     }
@@ -396,7 +411,7 @@ class StorageAdapter {
       throw new Error('邀请码无效或已过期')
     }
 
-    const myUserId = this.getUserId()
+    const myUserId = await this.getUserIdAsync()
     if (myUserId === codeInfo.userId) {
       throw new Error('不能绑定自己')
     }
@@ -598,7 +613,7 @@ class StorageAdapter {
       this.initCloudDB()
     }
 
-    const userId = this.getUserId()
+    const userId = await this.getUserIdAsync()
     if (!userId) {
       throw new Error('用户未登录')
     }

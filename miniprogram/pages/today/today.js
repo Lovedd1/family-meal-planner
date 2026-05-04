@@ -1,5 +1,6 @@
 // pages/today/today.js
 const foods = require('../../utils/foods.js')
+const storageAdapter = require('../../utils/storageAdapter.js')
 
 // 解析食材数量字符串，返回 { value, unit }
 function parseAmount(amountStr) {
@@ -142,7 +143,7 @@ Page({
   },
 
   loadMenu() {
-    const menu = wx.getStorageSync('todayMenu') || {
+    const menu = storageAdapter.get('todayMenu') || {
       breakfast: [],
       lunch: [],
       dinner: []
@@ -193,7 +194,7 @@ Page({
     const menu = { ...this.data.menu }
     menu[tab].splice(index, 1)
     this.setData({ menu })
-    wx.setStorageSync('todayMenu', menu)
+    storageAdapter.set('todayMenu', menu)
     this.updateTabCounts()
     this.checkConflicts()
   },
@@ -207,7 +208,7 @@ Page({
     if (allDishes.length === 0) return
 
     // 获取冰箱库存
-    const fridgeItems = wx.getStorageSync('fridgeItems') || []
+    const fridgeItems = storageAdapter.get('fridgeItems') || []
 
     // 计算扣减清单
     const deductionList = calculateDeductions(allDishes, fridgeItems)
@@ -226,9 +227,9 @@ Page({
     const deductionList = this.data.deductionList
 
     // 获取冰箱库存并执行扣减
-    let fridgeItems = wx.getStorageSync('fridgeItems') || []
+    let fridgeItems = storageAdapter.get('fridgeItems') || []
     fridgeItems = performDeduction(deductionList, fridgeItems)
-    wx.setStorageSync('fridgeItems', fridgeItems)
+    storageAdapter.set('fridgeItems', fridgeItems)
 
     // 清空菜单
     const emptyMenu = {
@@ -237,7 +238,7 @@ Page({
       dinner: []
     }
     this.setData({ menu: emptyMenu })
-    wx.setStorageSync('todayMenu', emptyMenu)
+    storageAdapter.set('todayMenu', emptyMenu)
     this.updateTabCounts()
     this.closeConfirmModal()
 

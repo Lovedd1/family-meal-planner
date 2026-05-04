@@ -53,9 +53,7 @@ Page({
     this.setData({
       userInfo: {
         nickname: userProfile.nickname || '我',
-        avatar: userProfile.nickname?.charAt(0) || '我',
-        avatarUrl: userProfile.avatarUrl || '',
-        hasLogin: !!userProfile.avatarUrl
+        avatar: userProfile.nickname?.charAt(0) || '我'
       }
     })
 
@@ -214,26 +212,6 @@ Page({
 
   preventBubble() {
     // 阻止冒泡
-  },
-
-  onGetUserProfile(e) {
-    if (e.detail && e.detail.userInfo) {
-      const userProfile = storageAdapter.get('userProfile') || {}
-      userProfile.nickname = e.detail.userInfo.nickName
-      userProfile.avatarUrl = e.detail.userInfo.avatarUrl
-      storageAdapter.set('userProfile', userProfile)
-      this.setData({
-        userInfo: {
-          nickname: e.detail.userInfo.nickName,
-          avatar: e.detail.userInfo.nickName.charAt(0),
-          avatarUrl: e.detail.userInfo.avatarUrl,
-          hasLogin: true
-        }
-      })
-      wx.showToast({ title: '登录成功', icon: 'success' })
-    } else {
-      wx.showToast({ title: '请允许授权', icon: 'none' })
-    }
   },
 
   async generateInviteCode() {

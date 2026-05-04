@@ -3,9 +3,9 @@
   <!-- 顶部导航 -->
   <view class="nav-bar">
     <view class="nav-title">我的冰箱</view>
-    <view class="sync-status">
+    <view class="sync-status" wx:if="{{partnerNickname}}">
       <view class="status-dot"></view>
-      <text>与{{partnerName}}同步中</text>
+      <text>与{{partnerNickname}}同步中</text>
     </view>
   </view>
 

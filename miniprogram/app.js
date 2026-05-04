@@ -11,7 +11,8 @@ App({
       breakfast: [],
       lunch: [],
       dinner: []
-    }
+    },
+    loginPromise: null
   },
 
   onLaunch() {
@@ -53,23 +54,23 @@ App({
       this.globalData.userId = userId
     } else {
       // 如果没有userId，获取openid作为userId
-      this.login()
+      this.loginPromise = this.login()
     }
   },
 
   login() {
-    if (!wx.cloud) return
-    wx.cloud.callFunction({
+    if (!wx.cloud) return Promise.resolve()
+    return wx.cloud.callFunction({
       name: 'login',
       data: {},
-      success: (res) => {
-        if (res.result && res.result.openid) {
-          this.setUserId(res.result.openid)
-        }
-      },
-      fail: (err) => {
-        console.error('login failed:', err)
+    }).then(res => {
+      if (res.result && res.result.openid) {
+        this.setUserId(res.result.openid)
       }
+      return res
+    }).catch(err => {
+      console.error('login failed:', err)
+      return Promise.reject(err)
     })
   },
 
@@ -92,8 +93,8 @@ App({
   // 更新今日菜单
   updateTodayMenu(menu) {
     this.globalData.todayMenu = menu
-    // todayMenu 不同步到云端，只存本地
-    wx.setStorageSync('todayMenu', menu)
+    // todayMenu 不同步到云端，但通过storageAdapter保持一致性
+    storageAdapter.set('todayMenu', menu)
   },
 
   // 获取今日菜单

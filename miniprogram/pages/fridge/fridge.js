@@ -14,7 +14,8 @@ Page({
     showAddModal: false,
     showRecommendModal: false,
     recommendations: [],
-    syncStatus: '已连接'
+    syncStatus: '已连接',
+    partnerNickname: ''
   },
 
   onLoad() {
@@ -22,7 +23,13 @@ Page({
   },
 
   onShow() {
+    this.loadPartnerInfo()
     this.loadItems()
+  },
+
+  loadPartnerInfo() {
+    const partnerNickname = wx.getStorageSync('partnerNickname') || ''
+    this.setData({ partnerNickname })
   },
 
   loadItems() {
