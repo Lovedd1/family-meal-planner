@@ -1,5 +1,6 @@
 // pages/fridge/fridge.js
 const app = getApp()
+const storageAdapter = require('../../utils/storageAdapter.js')
 
 Page({
   data: {
@@ -25,7 +26,7 @@ Page({
   },
 
   loadItems() {
-    const items = wx.getStorageSync('fridgeItems') || []
+    const items = storageAdapter.get('fridgeItems') || []
     this.setData({ items })
     this.updateCategoryCounts()
   },
@@ -69,7 +70,7 @@ Page({
     }
 
     const items = [...this.data.items, newItem]
-    wx.setStorageSync('fridgeItems', items)
+    storageAdapter.set('fridgeItems', items)
     this.setData({ items })
     this.updateCategoryCounts()
     this.closeAddModal()
@@ -80,7 +81,7 @@ Page({
     const index = e.currentTarget.dataset.index
     const items = [...this.data.items]
     items.splice(index, 1)
-    wx.setStorageSync('fridgeItems', items)
+    storageAdapter.set('fridgeItems', items)
     this.setData({ items })
     this.updateCategoryCounts()
   },

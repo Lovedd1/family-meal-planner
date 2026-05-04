@@ -1,5 +1,6 @@
 // pages/health/health.js
 const app = getApp()
+const storageAdapter = require('../../utils/storageAdapter.js')
 
 Page({
   data: {
@@ -54,7 +55,7 @@ Page({
 
   loadHealthData() {
     // 加载健康档案
-    const profile = wx.getStorageSync('healthProfile') || {}
+    const profile = storageAdapter.get('healthProfile') || {}
     const allergies = profile.allergies || ''
     const allergyList = allergies ? allergies.split(',').map(s => s.trim()).filter(s => s) : []
     this.setData({
@@ -68,12 +69,12 @@ Page({
     })
 
     // 加载体重记录
-    const records = wx.getStorageSync('weightRecords') || []
+    const records = storageAdapter.get('weightRecords') || []
     this.setData({ weightRecords: records })
     this.updateWeightStats()
 
     // 加载生理期设置
-    const menstrual = wx.getStorageSync('menstrualSettings') || {}
+    const menstrual = storageAdapter.get('menstrualSettings') || {}
     this.setData({
       menstrualSettings: {
         lastPeriodDate: menstrual.lastPeriodDate || '',
@@ -151,7 +152,7 @@ Page({
       activityLevel: this.data.activityLevel,
       allergies: form.allergies
     }
-    wx.setStorageSync('healthProfile', profile)
+    storageAdapter.set('healthProfile', profile)
     this.setData({ ...profile })
     this.updateWeightStats()
     this.closeEditProfile()
@@ -181,7 +182,7 @@ Page({
           }
 
           const records = [...this.data.weightRecords, record]
-          wx.setStorageSync('weightRecords', records)
+          storageAdapter.set('weightRecords', records)
           this.setData({
             weightRecords: records,
             currentWeight: weight.toString()
@@ -234,7 +235,7 @@ Page({
             ...this.data.menstrualSettings,
             lastPeriodDate: res.content
           }
-          wx.setStorageSync('menstrualSettings', settings)
+          storageAdapter.set('menstrualSettings', settings)
           this.setData({ menstrualSettings: settings })
           this.calculateMenstrualPhase()
           wx.showToast({ title: '已保存', icon: 'success' })
@@ -287,7 +288,7 @@ Page({
 
         this.setData({ dietPlan: plan, showDietPlan: true, currentPlanPhase: 0 })
           // 保存到本地
-          wx.setStorageSync('dietPlan', plan)
+          storageAdapter.set('dietPlan', plan)
           wx.showToast({ title: '生成成功', icon: 'success' })
         } else {
           wx.showModal({
@@ -320,7 +321,7 @@ Page({
 
   // 检查冰箱库存，返回购物清单是否充足
   checkFridgeStock(shoppingList) {
-    const fridgeItems = wx.getStorageSync('fridgeItems') || []
+    const fridgeItems = storageAdapter.get('fridgeItems') || []
     const fridgeNames = fridgeItems.map(item => item.name)
 
     return shoppingList.map(item => {

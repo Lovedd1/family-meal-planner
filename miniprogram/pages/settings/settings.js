@@ -1,4 +1,6 @@
 // pages/settings/settings.js
+const storageAdapter = require('../../utils/storageAdapter.js')
+
 Page({
   data: {
     userInfo: {
@@ -36,7 +38,7 @@ Page({
 
   loadSettings() {
     // 用户信息
-    const userProfile = wx.getStorageSync('userProfile') || {}
+    const userProfile = storageAdapter.get('userProfile') || {}
     this.setData({
       userInfo: {
         nickname: userProfile.nickname || '我',
@@ -56,15 +58,15 @@ Page({
     })
 
     // 数据统计
-    const fridgeItems = wx.getStorageSync('fridgeItems')?.length || 0
-    const customFoods = wx.getStorageSync('customFoods')?.length || 0
-    const weightRecords = wx.getStorageSync('weightRecords')?.length || 0
+    const fridgeItems = storageAdapter.get('fridgeItems')?.length || 0
+    const customFoods = storageAdapter.get('customFoods')?.length || 0
+    const weightRecords = storageAdapter.get('weightRecords')?.length || 0
     this.setData({
       dataStats: { fridgeItems, customFoods, weightRecords }
     })
 
     // 生理期设置
-    const menstrualSettings = wx.getStorageSync('menstrualSettings') || {}
+    const menstrualSettings = storageAdapter.get('menstrualSettings') || {}
     this.setData({ menstrualSettings })
   },
 
@@ -75,9 +77,9 @@ Page({
       placeholderText: '请输入昵称',
       success: (res) => {
         if (res.confirm && res.content) {
-          const userProfile = wx.getStorageSync('userProfile') || {}
+          const userProfile = storageAdapter.get('userProfile') || {}
           userProfile.nickname = res.content
-          wx.setStorageSync('userProfile', userProfile)
+          storageAdapter.set('userProfile', userProfile)
           this.setData({
             'userInfo.nickname': res.content,
             'userInfo.avatar': res.content.charAt(0)
@@ -91,7 +93,9 @@ Page({
   syncData() {
     wx.showToast({ title: '正在同步...', icon: 'loading' })
 
-    // 模拟同步
+    // 触发全量同步
+    storageAdapter.syncAll()
+
     setTimeout(() => {
       const now = new Date().toLocaleString()
       wx.setStorageSync('lastSyncTime', now)

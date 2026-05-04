@@ -1,6 +1,7 @@
 // 家庭饮食健康管家
 // app.js
 const foods = require('./utils/foods.js')
+const storageAdapter = require('./utils/storageAdapter.js')
 
 App({
   globalData: {
@@ -19,13 +20,24 @@ App({
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
       wx.cloud.init({
-        env: 'your-env-id', // 替换为你的云开发环境ID
+        env: 'cloud1-d1gse71xxaad6c670',
         traceUser: true,
       })
     }
 
+    // 初始化存储适配器
+    storageAdapter.initCloudDB()
+
     // 检查登录状态
     this.checkLogin()
+
+    // 监听网络状态变化，自动同步
+    storageAdapter.onNetworkStatusChange()
+  },
+
+  onShow() {
+    // 每次进入小程序尝试同步
+    storageAdapter.syncAll()
   },
 
   checkLogin() {
@@ -54,12 +66,13 @@ App({
   // 更新今日菜单
   updateTodayMenu(menu) {
     this.globalData.todayMenu = menu
+    // todayMenu 不同步到云端，只存本地
     wx.setStorageSync('todayMenu', menu)
   },
 
   // 获取今日菜单
   getTodayMenu() {
-    const menu = wx.getStorageSync('todayMenu')
+    const menu = storageAdapter.get('todayMenu')
     if (menu) {
       return menu
     }

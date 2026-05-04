@@ -1,6 +1,7 @@
 // pages/order/order.js
 const foods = require('../../utils/foods.js')
 const app = getApp()
+const storageAdapter = require('../../utils/storageAdapter.js')
 
 Page({
   data: {
@@ -34,7 +35,7 @@ Page({
 
   loadFoods() {
     // 合并内置菜品和自定义菜品
-    const customFoods = wx.getStorageSync('customFoods') || []
+    const customFoods = storageAdapter.get('customFoods') || []
     const allFoods = [...foods.foods, ...customFoods]
     // 添加食材摘要
     allFoods.forEach(food => {
@@ -201,9 +202,9 @@ Page({
       isCustom: true
     }
 
-    const customFoods = wx.getStorageSync('customFoods') || []
+    const customFoods = storageAdapter.get('customFoods') || []
     customFoods.push(customFood)
-    wx.setStorageSync('customFoods', customFoods)
+    storageAdapter.set('customFoods', customFoods)
 
     this.loadFoods()
     this.closeAddCustomModal()
