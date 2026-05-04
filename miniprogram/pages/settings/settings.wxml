@@ -7,7 +7,7 @@
 
   <!-- 用户信息 -->
   <view class="section">
-    <view class="user-card" bindtap="handleUserCardTap">
+    <view class="user-card">
       <view class="avatar">{{userInfo.avatar}}</view>
       <view class="user-info">
         <text class="nickname">{{userInfo.nickname}}</text>
