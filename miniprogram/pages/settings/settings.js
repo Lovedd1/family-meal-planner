@@ -210,6 +210,10 @@ Page({
     })
   },
 
+  preventBubble() {
+    // 阻止冒泡
+  },
+
   async generateInviteCode() {
     this.setData({ isGeneratingCode: true })
     try {

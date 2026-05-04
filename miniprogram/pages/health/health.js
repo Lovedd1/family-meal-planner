@@ -40,8 +40,6 @@ Page({
     dietPlan: null,
     showDietPlan: false,
     currentPlanPhase: 0,
-    showDietPlansList: false,
-    dietPlans: [],
 
     // 平台期提醒
     showPlateauAlert: false
@@ -293,8 +291,8 @@ Page({
         }
 
         this.setData({ dietPlan: plan, showDietPlan: true, currentPlanPhase: 0 })
-          // 保存到饮食计划列表（最多保留3份）
-          this.saveDietPlan(plan)
+          // 保存到本地
+          storageAdapter.set('dietPlan', plan)
           wx.showToast({ title: '生成成功', icon: 'success' })
         } else {
           wx.showModal({
@@ -318,64 +316,6 @@ Page({
 
   closeDietPlan() {
     this.setData({ showDietPlan: false, currentPlanPhase: 0 })
-  },
-
-  // 保存饮食计划（最多保留3份）
-  saveDietPlan(plan) {
-    const plans = storageAdapter.get('dietPlans') || []
-    // 添加时间戳
-    plan.savedAt = Date.now()
-    plan.id = 'plan_' + Date.now()
-    // 添加到列表开头
-    plans.unshift(plan)
-    // 最多保留3份
-    if (plans.length > 3) {
-      plans.pop()
-    }
-    storageAdapter.set('dietPlans', plans)
-  },
-
-  // 加载饮食计划列表
-  loadDietPlans() {
-    const plans = storageAdapter.get('dietPlans') || []
-    this.setData({ dietPlans: plans })
-  },
-
-  // 打开历史计划列表
-  showDietPlansList() {
-    this.loadDietPlans()
-    this.setData({ showDietPlansList: true })
-  },
-
-  closeDietPlansList() {
-    this.setData({ showDietPlansList: false })
-  },
-
-  // 选择历史计划
-  selectDietPlan(e) {
-    const index = e.currentTarget.dataset.index
-    const plan = this.data.dietPlans[index]
-    if (plan) {
-      this.setData({ dietPlan: plan, showDietPlan: true, showDietPlansList: false, currentPlanPhase: 0 })
-    }
-  },
-
-  // 删除饮食计划
-  deleteDietPlan(e) {
-    const index = e.currentTarget.dataset.index
-    wx.showModal({
-      title: '确认删除',
-      content: '确定要删除这份饮食计划吗？',
-      success: (res) => {
-        if (res.confirm) {
-          const plans = storageAdapter.get('dietPlans') || []
-          plans.splice(index, 1)
-          storageAdapter.set('dietPlans', plans)
-          this.setData({ dietPlans: plans })
-          wx.showToast({ title: '已删除', icon: 'success' })
-        }
-      }
-    })
   },
 
   switchPlanPhase(e) {
@@ -423,13 +363,5 @@ Page({
       'active': '运动较多'
     }
     return labels[level] || ''
-  },
-
-  formatDate(timestamp) {
-    if (!timestamp) return ''
-    const date = new Date(timestamp)
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    return `${month}-${day}`
   }
 })

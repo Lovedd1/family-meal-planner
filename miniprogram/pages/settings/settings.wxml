@@ -93,7 +93,7 @@
           <!-- 输入伴侣邀请码 -->
           <view class="bind-input-section">
             <view class="section-title">输入TA的邀请码</view>
-            <form bindsubmit="bindWithCode">
+            <form bindsubmit="bindWithCode" catchtap="preventBubble">
               <input name="code" maxlength="6" placeholder="请输入6位邀请码" class="code-input"/>
               <button form-type="submit" loading="{{isBinding}}" class="btn-primary">确认绑定</button>
             </form>

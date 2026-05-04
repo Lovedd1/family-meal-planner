@@ -3,7 +3,9 @@
     "allow": [
       "mcp__cloudbase__manageFunctions",
       "mcp__cloudbase__writeNoSqlDatabaseStructure",
-      "mcp__cloudbase__managePermissions"
+      "mcp__cloudbase__managePermissions",
+      "mcp__weapp__weapp_cloud_functions_deploy",
+      "mcp__cloudbase__queryFunctions"
     ]
   },
   "enabledPlugins": {

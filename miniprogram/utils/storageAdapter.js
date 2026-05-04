@@ -11,7 +11,6 @@ const STORAGE_KEY_MAP = {
   menstrualSettings: 'menstrual_records',
   userProfile: 'user_profiles',
   dietPlan: 'diet_plans',
-  dietPlans: 'diet_plans',  // 历史饮食计划列表
   todayMenu: null, // 今日菜单不同步到云端
 }
 
