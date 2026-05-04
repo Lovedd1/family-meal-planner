@@ -572,7 +572,7 @@ class StorageAdapter {
     const partnerId = wx.getStorageSync('partnerId')
     if (!partnerId) return
 
-    const sharedKeys = ['fridgeItems', 'customFoods']
+    const sharedKeys = ['fridgeItems', 'customFoods', 'todayMenu']
 
     for (const key of sharedKeys) {
       try {
