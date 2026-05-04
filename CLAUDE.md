@@ -15,7 +15,8 @@
 │   │   ├── fridge/       # 我的冰箱 ✓
 │   │   └── settings/     # 设置 ✓
 │   ├── utils/
-│   │   └── foods.js      # 12道菜品 + 相克规则
+│   │   ├── foods.js      # 12道菜品 + 相克规则
+│   │   └── storageAdapter.js  # 离线优先存储适配层
 │   └── static/           # TabBar图标 (SVG/PNG)
 ├── cloudfunctions/       # 云函数
 │   └── generateDietPlan/ # AI饮食计划生成
@@ -38,9 +39,9 @@
 - [x] AI智能饮食计划（3阶段计划，每周菜单，2天采购清单）
 - [x] 云函数 generateDietPlan（调用DeepSeek API，已部署至云端）
 - [x] Git 提交
+- [x] 云开发数据库集成（离线优先存储适配层 + 7个Collection）
 
 ### 待开发 📋
-- [ ] 云开发数据库集成
 - [ ] 双人实时同步
 
 ## 技术决策
@@ -76,12 +77,14 @@
 - 区域: 上海 (ap-shanghai)
 - DeepSeek API Key: 环境变量方式存储（`DEEPSEEK_API_KEY`）
 
-## 云开发 Collection (规划)
-- `fridge_items` - 冰箱食材
-- `menu_items` - 菜品库(含自定义)
-- `health_records` - 健康档案
-- `weight_records` - 体重记录
-- `menstrual_records` - 生理期记录
+## 云开发 Collection
+- `fridge_items` - 冰箱食材 ✓
+- `menu_items` - 菜品库(含自定义) ✓
+- `health_records` - 健康档案 ✓
+- `weight_records` - 体重记录 ✓
+- `menstrual_records` - 生理期记录 ✓
+- `user_profiles` - 用户信息 ✓
+- `diet_plans` - AI饮食计划 ✓
 
 ## 食物相克规则
 | 组合 | 级别 | 说明 |
