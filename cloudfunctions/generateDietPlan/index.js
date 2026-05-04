@@ -4,9 +4,13 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
-// DeepSeek API配置 - 环境变量方式存储
-const API_KEY = 'sk-4d6e79ef904a423fb64e8821d6617f22'
+// DeepSeek API配置 - 从环境变量读取
+const API_KEY = process.env.DEEPSEEK_API_KEY
 const API_URL = 'https://api.deepseek.com/v1/chat/completions'
+
+if (!API_KEY) {
+  throw new Error('缺少环境变量 DEEPSEEK_API_KEY，请联系管理员配置')
+}
 
 exports.main = async (event, context) => {
   const { dietGoal, activityLevel, allergies, currentPhase, targetWeight } = event

@@ -1,0 +1,9 @@
+{
+  "name": "generateDietPlan",
+  "version": "1.0.0",
+  "description": "AI个性化饮食计划生成",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}
