@@ -22,6 +22,7 @@ class StorageAdapter {
     this.syncQueue = wx.getStorageSync(SYNC_QUEUE_KEY) || []
     this.isSyncing = false
     this.db = null
+    this._networkListenerRegistered = false
   }
 
   /**
@@ -234,7 +235,7 @@ class StorageAdapter {
   /**
    * 同步全部队列
    */
-  syncAll() {
+  async syncAll() {
     if (this.isSyncing) {
       return
     }
@@ -249,7 +250,7 @@ class StorageAdapter {
       return this.syncToCloud(item.key, collectionName)
     })
 
-    Promise.all(syncPromises).finally(() => {
+    await Promise.all(syncPromises).finally(() => {
       this.isSyncing = false
       wx.setStorageSync(LAST_SYNC_KEY, Date.now())
     })
@@ -273,6 +274,10 @@ class StorageAdapter {
    * 监听网络状态变化
    */
   onNetworkStatusChange(callback) {
+    if (this._networkListenerRegistered) {
+      return
+    }
+    this._networkListenerRegistered = true
     wx.onNetworkStatusChange((res) => {
       if (res.isConnected) {
         // 网络恢复，触发同步
@@ -452,7 +457,18 @@ class StorageAdapter {
       throw new Error('用户未登录')
     }
 
-    const code = this.generateInviteCode()
+    let code = this.generateInviteCode()
+    // 确保邀请码唯一性
+    const allUsers = await this.db.collection('user_profiles').limit(100).get()
+    for (const user of allUsers.data) {
+      if (user.codes && user.codes[code]) {
+        const codeInfo = user.codes[code]
+        if (!codeInfo.used && (Date.now() - codeInfo.createdAt) < 24 * 60 * 60 * 1000) {
+          code = this.generateInviteCode()
+        }
+      }
+    }
+
     const collection = this.db.collection('user_profiles')
 
     const profile = await collection.doc(userId).get()
