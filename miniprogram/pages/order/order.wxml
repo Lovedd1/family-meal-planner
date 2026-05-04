@@ -156,7 +156,7 @@
         <text class="modal-title">新增自定义菜品</text>
         <text class="modal-close" bindtap="closeAddCustomModal">×</text>
       </view>
-      <form bindsubmit="saveCustomFood">
+      <form bindsubmit="saveCustomFood" catchtap="preventBubble">
         <scroll-view class="form-body" scroll-y>
           <view class="form-item">
             <label>菜品名称</label>

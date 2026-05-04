@@ -1,7 +1,14 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__cloudbase__manageFunctions",
+      "mcp__cloudbase__writeNoSqlDatabaseStructure",
+      "mcp__cloudbase__managePermissions"
+    ]
+  },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true
   },
-  "CLAUDE_CODE_NEW_INIT":"1"
+  "CLAUDE_CODE_NEW_INIT": "1"
 }

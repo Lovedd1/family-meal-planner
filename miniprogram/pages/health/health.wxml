@@ -215,7 +215,7 @@
         <text class="modal-title">编辑健康档案</text>
         <text class="modal-close" bindtap="closeEditProfile">×</text>
       </view>
-      <form bindsubmit="saveProfile">
+      <form bindsubmit="saveProfile" catchtap="preventBubble">
         <view class="form-body">
           <view class="form-item">
             <label>当前体重(kg)</label>

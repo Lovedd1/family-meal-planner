@@ -53,6 +53,10 @@ Page({
     this.setData({ showAddModal: false })
   },
 
+  preventBubble() {
+    // 阻止冒泡
+  },
+
   addItem(e) {
     const form = e.detail.value
     if (!form.name || !form.category) {

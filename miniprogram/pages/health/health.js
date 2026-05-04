@@ -142,6 +142,10 @@ Page({
     this.setData({ showEditProfile: false })
   },
 
+  preventBubble() {
+    // 阻止冒泡，防止点击输入框时关闭弹窗
+  },
+
   saveProfile(e) {
     const form = e.detail.value
     const profile = {

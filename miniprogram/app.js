@@ -51,7 +51,26 @@ App({
     const userId = wx.getStorageSync('userId')
     if (userId) {
       this.globalData.userId = userId
+    } else {
+      // 如果没有userId，获取openid作为userId
+      this.login()
     }
+  },
+
+  login() {
+    if (!wx.cloud) return
+    wx.cloud.callFunction({
+      name: 'login',
+      data: {},
+      success: (res) => {
+        if (res.result && res.result.openid) {
+          this.setUserId(res.result.openid)
+        }
+      },
+      fail: (err) => {
+        console.error('login failed:', err)
+      }
+    })
   },
 
   setUserId(id) {

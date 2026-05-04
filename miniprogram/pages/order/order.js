@@ -163,6 +163,10 @@ Page({
     this.setData({ showAddCustomModal: false })
   },
 
+  preventBubble() {
+    // 阻止冒泡
+  },
+
   updateCustomForm(e) {
     const field = e.currentTarget.dataset.field
     const value = e.detail.value
