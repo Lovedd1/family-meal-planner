@@ -1,0 +1,285 @@
+<!-- 健康计划页面 -->
+<view class="page">
+  <!-- 顶部导航 -->
+  <view class="nav-bar">
+    <view class="nav-title">健康计划</view>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <!-- 伴侣健康档案 -->
+    <view class="card partner-card" wx:if="{{partnerProfile}}">
+      <view class="card-header">
+        <text class="card-title">👤 {{partnerProfile.nickname}} 的档案</text>
+      </view>
+      <view class="partner-info">
+        <view class="info-item">
+          <text>体重</text>
+          <text>{{partnerProfile.weight}}kg</text>
+        </view>
+        <view class="info-item">
+          <text>目标</text>
+          <text>{{partnerProfile.targetWeight}}kg</text>
+        </view>
+        <view class="info-item">
+          <text>差距</text>
+          <text class="text-danger">{{partnerProfile.weight - partnerProfile.targetWeight}}kg</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 我的健康档案 -->
+    <view class="card">
+      <view class="card-header">
+        <text class="card-title">📋 我的健康档案</text>
+        <text class="edit-btn" bindtap="showEditProfile">编辑</text>
+      </view>
+
+      <!-- 饮食目标 -->
+      <view class="goal-selector">
+        <view
+          class="goal-btn {{dietGoal === 'lose' ? 'active' : ''}}"
+          data-goal="lose"
+          bindtap="setDietGoal"
+        >
+          📉 减肥
+        </view>
+        <view
+          class="goal-btn {{dietGoal === 'maintain' ? 'active' : ''}}"
+          data-goal="maintain"
+          bindtap="setDietGoal"
+        >
+          ⚖️ 维持
+        </view>
+        <view
+          class="goal-btn {{dietGoal === 'gain' ? 'active' : ''}}"
+          data-goal="gain"
+          bindtap="setDietGoal"
+        >
+          📈 增重
+        </view>
+      </view>
+
+      <!-- 数据概览 -->
+      <view class="data-overview">
+        <view class="data-item">
+          <text class="data-label">当前体重</text>
+          <text class="data-value">{{currentWeight || '--'}}</text>
+          <text class="data-unit">kg</text>
+        </view>
+        <view class="data-item">
+          <text class="data-label">目标体重</text>
+          <text class="data-value text-success">{{targetWeight || '--'}}</text>
+          <text class="data-unit">kg</text>
+        </view>
+        <view class="data-item">
+          <text class="data-label">身高</text>
+          <text class="data-value">{{height || '--'}}</text>
+          <text class="data-unit">cm</text>
+        </view>
+      </view>
+
+      <!-- 活动量 -->
+      <view class="activity-selector">
+        <text class="section-label">日常活动量</text>
+        <view class="activity-btns">
+          <view
+            class="activity-btn {{activityLevel === 'sedentary' ? 'active' : ''}}"
+            data-level="sedentary"
+            bindtap="setActivityLevel"
+          >久坐少动</view>
+          <view
+            class="activity-btn {{activityLevel === 'moderate' ? 'active' : ''}}"
+            data-level="moderate"
+            bindtap="setActivityLevel"
+          >适度活动</view>
+          <view
+            class="activity-btn {{activityLevel === 'active' ? 'active' : ''}}"
+            data-level="active"
+            bindtap="setActivityLevel"
+          >运动较多</view>
+        </view>
+      </view>
+
+      <!-- 过敏源 -->
+      <view class="allergy-section" wx:if="{{allergies}}">
+        <text class="section-label">食物过敏源</text>
+        <view class="allergy-tags">
+          <text class="allergy-tag" wx:for="{{allergyList}}" wx:key="*this">
+            {{item}}
+          </text>
+        </view>
+      </view>
+
+      <button class="btn btn-primary btn-record" bindtap="recordWeight">
+        记录今日体重
+      </button>
+    </view>
+
+    <!-- 体重趋势图 -->
+    <view class="card" wx:if="{{weightRecords.length > 0}}">
+      <view class="card-header">
+        <text class="card-title">📊 体重趋势 (最近14次)</text>
+      </view>
+      <view class="weight-chart">
+        <view class="chart-bars">
+          <view
+            class="chart-bar"
+            wx:for="{{chartData}}"
+            wx:key="index"
+            style="height: {{item.height}}%"
+          >
+            <text class="bar-value">{{item.weight}}</text>
+          </view>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-inner" style="width: {{weightStats.progress}}%"></view>
+        </view>
+        <view class="progress-label">
+          <text>当前 {{weightStats.current}}kg</text>
+          <text class="text-success">{{weightStats.diff > 0 ? '距目标还有' : '已达标'}}{{Math.abs(weightStats.diff)}}kg</text>
+          <text>目标 {{weightStats.target}}kg</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 生理期追踪 -->
+    <view class="card">
+      <view class="card-header">
+        <text class="card-title">🌸 生理期追踪</text>
+        <text class="edit-btn" bindtap="showMenstrualSettings">设置</text>
+      </view>
+
+      <block wx:if="{{menstrualSettings.lastPeriodDate}}">
+        <view class="phase-status">
+          <view class="phase-badge phase-{{currentPhase}}">
+            {{getPhaseLabel(currentPhase)}}
+          </view>
+          <text class="phase-day">第{{phaseDay}}天</text>
+        </view>
+
+        <view class="calendar-view">
+          <view class="calendar-legend">
+            <view class="legend-item">
+              <view class="legend-dot period"></view>
+              <text>经期</text>
+            </view>
+            <view class="legend-item">
+              <view class="legend-dot fertile"></view>
+              <text>易孕期</text>
+            </view>
+            <view class="legend-item">
+              <view class="legend-dot today"></view>
+              <text>今天</text>
+            </view>
+          </view>
+          <view class="calendar-grid">
+            <text class="day-cell" wx:for="{{28}}" wx:key="*this">
+              {{index + 1}}
+            </text>
+          </view>
+        </view>
+
+        <view class="phase-tips">
+          <text class="phase-tip-title">{{getPhaseLabel(currentPhase)}}饮食建议</text>
+          <text class="phase-tip-text">
+            {{currentPhase === 'menstruation' ? '温热、补铁，推荐：红枣桂圆粥、红糖姜茶' :
+              currentPhase === 'follicular' ? '高蛋白、富含叶酸，推荐：三文鱼、鸡蛋、牛奶' :
+              currentPhase === 'ovulation' ? '补气血，推荐：红枣乌鸡汤、坚果、牛肉' :
+              '清淡少盐、膳食纤维，推荐：杂粮饭、绿叶蔬菜'}}
+          </text>
+        </view>
+      </block>
+      <view class="empty-phase" wx:else bindtap="showMenstrualSettings">
+        <text>点击设置月经日期</text>
+      </view>
+    </view>
+
+    <!-- 饮食计划 -->
+    <view class="card">
+      <view class="card-header">
+        <text class="card-title">🤖 AI 饮食计划</text>
+      </view>
+      <view class="ai-hint">
+        基于你的体重、目标、生理阶段生成的个性化饮食建议
+      </view>
+      <button class="btn btn-primary" bindtap="generateDietPlan">
+        生成饮食计划
+      </button>
+    </view>
+  </scroll-view>
+
+  <!-- 编辑档案弹窗 -->
+  <view class="modal" wx:if="{{showEditProfile}}" bindtap="closeEditProfile">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">编辑健康档案</text>
+        <text class="modal-close" bindtap="closeEditProfile">×</text>
+      </view>
+      <form bindsubmit="saveProfile">
+        <view class="form-body">
+          <view class="form-item">
+            <label>当前体重(kg)</label>
+            <input name="currentWeight" type="digit" value="{{currentWeight}}" />
+          </view>
+          <view class="form-item">
+            <label>目标体重(kg)</label>
+            <input name="targetWeight" type="digit" value="{{targetWeight}}" />
+          </view>
+          <view class="form-item">
+            <label>身高(cm)</label>
+            <input name="height" type="number" value="{{height}}" />
+          </view>
+          <view class="form-item">
+            <label>食物过敏源(逗号分隔)</label>
+            <input name="allergies" value="{{allergies}}" placeholder="如：虾、芒果" />
+          </view>
+        </view>
+        <view class="modal-footer">
+          <button type="default" catchtap="closeEditProfile">取消</button>
+          <button type="primary" form-type="submit">保存</button>
+        </view>
+      </form>
+    </view>
+  </view>
+
+  <!-- 饮食计划弹窗 -->
+  <view class="modal" wx:if="{{showDietPlan}}" bindtap="closeDietPlan">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">饮食计划</text>
+        <text class="modal-close" bindtap="closeDietPlan">×</text>
+      </view>
+      <scroll-view class="modal-body" scroll-y>
+        <view class="plan-phase" wx:for="{{dietPlan.phases}}" wx:key="name">
+          <view class="phase-name">{{item.name}}</view>
+          <view class="phase-detail">
+            <text>周期: {{item.duration}}</text>
+            <text>热量: {{item.calories}}</text>
+          </view>
+          <view class="phase-focus">{{item.focus}}</view>
+        </view>
+        <view class="plan-tips">
+          <text class="tips-title">饮食建议</text>
+          <text wx:for="{{dietPlan.recommendations}}" wx:key="*this">{{item}}</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 平台期提醒 -->
+  <view class="modal" wx:if="{{showPlateauAlert}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">⚠️ 体重平台期提醒</text>
+      </view>
+      <view class="modal-body">
+        <text>连续3次体重变化小于0.3kg，可能进入平台期。</text>
+        <text class="plateau-tip">是否需要调整热量目标？</text>
+      </view>
+      <view class="modal-footer">
+        <button bindtap="setData({showPlateauAlert: false})">暂不调整</button>
+        <button type="primary" bindtap="setData({showPlateauAlert: false})">调整计划</button>
+      </view>
+    </view>
+  </view>
+</view>

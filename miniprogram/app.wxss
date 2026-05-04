@@ -1,0 +1,188 @@
+/* 全局样式 */
+page {
+  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 通用卡片 */
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+  color: #333;
+}
+
+/* 按钮样式 */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #07c160, #10b266);
+  color: #fff;
+}
+
+.btn-default {
+  background: #fff;
+  color: #333;
+  border: 1rpx solid #ddd;
+}
+
+.btn-danger {
+  background: #fa5151;
+  color: #fff;
+}
+
+.btn-disabled {
+  background: #e5e5e5;
+  color: #999;
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+}
+
+.tag-danger {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+.tag-warning {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.tag-success {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.tag-info {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+/* 加热标签 */
+.tag-microwave-safe {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.tag-microwave-none {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+.tag-steam-only {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.tag-fire-only {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+  color: #999;
+}
+
+.empty-state .icon {
+  font-size: 100rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-state .text {
+  font-size: 28rpx;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 20rpx 40rpx;
+  border-radius: 12rpx;
+  z-index: 9999;
+}
+
+/* Flex工具 */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* 间距工具 */
+.mt-10 { margin-top: 10rpx; }
+.mt-20 { margin-top: 20rpx; }
+.mt-30 { margin-top: 30rpx; }
+.mb-10 { margin-bottom: 10rpx; }
+.mb-20 { margin-bottom: 20rpx; }
+.mb-30 { margin-bottom: 30rpx; }
+.ml-10 { margin-left: 10rpx; }
+.ml-20 { margin-left: 20rpx; }
+.mr-10 { margin-right: 10rpx; }
+.mr-20 { margin-right: 20rpx; }
+.p-20 { padding: 20rpx; }
+.p-30 { padding: 30rpx; }
+
+/* 文本工具 */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-danger { color: #ff4d4f; }
+.text-warning { color: #fa8c16; }
+.text-success { color: #52c41a; }
+.text-muted { color: #999; }
+.text-small { font-size: 24rpx; }
+.text-large { font-size: 36rpx; }
+.text-bold { font-weight: 600; }

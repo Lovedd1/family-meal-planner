@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>生成TabBar图标</title>
+<style>
+body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+.icon-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+.icon-box { 
+  background: white; padding: 20px; border-radius: 12px; 
+  display: flex; flex-direction: column; align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+canvas { border: 1px solid #eee; }
+.label { margin-top: 10px; font-size: 12px; color: #666; }
+h1 { color: #333; }
+button { 
+  margin-top: 30px; padding: 15px 40px; font-size: 18px;
+  background: #07c160; color: white; border: none; 
+  border-radius: 8px; cursor: pointer;
+}
+button:hover { background: #06ad56; }
+</style>
+</head>
+<body>
+<h1>家庭饮食健康管家 - TabBar 图标生成器</h1>
+<p>点击下方按钮下载所有图标</p>
+<div class="icon-grid">
+  <div class="icon-box">
+    <canvas id="tab-today" width="81" height="81"></canvas>
+    <span class="label">今日菜单</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-today-active" width="81" height="81"></canvas>
+    <span class="label">今日菜单(选中)</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-health" width="81" height="81"></canvas>
+    <span class="label">健康计划</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-health-active" width="81" height="81"></canvas>
+    <span class="label">健康计划(选中)</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-order" width="81" height="81"></canvas>
+    <span class="label">点餐</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-order-active" width="81" height="81"></canvas>
+    <span class="label">点餐(选中)</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-fridge" width="81" height="81"></canvas>
+    <span class="label">我的冰箱</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-fridge-active" width="81" height="81"></canvas>
+    <span class="label">我的冰箱(选中)</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-settings" width="81" height="81"></canvas>
+    <span class="label">设置</span>
+  </div>
+  <div class="icon-box">
+    <canvas id="tab-settings-active" width="81" height="81"></canvas>
+    <span class="label">设置(选中)</span>
+  </div>
+</div>
+<button onclick="downloadAll()">下载所有图标</button>
+
+<script>
+const icons = {
+  'tab-today': { emoji: '📋', text: '菜单' },
+  'tab-health': { emoji: '💪', text: '健康' },
+  'tab-order': { emoji: '🍽️', text: '点餐' },
+  'tab-fridge': { emoji: '🧊', text: '冰箱' },
+  'tab-settings': { emoji: '⚙️', text: '设置' }
+};
+
+Object.keys(icons).forEach(key => {
+  const ctx = document.getElementById(key).getContext('2d');
+  ctx.fillStyle = '#999';
+  ctx.font = '40px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(icons[key].emoji, 40, 38);
+  ctx.font = '10px Arial';
+  ctx.fillText(icons[key].text, 40, 68);
+
+  const ctx2 = document.getElementById(key + '-active').getContext('2d');
+  ctx2.fillStyle = '#07c160';
+  ctx2.font = '40px Arial';
+  ctx2.textAlign = 'center';
+  ctx2.textBaseline = 'middle';
+  ctx2.fillText(icons[key].emoji, 40, 38);
+  ctx2.font = '10px Arial';
+  ctx2.fillText(icons[key].text, 40, 68);
+});
+
+function downloadAll() {
+  const names = ['tab-today', 'tab-health', 'tab-order', 'tab-fridge', 'tab-settings'];
+  names.forEach((name, i) => {
+    setTimeout(() => {
+      ['', '-active'].forEach(suffix => {
+        const canvas = document.getElementById(name + suffix);
+        const link = document.createElement('a');
+        link.download = name + suffix + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }, i * 300);
+  });
+  alert('请在浏览器下载位置查找下载的10张图标，然后放入 static/ 目录');
+}
+</script>
+</body>
+</html>

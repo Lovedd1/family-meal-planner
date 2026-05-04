@@ -1,0 +1,171 @@
+<!-- 我的冰箱页面 -->
+<view class="page">
+  <!-- 顶部导航 -->
+  <view class="nav-bar">
+    <view class="nav-title">我的冰箱</view>
+    <view class="sync-status">
+      <view class="status-dot"></view>
+      <text>与{{partnerName}}同步中</text>
+    </view>
+  </view>
+
+  <!-- 分类统计卡片 -->
+  <view class="category-cards">
+    <view
+      class="category-card"
+      wx:for="{{categories}}"
+      wx:key="value"
+      data-category="{{item.value}}"
+      bindtap="switchFilter"
+    >
+      <text class="category-emoji">{{item.value === 'meat' ? '🥩' : item.value === 'vegetable' ? '🥬' : '🧂'}}</text>
+      <text class="category-name">{{item.label}}</text>
+      <text class="category-count">{{item.count}}种</text>
+    </view>
+  </view>
+
+  <!-- 操作栏 -->
+  <view class="action-bar">
+    <view class="filter-tabs">
+      <view
+        class="filter-tab {{filterCategory === 'all' ? 'active' : ''}}"
+        data-category="all"
+        bindtap="switchFilter"
+      >全部</view>
+      <view
+        class="filter-tab {{filterCategory === 'meat' ? 'active' : ''}}"
+        data-category="meat"
+        bindtap="switchFilter"
+      >肉类</view>
+      <view
+        class="filter-tab {{filterCategory === 'vegetable' ? 'active' : ''}}"
+        data-category="vegetable"
+        bindtap="switchFilter"
+      >蔬菜</view>
+      <view
+        class="filter-tab {{filterCategory === 'seasoning' ? 'active' : ''}}"
+        data-category="seasoning"
+        bindtap="switchFilter"
+      >调料</view>
+    </view>
+    <view class="action-buttons">
+      <view class="action-btn" bindtap="showRecommendations">
+        <text>🤖</text>
+        <text>智能搭配</text>
+      </view>
+      <view class="action-btn primary" bindtap="showAddModal">
+        <text>+</text>
+        <text>添加食材</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 食材列表 -->
+  <view class="item-list">
+    <block wx:if="{{items.length > 0}}">
+      <view
+        class="item-card {{getDaysLeftClass(item.daysLeft)}}"
+        wx:for="{{items}}"
+        wx:key="id"
+        wx:if="{{filterCategory === 'all' || item.category === filterCategory}}"
+      >
+        <view class="item-left">
+          <text class="item-category-tag">{{item.category === 'meat' ? '🥩' : item.category === 'vegetable' ? '🥬' : '🧂'}}</text>
+          <view class="item-info">
+            <text class="item-name">{{item.name}}</text>
+            <view class="item-meta">
+              <text>{{item.amount}}</text>
+              <text class="days-left {{getDaysLeftClass(item.daysLeft)}}">
+                剩余{{item.daysLeft}}天
+              </text>
+            </view>
+          </view>
+        </view>
+        <view
+          class="item-delete"
+          data-index="{{index}}"
+          bindtap="deleteItem"
+        >删除</view>
+      </view>
+    </block>
+    <view class="empty-state" wx:else>
+      <text class="icon">🧊</text>
+      <text class="text">冰箱是空的</text>
+      <text class="text-small">点击添加食材开始管理</text>
+    </view>
+  </view>
+
+  <!-- 添加食材弹窗 -->
+  <view class="modal" wx:if="{{showAddModal}}" bindtap="closeAddModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">添加食材</text>
+        <text class="modal-close" bindtap="closeAddModal">×</text>
+      </view>
+      <form bindsubmit="addItem">
+        <view class="form-body">
+          <view class="form-item">
+            <label>食材名称</label>
+            <input name="name" placeholder="如：鸡蛋、西红柿" />
+          </view>
+          <view class="form-item">
+            <label>分类</label>
+            <radio-group name="category">
+              <label><radio value="meat" /> 🥩 肉类</label>
+              <label><radio value="vegetable" /> 🥬 蔬菜类</label>
+              <label><radio value="seasoning" /> 🧂 调料类</label>
+            </radio-group>
+          </view>
+          <view class="form-item">
+            <label>剩余天数</label>
+            <input name="daysLeft" type="number" value="7" placeholder="预计保质期" />
+          </view>
+          <view class="form-item">
+            <label>数量</label>
+            <input name="amount" placeholder="如：500g、3个" />
+          </view>
+        </view>
+        <view class="modal-footer">
+          <button type="default" catchtap="closeAddModal">取消</button>
+          <button type="primary" form-type="submit">保存</button>
+        </view>
+      </form>
+    </view>
+  </view>
+
+  <!-- 智能推荐弹窗 -->
+  <view class="modal" wx:if="{{showRecommendModal}}" bindtap="closeRecommendModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">智能搭配推荐</text>
+        <text class="modal-close" bindtap="closeRecommendModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="recommend-tip">
+          基于最快过期食材优先匹配
+        </view>
+        <view class="recommend-list">
+          <view
+            class="recommend-item"
+            wx:for="{{recommendations}}"
+            wx:key="id"
+          >
+            <text class="emoji">{{item.emoji}}</text>
+            <view class="recommend-info">
+              <text class="name">{{item.name}}</text>
+              <text class="matched">匹配食材: {{item.matchedIngredients}}</text>
+            </view>
+            <button
+              class="btn-mini"
+              data-food="{{item}}"
+              bindtap="addToDinner"
+            >加入晚餐</button>
+          </view>
+          <view class="empty-recommend" wx:if="{{recommendations.length === 0}}">
+            <text>添加更多食材后查看推荐</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

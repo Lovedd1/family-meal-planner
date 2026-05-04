@@ -1,0 +1,211 @@
+<!-- 点餐页面 -->
+<view class="page">
+  <!-- 顶部导航 -->
+  <view class="nav-bar">
+    <view class="nav-title">点餐</view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-bar">
+    <input
+      class="search-input"
+      placeholder="搜索菜品或食材"
+      value="{{searchKeyword}}"
+      bindinput="onSearch"
+    />
+  </view>
+
+  <!-- 分类筛选 -->
+  <view class="category-bar">
+    <view
+      class="category-item {{currentCategory === item.value ? 'active' : ''}}"
+      wx:for="{{categories}}"
+      wx:key="value"
+      data-category="{{item.value}}"
+      bindtap="switchCategory"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <!-- 添加到餐次 -->
+  <view class="add-to-bar">
+    <text class="add-label">添加到:</text>
+    <view
+      class="tab-btn {{currentTab === 'breakfast' ? 'active' : ''}}"
+      data-tab="breakfast"
+      bindtap="switchTab"
+    >🌅早餐</view>
+    <view
+      class="tab-btn {{currentTab === 'lunch' ? 'active' : ''}}"
+      data-tab="lunch"
+      bindtap="switchTab"
+    >☀️午餐</view>
+    <view
+      class="tab-btn {{currentTab === 'dinner' ? 'active' : ''}}"
+      data-tab="dinner"
+      bindtap="switchTab"
+    >🌙晚餐</view>
+  </view>
+
+  <!-- 菜品列表 -->
+  <view class="food-list">
+    <block wx:if="{{filteredList.length > 0}}">
+      <view
+        class="food-card {{item.hasConflict ? 'has-conflict' : ''}} {{isAdded(item) ? 'is-added' : ''}}"
+        wx:for="{{filteredList}}"
+        wx:key="id"
+      >
+        <view
+          class="food-main"
+          data-dish="{{item}}"
+          bindtap="showRecipe"
+        >
+          <text class="food-emoji">{{item.emoji}}</text>
+          <view class="food-info">
+            <view class="food-name">
+              <text>{{item.name}}</text>
+              <text class="tag tag-info" wx:if="{{item.isCustom}}">自定义</text>
+            </view>
+            <view class="food-tags">
+              <text class="heat-tag {{item.heatMethod === 'microwave_safe' ? 'safe' : item.heatMethod === 'microwave_none' ? 'danger' : item.heatMethod === 'steam_only' ? 'steam' : 'fire'}}">
+                {{item.heatMethod === 'microwave_safe' ? '✅微波' : item.heatMethod === 'microwave_none' ? '🔴微波' : item.heatMethod === 'steam_only' ? '🟢蒸制' : '🟠明火'}}
+              </text>
+              <text class="conflict-tag" wx:if="{{item.hasConflict}}">⚠️相克</text>
+            </view>
+            <view class="food-ingredients">
+              {{item.ingredientsSummary}}
+            </view>
+          </view>
+        </view>
+        <view class="food-action">
+          <block wx:if="{{isAdded(item)}}">
+            <view class="added-text">已添加</view>
+            <view
+              class="remove-btn"
+              data-dish="{{item}}"
+              data-tab="{{currentTab}}"
+              catchtap="removeFromMenu"
+            >移除</view>
+          </block>
+          <view
+            wx:else
+            class="add-btn"
+            data-dish="{{item}}"
+            catchtap="addToMenu"
+          >+ 添加</view>
+        </view>
+      </view>
+    </block>
+    <view class="empty-state" wx:else>
+      <text class="icon">🔍</text>
+      <text class="text">没有找到相关菜品</text>
+    </view>
+  </view>
+
+  <!-- 新增自定义菜品按钮 -->
+  <view class="fab" bindtap="showAddCustomModal">
+    <text>+</text>
+  </view>
+
+  <!-- 配方弹窗 -->
+  <view class="modal" wx:if="{{showRecipeModal}}" bindtap="closeRecipeModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">{{currentRecipe.name}}</text>
+        <text class="modal-close" bindtap="closeRecipeModal">×</text>
+      </view>
+      <scroll-view class="modal-body" scroll-y>
+        <view class="modal-emoji">{{currentRecipe.emoji}}</view>
+        <view class="section">
+          <view class="section-title">分类</view>
+          <text class="tag tag-info">{{currentRecipe.category}}</text>
+        </view>
+        <view class="section">
+          <view class="section-title">食材</view>
+          <view class="ingredient-list">
+            <view class="ingredient-item" wx:for="{{currentRecipe.ingredients}}" wx:key="name">
+              <text>{{item.name}}</text>
+              <text class="amount">{{item.amount}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="section">
+          <view class="section-title">做法</view>
+          <view class="step-list">
+            <view class="step-item" wx:for="{{currentRecipe.steps}}" wx:key="index">
+              <text class="step-num">{{index + 1}}</text>
+              <text class="step-text">{{item}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="section">
+          <view class="section-title">加热方式</view>
+          <view class="heat-info">
+            {{currentRecipe.heatMethod === 'microwave_safe' ? '✅ 可用微波炉加热' : currentRecipe.heatMethod === 'microwave_none' ? '🔴 禁止微波炉加热' : currentRecipe.heatMethod === 'steam_only' ? '🟢 仅可用蒸锅加热' : '🟠 仅可用明火加热'}}
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 新增自定义菜品弹窗 -->
+  <view class="modal" wx:if="{{showAddCustomModal}}" bindtap="closeAddCustomModal">
+    <view class="modal-content modal-lg" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">新增自定义菜品</text>
+        <text class="modal-close" bindtap="closeAddCustomModal">×</text>
+      </view>
+      <form bindsubmit="saveCustomFood">
+        <scroll-view class="form-body" scroll-y>
+          <view class="form-item">
+            <label>菜品名称</label>
+            <input name="name" placeholder="输入菜品名称" />
+          </view>
+          <view class="form-item">
+            <label>图标</label>
+            <view class="emoji-picker">
+              <text
+                wx:for="{{['🍲','🍳','🥗','🍜','🥘','🍛','🥩','🍖','🥦','🥕','🧄','🥟']}}"
+                wx:key="*this"
+                class="emoji-option {{customForm.emoji === item ? 'selected' : ''}}"
+                data-emoji="{{item}}"
+                bindtap="selectEmoji"
+              >{{item}}</text>
+            </view>
+          </view>
+          <view class="form-item">
+            <label>分类</label>
+            <radio-group name="category">
+              <label><radio value="荤菜" checked /> 荤菜</label>
+              <label><radio value="素菜" /> 素菜</label>
+              <label><radio value="主食" /> 主食</label>
+              <label><radio value="汤品" /> 汤品</label>
+            </radio-group>
+          </view>
+          <view class="form-item">
+            <label>加热方式</label>
+            <radio-group name="heatMethod">
+              <label><radio value="microwave_safe" checked /> ✅ 微波安全</label>
+              <label><radio value="microwave_none" /> 🔴 禁微波</label>
+              <label><radio value="steam_only" /> 🟢 仅蒸制</label>
+              <label><radio value="fire_only" /> 🟠 仅明火</label>
+            </radio-group>
+          </view>
+          <view class="form-item">
+            <label>食材清单 (每行一个，格式：食材名 数量)</label>
+            <textarea name="ingredients" placeholder="鸡蛋 2个&#10;番茄 200g&#10;葱 10g" />
+          </view>
+          <view class="form-item">
+            <label>做法步骤 (每行一步)</label>
+            <textarea name="steps" placeholder="番茄切块&#10;鸡蛋打散&#10;热油炒鸡蛋" />
+          </view>
+        </scroll-view>
+        <view class="modal-footer">
+          <button type="default" catchtap="closeAddCustomModal">取消</button>
+          <button type="primary" form-type="submit">保存</button>
+        </view>
+      </form>
+    </view>
+  </view>
+</view>

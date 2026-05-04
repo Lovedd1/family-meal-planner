@@ -1,0 +1,347 @@
+/* 我的冰箱页面样式 */
+.page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 30rpx;
+}
+
+.nav-bar {
+  background: linear-gradient(135deg, #1890ff, #096dd9);
+  color: #fff;
+  padding: 60rpx 30rpx 30rpx;
+}
+
+.nav-title {
+  font-size: 40rpx;
+  font-weight: 600;
+}
+
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+.status-dot {
+  width: 16rpx;
+  height: 16rpx;
+  background: #52c41a;
+  border-radius: 50%;
+}
+
+.category-cards {
+  display: flex;
+  gap: 20rpx;
+  padding: 30rpx;
+  margin-top: -20rpx;
+}
+
+.category-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  text-align: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+.category-emoji {
+  font-size: 48rpx;
+  display: block;
+}
+
+.category-name {
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.category-count {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-top: 4rpx;
+}
+
+.action-bar {
+  background: #fff;
+  padding: 20rpx 30rpx;
+  margin: 0 20rpx;
+  border-radius: 16rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 16rpx;
+}
+
+.filter-tab {
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+  background: #f5f5f5;
+  color: #666;
+}
+
+.filter-tab.active {
+  background: #1890ff;
+  color: #fff;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 24rpx;
+  background: #f5f5f5;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.action-btn.primary {
+  background: #1890ff;
+  color: #fff;
+}
+
+.item-list {
+  padding: 20rpx;
+}
+
+.item-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  border-left: 6rpx solid #07c160;
+}
+
+.item-card.warning {
+  border-left-color: #fa8c16;
+}
+
+.item-card.danger {
+  border-left-color: #ff4d4f;
+}
+
+.item-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.item-category-tag {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-name {
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.item-meta {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+.days-left.danger {
+  color: #ff4d4f;
+  font-weight: 500;
+}
+
+.days-left.warning {
+  color: #fa8c16;
+}
+
+.item-delete {
+  color: #ff4d4f;
+  font-size: 26rpx;
+  padding: 8rpx 16rpx;
+}
+
+/* 弹窗样式 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 24rpx;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.modal-title {
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.modal-close {
+  font-size: 48rpx;
+  color: #999;
+}
+
+.form-body {
+  padding: 30rpx;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-item label {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+}
+
+.form-item input {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.form-item radio-group {
+  display: flex;
+  gap: 20rpx;
+}
+
+.form-item radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 30rpx;
+  border-top: 1rpx solid #eee;
+}
+
+.modal-footer button {
+  flex: 1;
+}
+
+.recommend-tip {
+  text-align: center;
+  color: #999;
+  font-size: 26rpx;
+  margin-bottom: 20rpx;
+}
+
+.recommend-list {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.recommend-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.recommend-item .emoji {
+  font-size: 48rpx;
+  margin-right: 16rpx;
+}
+
+.recommend-info {
+  flex: 1;
+}
+
+.recommend-info .name {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.recommend-info .matched {
+  display: block;
+  font-size: 24rpx;
+  color: #07c160;
+  margin-top: 4rpx;
+}
+
+.btn-mini {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  background: #07c160;
+  color: #fff;
+  border-radius: 16rpx;
+  line-height: 1.6;
+}
+
+.empty-recommend {
+  text-align: center;
+  padding: 60rpx;
+  color: #999;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 0;
+}
+
+.empty-state .icon {
+  font-size: 100rpx;
+}
+
+.empty-state .text {
+  font-size: 28rpx;
+  color: #999;
+  margin-top: 20rpx;
+}
+
+.empty-state .text-small {
+  font-size: 24rpx;
+  color: #ccc;
+}

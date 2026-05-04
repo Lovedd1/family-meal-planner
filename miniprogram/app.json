@@ -1,0 +1,53 @@
+{
+  "pages": [
+    "pages/today/today",
+    "pages/health/health",
+    "pages/order/order",
+    "pages/fridge/fridge",
+    "pages/settings/settings"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "胖胖点餐",
+    "navigationBarBackgroundColor": "#ffffff"
+  },
+  "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/today/today",
+        "text": "今日菜单",
+        "iconPath": "static/tab-today.png",
+        "selectedIconPath": "static/tab-today-active.png"
+      },
+      {
+        "pagePath": "pages/health/health",
+        "text": "健康计划",
+        "iconPath": "static/tab-health.png",
+        "selectedIconPath": "static/tab-health-active.png"
+      },
+      {
+        "pagePath": "pages/order/order",
+        "text": "点餐",
+        "iconPath": "static/tab-order.png",
+        "selectedIconPath": "static/tab-order-active.png"
+      },
+      {
+        "pagePath": "pages/fridge/fridge",
+        "text": "我的冰箱",
+        "iconPath": "static/tab-fridge.png",
+        "selectedIconPath": "static/tab-fridge-active.png"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "设置",
+        "iconPath": "static/tab-settings.png",
+        "selectedIconPath": "static/tab-settings-active.png"
+      }
+    ],
+    "color": "#999999",
+    "selectedColor": "#07c160"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
