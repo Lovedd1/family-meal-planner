@@ -7,17 +7,23 @@
 
   <!-- 用户信息 -->
   <view class="section">
-    <view class="user-card">
+    <view class="user-card" bindtap="handleUserCardTap">
       <view class="avatar">{{userInfo.avatar}}</view>
       <view class="user-info">
         <text class="nickname">{{userInfo.nickname}}</text>
-        <text class="collab-status">
+        <text class="login-hint" wx:if="{{!isLoggedIn}}">点击登录微信账号</text>
+        <text class="collab-status" wx:else>
           <text class="status-dot {{partnerInfo.connected ? 'connected' : ''}}"></text>
           与{{partnerInfo.connected ? partnerInfo.nickname : '未连接'}}协作中
         </text>
       </view>
-      <view class="edit-btn" bindtap="showEditNickname">编辑</view>
+      <view class="edit-btn" wx:if="{{isLoggedIn}}" bindtap="showEditNickname">编辑</view>
     </view>
+
+    <!-- 微信登录按钮（未登录时显示） -->
+    <button wx:if="{{!isLoggedIn}}" class="btn-login" open-type="getUserProfile" bindgetuserinfo="onGetUserProfile">
+      微信登录
+    </button>
   </view>
 
   <!-- 数据同步 -->
