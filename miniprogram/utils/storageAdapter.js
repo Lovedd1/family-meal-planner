@@ -301,6 +301,173 @@ class StorageAdapter {
     this.syncQueue = []
     wx.setStorageSync(SYNC_QUEUE_KEY, [])
   }
+
+  /**
+   * 生成6位邀请码
+   */
+  generateInviteCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+    let code = ''
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    return code
+  }
+
+  /**
+   * 初始化用户档案
+   */
+  async initUserProfile() {
+    if (!this.db) {
+      this.initCloudDB()
+    }
+
+    const userId = this.getUserId()
+    if (!userId) {
+      return null
+    }
+
+    const collection = this.db.collection('user_profiles')
+    const result = await collection.where({ _id: userId }).get()
+
+    if (result.data && result.data.length > 0) {
+      return result.data[0]
+    }
+
+    const profile = {
+      _id: userId,
+      nickname: '我',
+      partnerId: '',
+      codes: {},
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    }
+    await collection.add({ data: profile })
+    return profile
+  }
+
+  /**
+   * 验证邀请码
+   */
+  async validateInviteCode(code) {
+    if (!this.db) {
+      this.initCloudDB()
+    }
+
+    const collection = this.db.collection('user_profiles')
+    const allUsers = await collection.limit(100).get()
+
+    for (const user of allUsers.data) {
+      if (user.codes && user.codes[code]) {
+        const codeInfo = user.codes[code]
+        if (!codeInfo.used && (Date.now() - codeInfo.createdAt) < 24 * 60 * 60 * 1000) {
+          return { valid: true, userId: user._id, nickname: user.nickname }
+        }
+      }
+    }
+    return { valid: false }
+  }
+
+  /**
+   * 绑定伴侣
+   */
+  async bindPartner(inviteCode) {
+    if (!this.db) {
+      this.initCloudDB()
+    }
+
+    const codeInfo = await this.validateInviteCode(inviteCode)
+    if (!codeInfo.valid) {
+      throw new Error('邀请码无效或已过期')
+    }
+
+    const myUserId = this.getUserId()
+    if (myUserId === codeInfo.userId) {
+      throw new Error('不能绑定自己')
+    }
+
+    const collection = this.db.collection('user_profiles')
+
+    await collection.doc(myUserId).update({
+      data: { partnerId: codeInfo.userId, updatedAt: Date.now() }
+    })
+
+    await collection.doc(codeInfo.userId).update({
+      data: { partnerId: myUserId, updatedAt: Date.now() }
+    })
+
+    const partnerProfile = await collection.doc(codeInfo.userId).get()
+    if (partnerProfile.data) {
+      const codes = partnerProfile.data.codes || {}
+      codes[inviteCode] = { ...codes[inviteCode], used: true }
+      await collection.doc(codeInfo.userId).update({ data: { codes } })
+    }
+
+    wx.setStorageSync('partnerId', codeInfo.userId)
+    wx.setStorageSync('partnerNickname', codeInfo.nickname)
+
+    return { success: true, partnerId: codeInfo.userId }
+  }
+
+  /**
+   * 解绑伴侣
+   */
+  async unbindPartner() {
+    if (!this.db) {
+      this.initCloudDB()
+    }
+
+    const myUserId = this.getUserId()
+    const partnerId = wx.getStorageSync('partnerId')
+    if (!partnerId) {
+      return { success: false }
+    }
+
+    const collection = this.db.collection('user_profiles')
+
+    await collection.doc(myUserId).update({
+      data: { partnerId: '', updatedAt: Date.now() }
+    })
+
+    await collection.doc(partnerId).update({
+      data: { partnerId: '', updatedAt: Date.now() }
+    })
+
+    wx.removeStorageSync('partnerId')
+    wx.removeStorageSync('partnerNickname')
+
+    return { success: true }
+  }
+
+  /**
+   * 创建邀请码
+   */
+  async createInviteCode() {
+    if (!this.db) {
+      this.initCloudDB()
+    }
+
+    const userId = this.getUserId()
+    if (!userId) {
+      throw new Error('用户未登录')
+    }
+
+    const code = this.generateInviteCode()
+    const collection = this.db.collection('user_profiles')
+
+    const profile = await collection.doc(userId).get()
+    if (!profile.data) {
+      throw new Error('用户档案不存在')
+    }
+
+    const codes = profile.data.codes || {}
+    codes[code] = { createdAt: Date.now(), used: false }
+    await collection.doc(userId).update({
+      data: { codes, updatedAt: Date.now() }
+    })
+
+    return { code, expiresAt: Date.now() + 24 * 60 * 60 * 1000 }
+  }
 }
 
 // 导出单例
