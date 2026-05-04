@@ -25,11 +25,22 @@ Page({
     },
     version: 'V2.1.0',
     showPrivacyModal: false,
-    showResetConfirm: false
+    showResetConfirm: false,
+    showBindPartnerModal: false,
+    inviteCode: '',
+    isGeneratingCode: false,
+    isBinding: false
   },
 
   onLoad() {
     this.loadSettings()
+    // 监听伴侣数据更新
+    storageAdapter.onPartnerUpdate((key, data) => {
+      if (key === 'fridgeItems') {
+        // 刷新冰箱数据
+        this.loadSettings()
+      }
+    })
   },
 
   onShow() {
@@ -184,5 +195,77 @@ Page({
       'luteal': '黄体期'
     }
     return phases[phase] || '未设置'
+  },
+
+  showBindPartner() {
+    this.setData({ showBindPartnerModal: true })
+  },
+
+  closeBindPartnerModal() {
+    this.setData({
+      showBindPartnerModal: false,
+      inviteCode: '',
+      isGeneratingCode: false,
+      isBinding: false
+    })
+  },
+
+  async generateInviteCode() {
+    this.setData({ isGeneratingCode: true })
+    try {
+      const result = await storageAdapter.createInviteCode()
+      this.setData({ inviteCode: result.code })
+    } catch (err) {
+      wx.showToast({ title: err.message || '生成失败', icon: 'none' })
+    } finally {
+      this.setData({ isGeneratingCode: false })
+    }
+  },
+
+  async bindWithCode(e) {
+    const code = e.detail.value.code
+    if (!code || code.length !== 6) {
+      wx.showToast({ title: '请输入6位邀请码', icon: 'none' })
+      return
+    }
+
+    this.setData({ isBinding: true })
+    try {
+      await storageAdapter.bindPartner(code)
+      wx.showToast({ title: '绑定成功', icon: 'success' })
+      this.closeBindPartnerModal()
+      this.loadSettings()
+    } catch (err) {
+      wx.showToast({ title: err.message || '绑定失败', icon: 'none' })
+    } finally {
+      this.setData({ isBinding: false })
+    }
+  },
+
+  async unbindPartner() {
+    wx.showModal({
+      title: '确认解除',
+      content: '确定要解除与TA的绑定吗？',
+      success: async (res) => {
+        if (res.confirm) {
+          try {
+            await storageAdapter.unbindPartner()
+            wx.showToast({ title: '已解除绑定', icon: 'success' })
+            this.loadSettings()
+          } catch (err) {
+            wx.showToast({ title: '解除失败', icon: 'none' })
+          }
+        }
+      }
+    })
+  },
+
+  copyInviteCode() {
+    wx.setClipboardData({
+      data: this.data.inviteCode,
+      success: () => {
+        wx.showToast({ title: '已复制', icon: 'success' })
+      }
+    })
   }
 })
