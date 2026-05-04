@@ -36,11 +36,10 @@
 - [x] TabBar图标（简约线性风格，SVG + PNG格式）
 - [x] 食材扣减逻辑（部分扣减，库存不足提示补充数量）
 - [x] AI智能饮食计划（3阶段计划，每周菜单，2天采购清单）
-- [x] 云函数 generateDietPlan（调用DeepSeek API）
-- [x] Git 提交并推送到 GitHub
+- [x] 云函数 generateDietPlan（调用DeepSeek API，已部署至云端）
+- [x] Git 提交
 
 ### 待开发 📋
-- [ ] 云函数部署（双人同步/DeepSeek饮食计划）
 - [ ] 云开发数据库集成
 - [ ] 双人实时同步
 
@@ -70,7 +69,12 @@
 | 蒸饺 | 主食 | 仅蒸制 |
 
 ## 云函数
-- `generateDietPlan` - AI饮食计划生成（DeepSeek API）
+- `generateDietPlan` - AI饮食计划生成（DeepSeek API，已部署至 `cloud1` 环境）
+
+## 云环境
+- 环境ID: `cloud1-d1gse71xxaad6c670`
+- 区域: 上海 (ap-shanghai)
+- DeepSeek API Key: 环境变量方式存储（`DEEPSEEK_API_KEY`）
 
 ## 云开发 Collection (规划)
 - `fridge_items` - 冰箱食材
