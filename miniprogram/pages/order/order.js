@@ -184,24 +184,34 @@ Page({
 
   saveCustomFood(e) {
     const form = e.detail.value
-    if (!form.name) {
+    if (!form.name || !form.name.trim()) {
       wx.showToast({ title: '请输入菜品名称', icon: 'none' })
+      return
+    }
+
+    // Parse and validate ingredients
+    const ingredients = form.ingredients.split('\n')
+      .filter(l => l.trim())
+      .map(l => {
+        const parts = l.trim().split(/\s+/)
+        const name = parts[0] || ''
+        const amount = parts.slice(1).join(' ') || '适量'
+        return { name, amount }
+      })
+      .filter(ing => ing.name) // Filter out empty ingredient names
+
+    if (ingredients.length === 0) {
+      wx.showToast({ title: '请至少添加一种食材', icon: 'none' })
       return
     }
 
     const customFood = {
       id: 'custom_' + Date.now(),
-      name: form.name,
+      name: form.name.trim(),
       emoji: this.data.customForm.emoji,
-      category: form.category,
-      heatMethod: form.heatMethod,
-      ingredients: form.ingredients.split('\n').filter(l => l.trim()).map(l => {
-        const parts = l.trim().split(/\s+/)
-        return {
-          name: parts[0],
-          amount: parts.slice(1).join(' ') || '适量'
-        }
-      }),
+      category: form.category || '荤菜',
+      heatMethod: form.heatMethod || 'microwave_safe',
+      ingredients: ingredients,
       steps: form.steps.split('\n').filter(l => l.trim()),
       isCustom: true
     }

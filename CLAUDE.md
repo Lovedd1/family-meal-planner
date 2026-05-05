@@ -55,6 +55,9 @@
 - [x] 所有弹窗禁止点击遮罩层关闭
 - [x] 点餐页 - 新增自定义菜品按钮改为大圆角按钮
 - [x] 冰箱页 - 操作栏改为居中双按钮布局
+- [x] Bug修复 - today.js performDeduction 函数 amount 计算错误
+- [x] Bug修复 - fridge.js generateRecommendations 大小写匹配问题
+- [x] Bug修复 - order.js saveCustomFood 缺少验证
 
 ### 待开发 📋
 - [ ] 在 CloudBase 控制台为各集合配置安全规则（设置 read、create、update 权限），恢复云端同步

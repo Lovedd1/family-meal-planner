@@ -153,7 +153,9 @@ Page({
     const fridgeItems = this.data.items
     if (fridgeItems.length === 0) return []
 
-    const fridgeNames = fridgeItems.map(item => item.name.toLowerCase())
+    // Build lowercase name set for fast lookup
+    const fridgeNameSet = new Set(fridgeItems.map(item => item.name.toLowerCase()))
+    // Map lowercase name to original item (for urgency score)
     const fridgeMap = {}
     fridgeItems.forEach(item => {
       fridgeMap[item.name.toLowerCase()] = item
@@ -167,16 +169,17 @@ Page({
       let urgencyScore = 0
 
       dish.ingredients.forEach(ing => {
-        const ingName = ing.name.toLowerCase()
-        const foundInFridge = fridgeNames.find(name =>
-          name.includes(ingName) || ingName.includes(name)
+        const ingNameLower = ing.name.toLowerCase()
+        // Check if any fridge item name matches (case-insensitive)
+        const foundItem = fridgeItems.find(item =>
+          item.name.toLowerCase().includes(ingNameLower) ||
+          ingNameLower.includes(item.name.toLowerCase())
         )
-        if (foundInFridge) {
+        if (foundItem) {
           matchedIngredients.push(ing.name)
-          const fridgeItem = fridgeMap[foundInFridge]
           // Lower daysLeft = higher urgency
           // Weight: items expiring today (0) get max urgency, items with more days get lower
-          urgencyScore += Math.max(0, 10 - (fridgeItem.daysLeft || 7))
+          urgencyScore += Math.max(0, 10 - (foundItem.daysLeft || 7))
         } else {
           missingIngredients.push(ing.name)
         }

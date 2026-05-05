@@ -87,18 +87,16 @@ function calculateDeductions(dishes, fridgeItems) {
 function performDeduction(deductionList, fridgeItems) {
   const newFridge = fridgeItems.map(item => {
     const deduction = deductionList.find(d => d.name === item.name)
-    if (deduction) {
+    if (deduction && deduction.deduct > 0) {
       const parsed = parseAmount(item.amount)
-      const newAmount = Math.max(0, parsed.value - deduction.deduct)
-      return {
-        ...item,
-        amount: newAmount + item.amount.replace(/^[\d.]+/, '').replace(/^\s+/, '') || newAmount + item.unit || newAmount + '个'
-      }
+      const newValue = Math.max(0, parsed.value - deduction.deduct)
+      const unit = parsed.unit || item.unit || '个'
+      return { ...item, amount: `${newValue}${unit}` }
     }
     return item
   })
 
-  // 对于完全没有的食材，不添加（保持冰箱数据干净）
+  // 过滤掉数量为0或负数的食材
   return newFridge.filter(item => {
     const parsed = parseAmount(item.amount)
     return parsed.value > 0
