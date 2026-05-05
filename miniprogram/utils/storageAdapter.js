@@ -8,7 +8,7 @@ const STORAGE_KEY_MAP = {
   customFoods: 'menu_items',
   healthProfile: 'health_records',
   weightRecords: 'weight_records',
-  menstrualSettings: 'menstrual_records',
+  menstrualSettings: null, // 仅本地存储，不同步到云端
   userProfile: 'user_profiles',
   dietPlan: 'diet_plans',
   todayMenu: null, // 今日菜单不同步到云端
