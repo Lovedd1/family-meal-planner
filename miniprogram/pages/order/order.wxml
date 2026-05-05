@@ -48,6 +48,14 @@
     >🌙晚餐</view>
   </view>
 
+  <!-- 新增自定义菜品按钮 -->
+  <view class="custom-dish-btn-wrap">
+    <view class="custom-dish-btn" bindtap="showAddCustomModal">
+      <text class="custom-dish-btn-icon">+</text>
+      <text class="custom-dish-btn-text">添加新菜品</text>
+    </view>
+  </view>
+
   <!-- 菜品列表 -->
   <view class="food-list">
     <block wx:if="{{filteredList.length > 0}}">
@@ -103,11 +111,6 @@
     </view>
   </view>
 
-  <!-- 新增自定义菜品按钮 -->
-  <view class="fab" bindtap="showAddCustomModal">
-    <text>+</text>
-  </view>
-
   <!-- 配方弹窗 -->
   <view class="modal" wx:if="{{showRecipeModal}}" bindtap="closeRecipeModal">
     <view class="modal-content" catchtap="">
@@ -150,7 +153,7 @@
   </view>
 
   <!-- 新增自定义菜品弹窗 -->
-  <view class="modal" wx:if="{{showAddCustomModal}}" bindtap="closeAddCustomModal">
+  <view class="modal" wx:if="{{showAddCustomModal}}">
     <view class="modal-content modal-lg" catchtap="">
       <view class="modal-header">
         <text class="modal-title">新增自定义菜品</text>
@@ -160,7 +163,12 @@
         <scroll-view class="form-body" scroll-y>
           <view class="form-item">
             <label>菜品名称</label>
-            <input name="name" placeholder="输入菜品名称" />
+            <input
+              name="name"
+              class="name-input"
+              placeholder="请输入菜品名称，如：番茄鸡蛋面"
+              placeholder-class="name-placeholder"
+            />
           </view>
           <view class="form-item">
             <label>图标</label>

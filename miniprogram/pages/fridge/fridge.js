@@ -6,6 +6,7 @@ const { foods } = require('../../utils/foods.js')
 Page({
   data: {
     categories: [
+      { value: 'all', label: '全部', count: 0 },
       { value: 'meat', label: '肉类', count: 0 },
       { value: 'vegetable', label: '蔬菜类', count: 0 },
       { value: 'seasoning', label: '调料类', count: 0 }
@@ -84,7 +85,7 @@ Page({
     const items = this.data.items
     const categories = this.data.categories.map(cat => ({
       ...cat,
-      count: items.filter(item => item.category === cat.value).length
+      count: cat.value === 'all' ? items.length : items.filter(item => item.category === cat.value).length
     }))
     this.setData({ categories })
   },

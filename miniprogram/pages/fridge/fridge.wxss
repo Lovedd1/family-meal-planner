@@ -134,44 +134,29 @@
   margin: 0 24rpx 20rpx;
   border-radius: 24rpx;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center;
+  align-items: stretch;
   box-shadow: 0 4rpx 16rpx rgba(93, 74, 74, 0.06);
-}
-
-.filter-tabs {
-  display: flex;
-  gap: 10rpx;
-}
-
-.filter-tab {
-  padding: 10rpx 24rpx;
-  border-radius: 24rpx;
-  font-size: 24rpx;
-  font-weight: 600;
-  background: #FDF8F8;
-  color: #8A6A6A;
-  transition: all 0.2s;
-}
-
-.filter-tab.active {
-  background: #C48B8B;
-  color: #fff;
 }
 
 .action-buttons {
   display: flex;
-  gap: 10rpx;
+  gap: 16rpx;
+  width: 100%;
+  justify-content: center;
 }
 
 .action-btn {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 6rpx;
-  padding: 12rpx 22rpx;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 24rpx;
   border-radius: 24rpx;
   background: #FDF8F8;
-  font-size: 24rpx;
+  font-size: 28rpx;
+  font-weight: 600;
   color: #8A6A6A;
 }
 
