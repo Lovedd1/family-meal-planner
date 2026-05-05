@@ -1,58 +1,46 @@
-/* 健康计划页面样式 */
-.page {
-  min-height: 100vh;
-  background: #f5f5f5;
-  padding-bottom: 30rpx;
-}
+/* ==================== 健康计划页面 ==================== */
 
-.nav-bar {
-  background: linear-gradient(135deg, #722ed1, #531d93);
-  color: #fff;
-  padding: 60rpx 30rpx 30rpx;
-}
-
-.nav-title {
-  font-size: 40rpx;
-  font-weight: 600;
-}
-
+/* 内容区 */
 .content {
-  height: calc(100vh - 90rpx);
+  height: calc(100vh - 180rpx);
 }
 
+/* 卡片 */
 .card {
-  background: #fff;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  margin: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin: var(--space-md) 20rpx;
+  box-shadow: var(--shadow-sm);
+  border: 1rpx solid var(--border-lighter);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: var(--space-lg);
 }
 
 .card-title {
   font-size: 32rpx;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .edit-btn {
   font-size: 26rpx;
-  color: #722ed1;
+  color: var(--primary);
 }
 
 /* 伴侣卡片 */
 .partner-card {
-  border-left: 6rpx solid #eb7185;
+  border-left: 8rpx solid var(--primary);
 }
 
 .partner-info {
   display: flex;
-  gap: 20rpx;
+  gap: var(--space-lg);
 }
 
 .info-item {
@@ -62,45 +50,47 @@
 
 .info-item text:first-child {
   display: block;
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--text-secondary);
 }
 
 .info-item text:last-child {
   font-size: 28rpx;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 /* 目标选择 */
 .goal-selector {
   display: flex;
-  gap: 16rpx;
-  margin-bottom: 30rpx;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
 }
 
 .goal-btn {
   flex: 1;
-  padding: 20rpx;
+  padding: 24rpx;
   text-align: center;
-  border-radius: 16rpx;
-  background: #f5f5f5;
+  border-radius: var(--radius-md);
+  background: var(--bg-start);
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .goal-btn.active {
-  background: linear-gradient(135deg, #722ed1, #531d93);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   color: #fff;
+  font-weight: 600;
 }
 
 /* 数据概览 */
 .data-overview {
   display: flex;
   justify-content: space-around;
-  padding: 20rpx 0;
-  border-top: 1rpx solid #eee;
-  border-bottom: 1rpx solid #eee;
-  margin: 20rpx 0;
+  padding: var(--space-lg) 0;
+  border-top: 1rpx solid var(--border-lighter);
+  border-bottom: 1rpx solid var(--border-lighter);
+  margin: var(--space-md) 0;
 }
 
 .data-item {
@@ -109,116 +99,115 @@
 
 .data-label {
   display: block;
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--text-secondary);
   margin-bottom: 8rpx;
 }
 
 .data-value {
   font-size: 40rpx;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .data-unit {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--text-secondary);
 }
 
 /* 活动量 */
 .activity-selector {
-  margin-bottom: 20rpx;
+  margin-bottom: var(--space-md);
 }
 
 .section-label {
-  font-size: 26rpx;
-  color: #666;
+  font-size: 24rpx;
+  color: var(--text-secondary);
   margin-bottom: 12rpx;
   display: block;
 }
 
 .activity-btns {
   display: flex;
-  gap: 12rpx;
+  gap: var(--space-xs);
 }
 
 .activity-btn {
   flex: 1;
-  padding: 12rpx;
+  padding: 16rpx;
   text-align: center;
-  border-radius: 12rpx;
-  background: #f5f5f5;
+  border-radius: var(--radius-sm);
+  background: var(--bg-start);
   font-size: 24rpx;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .activity-btn.active {
-  background: #722ed1;
-  color: #fff;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 600;
 }
 
-/* 过敏源 */
+/* 过敏源标签 */
 .allergy-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
+  gap: var(--space-xs);
 }
 
 .allergy-tag {
   padding: 8rpx 16rpx;
-  background: #fff1f0;
-  color: #ff4d4f;
+  background: #FFF0F0;
+  color: var(--danger);
   border-radius: 20rpx;
-  font-size: 24rpx;
+  font-size: 22rpx;
 }
 
-.btn-record {
-  margin-top: 20rpx;
-}
-
-/* 体重趋势图 */
+/* 体重图表 */
 .weight-chart {
-  padding: 20rpx 0;
+  padding: var(--space-md) 0;
 }
 
 .chart-bars {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  height: 120rpx;
-  padding-bottom: 40rpx;
+  height: 160rpx;
+  padding-bottom: 50rpx;
 }
 
 .chart-bar {
   flex: 1;
-  background: linear-gradient(to top, #722ed1, #eb7185);
-  border-radius: 4rpx 4rpx 0 0;
-  margin: 0 2rpx;
+  background: linear-gradient(to top, var(--primary-light) 0%, var(--primary) 100%);
+  border-radius: 6rpx 6rpx 0 0;
+  margin: 0 4rpx;
   min-height: 20rpx;
   position: relative;
 }
 
 .bar-value {
   position: absolute;
-  bottom: -36rpx;
+  bottom: -40rpx;
   left: 50%;
   transform: translateX(-50%);
   font-size: 18rpx;
-  color: #999;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
+/* 进度条 */
 .progress-bar {
-  height: 12rpx;
-  background: #f0f0f0;
-  border-radius: 6rpx;
-  margin-top: 60rpx;
+  height: 16rpx;
+  background: var(--bg-start);
+  border-radius: 8rpx;
+  margin-top: 80rpx;
   overflow: hidden;
 }
 
 .progress-inner {
   height: 100%;
-  background: linear-gradient(to right, #722ed1, #eb7185);
-  border-radius: 6rpx;
+  background: linear-gradient(to right, var(--primary-light) 0%, var(--primary) 100%);
+  border-radius: 8rpx;
   transition: width 0.3s;
 }
 
@@ -226,66 +215,67 @@
   display: flex;
   justify-content: space-between;
   margin-top: 16rpx;
-  font-size: 24rpx;
-  color: #666;
+  font-size: 22rpx;
+  color: var(--text-secondary);
 }
 
 /* 生理期 */
 .phase-status {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  margin-bottom: 20rpx;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
 }
 
 .phase-badge {
-  padding: 12rpx 24rpx;
-  border-radius: 24rpx;
+  padding: 16rpx 32rpx;
+  border-radius: var(--radius-lg);
   font-size: 28rpx;
   font-weight: 500;
 }
 
 .phase-menstruation {
-  background: #fff1f0;
-  color: #ff4d4f;
+  background: #FFF0F0;
+  color: var(--danger);
 }
 
 .phase-follicular {
-  background: #f6ffed;
-  color: #52c41a;
+  background: #F0FFF0;
+  color: var(--success);
 }
 
 .phase-ovulation {
-  background: #fff7e6;
-  color: #fa8c16;
+  background: #FFF8E6;
+  color: var(--warning);
 }
 
 .phase-luteal {
-  background: #e6f7ff;
-  color: #1890ff;
+  background: #F0F8FF;
+  color: var(--info);
 }
 
 .phase-day {
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
 }
 
+/* 日历 */
 .calendar-view {
-  margin: 20rpx 0;
+  margin: var(--space-md) 0;
 }
 
 .calendar-legend {
   display: flex;
-  gap: 20rpx;
-  margin-bottom: 16rpx;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 8rpx;
-  font-size: 24rpx;
-  color: #666;
+  font-size: 22rpx;
+  color: var(--text-secondary);
 }
 
 .legend-dot {
@@ -295,15 +285,15 @@
 }
 
 .legend-dot.period {
-  background: #ff4d4f;
+  background: var(--danger);
 }
 
 .legend-dot.fertile {
-  background: #fa8c16;
+  background: var(--warning);
 }
 
 .legend-dot.today {
-  background: #52c41a;
+  background: var(--success);
 }
 
 .calendar-grid {
@@ -317,192 +307,69 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  border-radius: 8rpx;
+  background: var(--bg-start);
+  border-radius: var(--radius-sm);
   font-size: 24rpx;
-  color: #666;
+  color: var(--text-secondary);
 }
 
+.day-cell.today {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.day-cell.period {
+  background: #FFF0F0;
+  color: var(--danger);
+}
+
+/* 阶段提示 */
 .phase-tips {
-  background: #f9f9f9;
-  padding: 20rpx;
-  border-radius: 12rpx;
+  background: var(--bg-start);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
 }
 
 .phase-tip-title {
   display: block;
   font-weight: 500;
   margin-bottom: 8rpx;
+  color: var(--text-primary);
 }
 
 .phase-tip-text {
-  font-size: 26rpx;
-  color: #666;
+  font-size: 24rpx;
+  color: var(--text-secondary);
   line-height: 1.6;
-}
-
-.empty-phase {
-  text-align: center;
-  padding: 40rpx;
-  color: #999;
 }
 
 /* AI饮食计划 */
 .ai-hint {
-  font-size: 26rpx;
-  color: #999;
-  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
   line-height: 1.6;
 }
 
-/* 弹窗样式 */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #fff;
-  border-radius: 24rpx;
-  width: 90%;
-  max-height: 80vh;
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 30rpx;
-  border-bottom: 1rpx solid #eee;
-}
-
-.modal-title {
-  font-size: 34rpx;
-  font-weight: 600;
-}
-
-.modal-close {
-  font-size: 48rpx;
-  color: #999;
-}
-
-.modal-body {
-  padding: 30rpx;
-  max-height: 60vh;
-}
-
-.modal-footer {
-  display: flex;
-  gap: 20rpx;
-  padding: 20rpx 30rpx;
-  border-top: 1rpx solid #eee;
-}
-
-.modal-footer button {
-  flex: 1;
-}
-
-.form-body {
-  padding: 30rpx;
-}
-
-.form-item {
-  margin-bottom: 30rpx;
-}
-
-.form-item label {
-  display: block;
-  font-size: 28rpx;
-  color: #666;
-  margin-bottom: 12rpx;
-}
-
-.form-item input {
-  width: 100%;
-  height: 80rpx;
-  border: 1rpx solid #ddd;
-  border-radius: 12rpx;
-  padding: 0 20rpx;
-  font-size: 28rpx;
-  box-sizing: border-box;
-}
-
-/* 饮食计划弹窗 */
-.plan-phase {
-  padding: 24rpx;
-  background: #f9f9f9;
-  border-radius: 16rpx;
-  margin-bottom: 16rpx;
-}
-
-.phase-name {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #722ed1;
-  margin-bottom: 12rpx;
-}
-
-.phase-detail {
-  display: flex;
-  gap: 20rpx;
-  font-size: 26rpx;
-  color: #666;
-  margin-bottom: 8rpx;
-}
-
-.phase-focus {
-  font-size: 26rpx;
-  color: #999;
-}
-
-.plan-tips {
-  margin-top: 20rpx;
-}
-
-.tips-title {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 12rpx;
-}
-
-.plateau-tip {
-  display: block;
-  margin-top: 12rpx;
-  color: #666;
-}
-
-/* 饮食计划弹窗（新设计） */
-.diet-plan-modal {
-  width: 95%;
-  max-height: 85vh;
-}
-
+/* 计划弹窗 */
 .plan-tabs {
   display: flex;
-  padding: 0 30rpx;
-  border-bottom: 1rpx solid #eee;
+  padding: 0 var(--space-lg);
+  border-bottom: 1rpx solid var(--border-lighter);
 }
 
 .plan-tab {
   flex: 1;
-  padding: 20rpx;
+  padding: var(--space-md);
   text-align: center;
   font-size: 28rpx;
-  color: #666;
+  color: var(--text-secondary);
   position: relative;
 }
 
 .plan-tab.active {
-  color: #722ed1;
+  color: var(--primary);
   font-weight: 600;
 }
 
@@ -513,74 +380,42 @@
   left: 50%;
   transform: translateX(-50%);
   width: 60rpx;
-  height: 4rpx;
-  background: #722ed1;
-  border-radius: 2rpx;
-}
-
-.phase-info {
-  display: flex;
-  gap: 30rpx;
-  margin-bottom: 16rpx;
-}
-
-.phase-info-item {
-  display: flex;
-  align-items: center;
-  gap: 8rpx;
-}
-
-.phase-info-item .info-label {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.phase-info-item .info-value {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #722ed1;
-}
-
-.phase-focus-text {
-  font-size: 26rpx;
-  color: #666;
-  background: #f9f9f9;
-  padding: 16rpx;
-  border-radius: 12rpx;
-  margin-bottom: 24rpx;
+  height: 6rpx;
+  background: var(--primary);
+  border-radius: 3rpx;
 }
 
 /* 周计划 */
 .weekly-plans {
-  margin-bottom: 30rpx;
+  margin-bottom: var(--space-lg);
 }
 
 .week-title {
   font-size: 28rpx;
   font-weight: 600;
-  color: #333;
-  margin-bottom: 16rpx;
-  padding-left: 8rpx;
-  border-left: 4rpx solid #722ed1;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  padding-left: 16rpx;
+  border-left: 6rpx solid var(--primary);
 }
 
 .day-plans {
-  background: #f9f9f9;
-  border-radius: 16rpx;
-  padding: 20rpx;
-  margin-bottom: 16rpx;
+  background: var(--bg-start);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
 }
 
 .day-plan-header {
-  font-size: 26rpx;
-  color: #999;
-  margin-bottom: 16rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
 }
 
 .meal-item {
   display: flex;
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid #eee;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid var(--border-lighter);
 }
 
 .meal-item:last-child {
@@ -588,9 +423,9 @@
 }
 
 .meal-label {
-  width: 120rpx;
-  font-size: 26rpx;
-  color: #666;
+  width: 100rpx;
+  font-size: 24rpx;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
@@ -599,73 +434,47 @@
 }
 
 .meal-name {
-  font-size: 28rpx;
+  font-size: 26rpx;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
   display: block;
   margin-bottom: 4rpx;
 }
 
 .meal-effect {
-  font-size: 24rpx;
-  color: #07c160;
+  font-size: 22rpx;
+  color: var(--success);
   display: block;
   margin-bottom: 4rpx;
 }
 
 .meal-ingredients {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--text-placeholder);
 }
 
 .ing-label {
-  color: #666;
+  color: var(--text-secondary);
 }
 
-.meal-item.snacks {
-  border-top: 1rpx dashed #ddd;
-  margin-top: 8rpx;
-  padding-top: 16rpx;
-}
-
-.snack-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-}
-
-.snack-list text {
-  font-size: 24rpx;
-  color: #666;
-  background: #fff;
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
-}
-
-/* 采购清单 */
+/* 购物清单 */
 .shopping-section {
-  margin-top: 30rpx;
-  border-top: 1rpx solid #eee;
-  padding-top: 20rpx;
+  margin-top: var(--space-lg);
+  border-top: 1rpx solid var(--border-lighter);
+  padding-top: var(--space-md);
 }
 
 .shopping-title {
   font-size: 28rpx;
   font-weight: 600;
-  margin-bottom: 16rpx;
-}
-
-.shopping-list {
-  background: #f9f9f9;
-  border-radius: 12rpx;
-  padding: 16rpx;
+  margin-bottom: var(--space-md);
 }
 
 .shopping-item {
   display: flex;
   align-items: center;
   padding: 12rpx 0;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 1rpx solid var(--border-lighter);
   font-size: 26rpx;
 }
 
@@ -674,29 +483,30 @@
 }
 
 .shopping-icon {
-  margin-right: 12rpx;
+  margin-right: var(--space-sm);
   font-size: 28rpx;
 }
 
 .shopping-name {
   flex: 1;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .shopping-amount {
-  color: #722ed1;
-  margin-right: 16rpx;
+  color: var(--primary);
+  margin-right: var(--space-md);
 }
 
 .shopping-period {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--text-secondary);
 }
 
 .shopping-item.need-buy .shopping-name {
-  color: #ff4d4f;
+  color: var(--danger);
 }
 
 .shopping-item.sufficient .shopping-icon {
-  color: #07c160;
+  color: var(--success);
 }
