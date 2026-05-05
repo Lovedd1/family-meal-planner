@@ -4,14 +4,7 @@
  */
 
 const STORAGE_KEY_MAP = {
-  fridgeItems: 'fridge_items',
-  customFoods: 'menu_items',
-  healthProfile: 'health_records',
-  weightRecords: null, // 仅本地存储，不同步到云端（个人隐私数据）
-  menstrualSettings: null, // 仅本地存储，不同步到云端
-  userProfile: 'user_profiles',
-  dietPlan: null, // 仅本地存储，不同步到云端
-  todayMenu: null, // 今日菜单不同步到云端
+  // 暂时禁用所有云端同步，云数据库权限待配置
 }
 
 const SYNC_QUEUE_KEY = 'syncQueue'
