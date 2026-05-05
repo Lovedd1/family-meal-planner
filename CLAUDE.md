@@ -97,6 +97,7 @@
 ## 云函数
 - `login` - 用户登录，获取openid（已部署至 `cloud1` 环境）
 - `generateDietPlan` - AI饮食计划生成（DeepSeek API，已部署至 `cloud1` 环境）
+- `pairPartner` - 双人配对同步（已部署至 `cloud1` 环境）
 
 ## 云环境
 - 环境ID: `cloud1-d1gse71xxaad6c670`
@@ -111,6 +112,8 @@
 - `menstrual_records` - 生理期记录 ✓
 - `user_profiles` - 用户信息 ✓
 - `diet_plans` - AI饮食计划 ✓
+- `shared_users` - 双人配对用户信息 ✓
+- `shared_data` - 双人共享数据 ✓
 
 ## 食物相克规则
 | 组合 | 级别 | 说明 |
