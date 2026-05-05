@@ -1,6 +1,7 @@
 // pages/health/health.js
 const app = getApp()
 const storageAdapter = require('../../utils/storageAdapter.js')
+const foods = require('../../utils/foods.js')
 
 Page({
   data: {
@@ -33,13 +34,25 @@ Page({
       cycleDays: 28,
       periodDays: 5
     },
+    showMenstrualSettings: false,
+    tempMenstrual: {
+      lastPeriodDate: '',
+      cycleDays: 28,
+      periodDays: 5
+    },
     currentPhase: 'follicular', // menstruation, follicular, ovulation, luteal
     phaseDay: 0,
 
     // 饮食计划
     dietPlan: null,
+    dietPlanHistory: [],
     showDietPlan: false,
     currentPlanPhase: 0,
+
+    // 健康报告
+    healthReports: [],
+    showReportModal: false,
+    currentReport: null,
 
     // 平台期提醒
     showPlateauAlert: false
@@ -75,14 +88,20 @@ Page({
 
     // 加载生理期设置
     const menstrual = storageAdapter.get('menstrualSettings') || {}
-    this.setData({
-      menstrualSettings: {
-        lastPeriodDate: menstrual.lastPeriodDate || '',
-        cycleDays: menstrual.cycleDays || 28,
-        periodDays: menstrual.periodDays || 5
-      }
-    })
-    this.calculateMenstrualPhase()
+    const menstrualSettings = {
+      lastPeriodDate: menstrual.lastPeriodDate || '',
+      cycleDays: menstrual.cycleDays || 28,
+      periodDays: menstrual.periodDays || 5
+    }
+    this.setData({ menstrualSettings })
+    this.calculateMenstrualPhase(menstrualSettings)
+
+    // 加载饮食计划历史
+    const dietPlanHistory = storageAdapter.get('dietPlanHistory') || []
+    this.setData({ dietPlanHistory })
+
+    // 生成健康报告
+    this.generateHealthReports()
   },
 
   updateWeightStats() {
@@ -93,28 +112,122 @@ Page({
     const target = parseFloat(this.data.targetWeight) || 0
     const initial = records[0]?.weight || current
 
-    // 计算图表数据
-    const displayRecords = records.slice(-14)
-    const maxWeight = Math.max(...displayRecords.map(r => r.weight))
-    const minWeight = Math.min(...displayRecords.map(r => r.weight))
-    const range = maxWeight - minWeight || 1
-    const chartData = displayRecords.map(record => ({
-      weight: record.weight,
-      height: Math.round(((record.weight - minWeight + 10) / range) * 50) + 20
-    }))
-
     this.setData({
       weightStats: {
         current,
         target,
         progress: target > 0 ? Math.round(((initial - current) / (initial - target)) * 100) : 0,
-        diff: current - target
-      },
-      chartData: chartData
+        diff: current - target,
+        absDiff: Math.abs(current - target)
+      }
     })
 
     // 检测平台期
     this.checkPlateau(records)
+  },
+
+  // 生成健康报告（基于体重记录和饮食计划）
+  generateHealthReports() {
+    const records = storageAdapter.get('weightRecords') || []
+    const dietPlan = storageAdapter.get('dietPlan')
+    const fridgeItems = storageAdapter.get('fridgeItems') || []
+    const profile = storageAdapter.get('healthProfile') || {}
+
+    const reports = []
+
+    // 生成周报/月报（当有足够数据时）
+    if (records.length >= 3) {
+      const latest = records[records.length - 1]
+      const weekAgo = records.slice(-7, -1)
+      const monthAgo = records.slice(-14, -1)
+
+      if (monthAgo.length >= 2) {
+        const monthStart = monthAgo[0].weight
+        const monthEnd = monthAgo[monthAgo.length - 1].weight
+        const monthChange = (monthEnd - monthStart).toFixed(1)
+        const avgWeight = (monthAgo.reduce((s, r) => s + r.weight, 0) / monthAgo.length).toFixed(1)
+
+        // 评估饮食均衡度
+        const veggieCount = fridgeItems.filter(i => i.category === 'vegetable').length
+        const balanceScore = Math.min(100, 60 + veggieCount * 8)
+
+        let summary = ''
+        let tags = []
+        let score = 70
+
+        if (parseFloat(monthChange) < 0) {
+          summary = `本月体重下降${Math.abs(monthChange)}kg，饮食控制效果良好。`
+          tags.push('体重下降')
+          score += 10
+        } else if (parseFloat(monthChange) > 0) {
+          summary = `本月体重上升${monthChange}kg，建议注意饮食控制。`
+          tags.push('体重上升')
+          score -= 5
+        } else {
+          summary = `本月体重持平，体脂率保持稳定。`
+          tags.push('体重持平')
+        }
+
+        if (veggieCount >= 5) {
+          tags.push('蔬果充足')
+          score += 5
+        } else if (veggieCount < 2) {
+          tags.push('蔬菜不足')
+          score -= 5
+        }
+
+        if (dietPlan) {
+          tags.push('计划执行中')
+          score += 3
+        }
+
+        reports.push({
+          id: 'report_month_' + Date.now(),
+          title: new Date().toLocaleDateString('zh-CN', { month: 'long' }) + '健康月报',
+          date: latest.date,
+          summary: summary + ` 平均体重${avgWeight}kg，蔬菜摄入${veggieCount}种。`,
+          tags,
+          score: Math.min(100, Math.max(50, score))
+        })
+      }
+
+      // 最近一周报告
+      if (weekAgo.length >= 2) {
+        const weekStart = weekAgo[0].weight
+        const weekEnd = weekAgo[weekAgo.length - 1].weight
+        const weekChange = (weekEnd - weekStart).toFixed(1)
+        const weekRecords = records.slice(-7)
+        const avgWeight = (weekRecords.reduce((s, r) => s + r.weight, 0) / weekRecords.length).toFixed(1)
+
+        let tags = []
+        let score = 75
+
+        if (parseFloat(weekChange) <= 0) {
+          tags.push('体重下降')
+          score += 8
+        } else {
+          tags.push('体重上升')
+          score -= 3
+        }
+
+        if (weekRecords.length >= 5) {
+          tags.push('记录完整')
+          score += 5
+        }
+
+        reports.push({
+          id: 'report_week_' + Date.now(),
+          title: `第${Math.ceil(records.length / 7)}周健康报告`,
+          date: weekRecords[weekRecords.length - 1].date,
+          summary: `本周平均体重${avgWeight}kg，较上周${parseFloat(weekChange) >= 0 ? '上升' : '下降'}${Math.abs(parseFloat(weekChange))}kg。体重变化趋势${parseFloat(weekChange) >= 0 ? '需注意' : '良好'}。`,
+          tags,
+          score: Math.min(100, Math.max(50, score))
+        })
+      }
+    }
+
+    // 只保留最新3条
+    this.setData({ healthReports: reports.slice(0, 3) })
   },
 
   checkPlateau(records) {
@@ -198,8 +311,9 @@ Page({
     })
   },
 
-  calculateMenstrualPhase() {
-    const { lastPeriodDate, cycleDays } = this.data.menstrualSettings
+  calculateMenstrualPhase(settings) {
+    const menstrualSettings = settings || this.data.menstrualSettings
+    const { lastPeriodDate, cycleDays } = menstrualSettings
     if (!lastPeriodDate) return
 
     const today = new Date()
@@ -228,24 +342,65 @@ Page({
     })
   },
 
-  showMenstrualSettings() {
-    wx.showModal({
-      title: '设置生理期',
-      editable: true,
-      placeholderText: '上次月经开始日期(YYYY-MM-DD)',
-      success: (res) => {
-        if (res.confirm && res.content) {
-          const settings = {
-            ...this.data.menstrualSettings,
-            lastPeriodDate: res.content
-          }
-          storageAdapter.set('menstrualSettings', settings)
-          this.setData({ menstrualSettings: settings })
-          this.calculateMenstrualPhase()
-          wx.showToast({ title: '已保存', icon: 'success' })
-        }
-      }
+  openMenstrualSettings() {
+    this.setData({
+      showMenstrualSettings: true,
+      tempMenstrual: { ...this.data.menstrualSettings }
     })
+  },
+
+  closeMenstrualSettings() {
+    this.setData({ showMenstrualSettings: false })
+  },
+
+  bindPeriodDateChange(e) {
+    this.setData({
+      'tempMenstrual.lastPeriodDate': e.detail.value
+    })
+  },
+
+  adjustCycleDays(e) {
+    const delta = parseInt(e.currentTarget.dataset.delta) || 1
+    const current = this.data.tempMenstrual.cycleDays || 28
+    const newVal = Math.max(20, Math.min(45, current + delta))
+    this.setData({ 'tempMenstrual.cycleDays': newVal })
+  },
+
+  inputCycleDays(e) {
+    const val = parseInt(e.detail.value)
+    if (!isNaN(val) && val >= 20 && val <= 45) {
+      this.setData({ 'tempMenstrual.cycleDays': val })
+    }
+  },
+
+  adjustPeriodDays(e) {
+    const delta = parseInt(e.currentTarget.dataset.delta) || 1
+    const current = this.data.tempMenstrual.periodDays || 5
+    const newVal = Math.max(2, Math.min(10, current + delta))
+    this.setData({ 'tempMenstrual.periodDays': newVal })
+  },
+
+  inputPeriodDays(e) {
+    const val = parseInt(e.detail.value)
+    if (!isNaN(val) && val >= 2 && val <= 10) {
+      this.setData({ 'tempMenstrual.periodDays': val })
+    }
+  },
+
+  saveMenstrualSettings() {
+    const { lastPeriodDate, cycleDays, periodDays } = this.data.tempMenstrual
+    if (!lastPeriodDate) {
+      wx.showToast({ title: '请选择月经开始日期', icon: 'none' })
+      return
+    }
+    const settings = { lastPeriodDate, cycleDays, periodDays }
+    storageAdapter.set('menstrualSettings', settings)
+    // 先关闭弹窗，再更新数据并计算，避免setData异步问题
+    this.closeMenstrualSettings()
+    this.setData({ menstrualSettings: settings })
+    // 传入settings确保计算使用新值
+    this.calculateMenstrualPhase(settings)
+    wx.showToast({ title: '已保存', icon: 'success' })
   },
 
   generateDietPlan() {
@@ -287,12 +442,40 @@ Page({
             if (phase.shoppingList) {
               phase.shoppingList = this.checkFridgeStock(phase.shoppingList)
             }
+            // Pre-compute joined ingredient strings
+            if (phase.weeklyMenus) {
+              phase.weeklyMenus.forEach(week => {
+                week.days.forEach(day => {
+                  if (day.breakfast && day.breakfast.ingredients) {
+                    day.breakfast._ingredientsStr = day.breakfast.ingredients.map(i => i.name).join('、')
+                  }
+                  if (day.lunch && day.lunch.ingredients) {
+                    day.lunch._ingredientsStr = day.lunch.ingredients.map(i => i.name).join('、')
+                  }
+                  if (day.dinner && day.dinner.ingredients) {
+                    day.dinner._ingredientsStr = day.dinner.ingredients.map(i => i.name).join('、')
+                  }
+                })
+              })
+            }
           })
         }
 
         this.setData({ dietPlan: plan, showDietPlan: true, currentPlanPhase: 0 })
           // 保存到本地
           storageAdapter.set('dietPlan', plan)
+          // 保存到历史记录
+          const history = storageAdapter.get('dietPlanHistory') || []
+          const historyItem = {
+            id: 'plan_' + Date.now(),
+            name: plan.phases && plan.phases[0] ? plan.phases[0].name : '饮食计划',
+            date: new Date().toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' }),
+            plan: plan
+          }
+          history.unshift(historyItem)
+          const trimmedHistory = history.slice(0, 3)
+          storageAdapter.set('dietPlanHistory', trimmedHistory)
+          this.setData({ dietPlanHistory: trimmedHistory })
           wx.showToast({ title: '生成成功', icon: 'success' })
         } else {
           wx.showModal({
@@ -347,6 +530,32 @@ Page({
     return labels[phase] || ''
   },
 
+  getDayClass(day, phaseDay, periodDays) {
+    const classes = []
+    // 经期：第1天到periodDays天
+    if (day <= periodDays) {
+      classes.push('period')
+    }
+    // 易孕期：第11-16天（假设周期第14天排卵，前后5天为易孕期）
+    if (day >= 10 && day <= 16) {
+      classes.push('fertile')
+    }
+    // 今天是第phaseDay天
+    if (day === phaseDay) {
+      classes.push('today')
+    }
+    return classes.join(' ')
+  },
+
+  viewDietPlan(e) {
+    const id = e.currentTarget.dataset.id
+    const history = this.data.dietPlanHistory
+    const item = history.find(h => h.id === id)
+    if (item && item.plan) {
+      this.setData({ dietPlan: item.plan, showDietPlan: true, currentPlanPhase: 0 })
+    }
+  },
+
   getDietGoalLabel(goal) {
     const labels = {
       'lose': '📉 减肥',
@@ -363,5 +572,24 @@ Page({
       'active': '运动较多'
     }
     return labels[level] || ''
+  },
+
+  showReport(e) {
+    const report = e.currentTarget.dataset.report
+    this.setData({ currentReport: report, showReportModal: true })
+  },
+
+  closeReportModal() {
+    this.setData({ showReportModal: false, currentReport: null })
+  },
+
+  getReportTagClass(tag) {
+    if (['体重下降', '体重持平', '蔬果充足', '记录完整', '计划执行中', '目标达成', '睡眠良好', '饮水达标'].includes(tag)) {
+      return ''
+    }
+    if (['体重上升', '体重持平', '蔬菜不足', '蛋白质不足'].includes(tag)) {
+      return 'warning'
+    }
+    return ''
   }
 })

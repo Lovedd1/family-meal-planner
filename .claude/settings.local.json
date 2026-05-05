@@ -8,9 +8,7 @@
       "mcp__cloudbase__queryFunctions",
       "mcp__cloudbase__readNoSqlDatabaseContent",
       "mcp__cloudbase__envQuery",
-      "mcp__cloudbase__readNoSqlDatabaseStructure",
-      "Bash(git add *)",
-      "Bash(git commit *)"
+      "mcp__cloudbase__readNoSqlDatabaseStructure"
     ]
   },
   "enabledPlugins": {

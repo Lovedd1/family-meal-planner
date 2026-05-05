@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>家庭饮食管家 - 设计风格预览</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .demo-container {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .demo-header {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #fff;
+    }
+
+    .demo-header h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .demo-header p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .style-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .style-tab {
+      padding: 10px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s;
+    }
+
+    .style-tab:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .style-tab.active {
+      background: #fff;
+      color: #1a1a2e;
+      font-weight: 500;
+    }
+
+    .phone-frame {
+      background: #000;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    .phone-screen {
+      width: 100%;
+      aspect-ratio: 9/19.5;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: #fff;
+    }
+
+    .notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+      z-index: 100;
+    }
+
+    .status-bar {
+      height: 44px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      position: relative;
+      z-index: 50;
+    }
+
+    .phone-content {
+      height: calc(100% - 44px);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .phone-content::-webkit-scrollbar { display: none; }
+
+    /* ========== STYLE A: 温暖治愈系 ========== */
+    .style-a {
+      --primary: #8B7355;
+      --primary-light: #A69076;
+      --secondary: #6B8E23;
+      --accent: #CD853F;
+      --bg: #FDF8F3;
+      --bg-card: #FFFFFF;
+      --text: #4A4A4A;
+      --text-light: #8B8B8B;
+      --border: #E8E0D8;
+    }
+
+    .style-a .status-bar {
+      background: #FDF8F3;
+      color: #5D5045;
+    }
+
+    .style-a .page {
+      background: linear-gradient(180deg, #FDF8F3 0%, #F5EDE4 100%);
+      min-height: 100%;
+      padding-bottom: 100px;
+    }
+
+    .style-a .nav-bar {
+      background: linear-gradient(135deg, #D4C4B0 0%, #C9B896 100%);
+      padding: 50px 24px 32px;
+      position: relative;
+    }
+
+    .style-a .nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cpath d='M0 20 Q 25 0, 50 10 T 100 20 Z' fill='%23F5EDE4'/%3E%3C/svg%3E") no-repeat bottom;
+      background-size: cover;
+    }
+
+    .style-a .nav-title {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 28px;
+      color: #5D5045;
+      letter-spacing: 2px;
+    }
+
+    .style-a .date-title {
+      font-size: 13px;
+      color: #8B7355;
+      margin-top: 4px;
+    }
+
+    .style-a .tab-bar {
+      display: flex;
+      gap: 8px;
+      padding: 30px 20px 16px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .style-a .tab-item {
+      flex: 1;
+      padding: 14px 8px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 16px;
+      text-align: center;
+      font-size: 14px;
+      color: #8B7355;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .style-a .tab-item.active {
+      background: #fff;
+      border-color: #D4C4B0;
+      color: #6B5B45;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(139,115,85,0.15);
+    }
+
+    .style-a .tab-item .tab-icon {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .style-a .tab-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 18px;
+      height: 18px;
+      background: #CD853F;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .style-a .conflict-banner {
+      margin: 0 20px 16px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, #FFF5E6 0%, #FFECD2 100%);
+      border-radius: 12px;
+      border-left: 4px solid #CD853F;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .style-a .conflict-icon {
+      font-size: 18px;
+    }
+
+    .style-a .conflict-text {
+      font-size: 13px;
+      color: #8B6914;
+    }
+
+    .style-a .dish-list {
+      padding: 0 20px;
+    }
+
+    .style-a .dish-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 8px rgba(139,115,85,0.08);
+      transition: all 0.3s;
+      border: 1px solid #F0E8E0;
+    }
+
+    .style-a .dish-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 1px 4px rgba(139,115,85,0.1);
+    }
+
+    .style-a .dish-emoji {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #FDF8F3 0%, #F5EDE4 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .style-a .dish-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .style-a .dish-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #4A4A4A;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .style-a .tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    .style-a .tag-info {
+      background: #F0E8E0;
+      color: #8B7355;
+    }
+
+    .style-a .heat-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #F5F5F5;
+      color: #666;
+    }
+
+    .style-a .heat-tag.safe {
+      background: #E8F5E9;
+      color: #4CAF50;
+    }
+
+    .style-a .heat-tag.danger {
+      background: #FFEBEE;
+      color: #E53935;
+    }
+
+    .style-a .heat-tag.warning {
+      background: #FFF8E1;
+      color: #FF8F00;
+    }
+
+    .style-a .conflict-tag {
+      background: #FFF3E0;
+      color: #E65100;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .style-a .dish-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .style-a .dish-remove {
+      width: 32px;
+      height: 32px;
+      background: #F5F5F5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .style-a .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .style-a .empty-state .icon {
+      font-size: 64px;
+      opacity: 0.6;
+    }
+
+    .style-a .empty-state .text {
+      display: block;
+      font-size: 15px;
+      color: #8B8B8B;
+      margin-top: 16px;
+    }
+
+    .style-a .empty-state .text-small {
+      font-size: 13px;
+      color: #BDBDBD;
+      margin-top: 6px;
+    }
+
+    .style-a .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 20px;
+      padding-bottom: calc(16px + var(--safe-bottom));
+      background: linear-gradient(180deg, transparent 0%, #FDF8F3 20%);
+    }
+
+    .style-a .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #8B7355 0%, #6B5B45 100%);
+      color: #fff;
+      border: none;
+      border-radius: 28px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 16px rgba(139,115,85,0.3);
+    }
+
+    /* ========== STYLE B: 现代简约北欧风 ========== */
+    .style-b {
+      --primary: #2C3E50;
+      --primary-light: #34495E;
+      --secondary: #7F8C8D;
+      --accent: #E74C3C;
+      --bg: #FAFAFA;
+      --bg-card: #FFFFFF;
+      --text: #2C3E50;
+      --text-light: #95A5A6;
+      --border: #ECF0F1;
+    }
+
+    .style-b .status-bar {
+      background: #FAFAFA;
+      color: #2C3E50;
+    }
+
+    .style-b .page {
+      background: #FAFAFA;
+      min-height: 100%;
+      padding-bottom: 100px;
+    }
+
+    .style-b .nav-bar {
+      background: #fff;
+      padding: 50px 24px 28px;
+      border-bottom: 1px solid #ECF0F1;
+    }
+
+    .style-b .nav-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #2C3E50;
+      letter-spacing: -0.5px;
+    }
+
+    .style-b .date-title {
+      font-size: 12px;
+      color: #95A5A6;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .style-b .tab-bar {
+      display: flex;
+      gap: 0;
+      padding: 24px 24px 0;
+      background: #fff;
+    }
+
+    .style-b .tab-item {
+      flex: 1;
+      padding: 16px 8px;
+      text-align: center;
+      font-size: 13px;
+      color: #95A5A6;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .style-b .tab-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: #2C3E50;
+      transition: width 0.3s;
+    }
+
+    .style-b .tab-item.active {
+      color: #2C3E50;
+      font-weight: 600;
+    }
+
+    .style-b .tab-item.active::after {
+      width: 40px;
+    }
+
+    .style-b .tab-item .tab-icon {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 6px;
+      opacity: 0.7;
+    }
+
+    .style-b .tab-item.active .tab-icon {
+      opacity: 1;
+    }
+
+    .style-b .conflict-banner {
+      margin: 20px 24px 0;
+      padding: 14px 16px;
+      background: #FFF9F0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 3px solid #F39C12;
+    }
+
+    .style-b .conflict-icon {
+      font-size: 16px;
+    }
+
+    .style-b .conflict-text {
+      font-size: 12px;
+      color: #B7791F;
+      font-weight: 500;
+    }
+
+    .style-b .dish-list {
+      padding: 20px 24px;
+    }
+
+    .style-b .dish-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.2s;
+      border: 1px solid #ECF0F1;
+    }
+
+    .style-b .dish-card:active {
+      background: #F8F9F9;
+    }
+
+    .style-b .dish-emoji {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      background: #F8F9FA;
+    }
+
+    .style-b .dish-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .style-b .dish-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2C3E50;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .style-b .tag {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .style-b .tag-info {
+      background: #E8E8E8;
+      color: #666;
+    }
+
+    .style-b .heat-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #95A5A6;
+      margin-right: 8px;
+    }
+
+    .style-b .heat-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .style-b .heat-tag.safe { color: #27AE60; }
+    .style-b .heat-tag.safe::before { background: #27AE60; }
+
+    .style-b .heat-tag.danger { color: #E74C3C; }
+    .style-b .heat-tag.danger::before { background: #E74C3C; }
+
+    .style-b .heat-tag.warning { color: #F39C12; }
+    .style-b .heat-tag.warning::before { background: #F39C12; }
+
+    .style-b .conflict-tag {
+      color: #E74C3C;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .style-b .conflict-tag::before {
+      content: '!';
+      width: 14px;
+      height: 14px;
+      background: #E74C3C;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .style-b .dish-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .style-b .dish-remove {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #BDC3C7;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .style-b .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .style-b .empty-state .icon {
+      font-size: 48px;
+      opacity: 0.3;
+    }
+
+    .style-b .empty-state .text {
+      display: block;
+      font-size: 14px;
+      color: #95A5A6;
+      margin-top: 20px;
+      font-weight: 500;
+    }
+
+    .style-b .empty-state .text-small {
+      font-size: 12px;
+      color: #BDC3C7;
+      margin-top: 8px;
+    }
+
+    .style-b .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      padding-bottom: calc(16px + var(--safe-bottom));
+      background: rgba(250,250,250,0.95);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #ECF0F1;
+    }
+
+    .style-b .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: #2C3E50;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* ========== STYLE C: 活泼清新风 ========== */
+    .style-c {
+      --primary: #00B894;
+      --primary-light: #00CEC9;
+      --secondary: #74B9FF;
+      --accent: #FD79A8;
+      --bg: #F0F9F7;
+      --bg-card: #FFFFFF;
+      --text: #2D3436;
+      --text-light: #636E72;
+      --border: #DFE6E9;
+    }
+
+    .style-c .status-bar {
+      background: linear-gradient(90deg, #00B894, #00CEC9);
+      color: #fff;
+    }
+
+    .style-c .page {
+      background: #F0F9F7;
+      min-height: 100%;
+      padding-bottom: 100px;
+    }
+
+    .style-c .nav-bar {
+      background: linear-gradient(135deg, #00B894 0%, #00CEC9 100%);
+      padding: 50px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .style-c .nav-bar::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+
+    .style-c .nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #F0F9F7;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .style-c .nav-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+    }
+
+    .style-c .date-title {
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .style-c .tab-bar {
+      display: flex;
+      gap: 10px;
+      padding: 20px 20px 0;
+      position: relative;
+      z-index: 10;
+      margin-top: -50px;
+    }
+
+    .style-c .tab-item {
+      flex: 1;
+      padding: 16px 8px;
+      background: #fff;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #636E72;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .style-c .tab-item.active {
+      background: linear-gradient(135deg, #00B894 0%, #00CEC9 100%);
+      color: #fff;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0,184,148,0.3);
+    }
+
+    .style-c .tab-item .tab-icon {
+      font-size: 22px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .style-c .conflict-banner {
+      margin: 16px 20px;
+      padding: 14px 18px;
+      background: linear-gradient(135deg, #FFF5F5 0%, #FFF0F5 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid #FFD7D7;
+    }
+
+    .style-c .conflict-icon {
+      font-size: 20px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .style-c .conflict-text {
+      font-size: 13px;
+      color: #E17055;
+      font-weight: 500;
+    }
+
+    .style-c .dish-list {
+      padding: 0 20px;
+    }
+
+    .style-c .dish-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.3s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .style-c .dish-card:active {
+      transform: scale(0.97);
+    }
+
+    .style-c .dish-emoji {
+      width: 54px;
+      height: 54px;
+      background: linear-gradient(135deg, #F0F9F7 0%, #E8F8F5 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .style-c .dish-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .style-c .dish-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2D3436;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .style-c .tag {
+      font-size: 10px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .style-c .tag-info {
+      background: linear-gradient(135deg, #DFE6E9 0%, #E8E8E8 100%);
+      color: #636E72;
+    }
+
+    .style-c .heat-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #F0F9F7 0%, #E8F8F5 100%);
+      color: #00B894;
+      margin-right: 6px;
+    }
+
+    .style-c .heat-tag.danger {
+      background: linear-gradient(135deg, #FFF5F5 0%, #FFF0F5 100%);
+      color: #E17055;
+    }
+
+    .style-c .heat-tag.warning {
+      background: linear-gradient(135deg, #FFF9E6 0%, #FFF5CC 100%);
+      color: #FDCB6E;
+    }
+
+    .style-c .conflict-tag {
+      background: linear-gradient(135deg, #FFD7D7 0%, #FFE0E0 100%);
+      color: #D63031;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .style-c .dish-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .style-c .dish-remove {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #F0F9F7 0%, #E8F8F5 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00B894;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .style-c .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .style-c .empty-state .icon {
+      font-size: 64px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .style-c .empty-state .text {
+      display: block;
+      font-size: 15px;
+      color: #636E72;
+      margin-top: 16px;
+      font-weight: 500;
+    }
+
+    .style-c .empty-state .text-small {
+      font-size: 13px;
+      color: #B2BEC3;
+      margin-top: 6px;
+    }
+
+    .style-c .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 20px;
+      padding-bottom: calc(16px + var(--safe-bottom));
+      background: linear-gradient(180deg, transparent 0%, #F0F9F7 30%);
+    }
+
+    .style-c .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #00B894 0%, #00CEC9 100%);
+      color: #fff;
+      border: none;
+      border-radius: 28px;
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0,184,148,0.4);
+    }
+
+    /* ========== STYLE D: 我的创意设计 - 杂志风格 ========== */
+    .style-d {
+      --primary: #1A1A2E;
+      --primary-light: #16213E;
+      --secondary: #E94560;
+      --accent: #0F3460;
+      --bg: #FAFAFA;
+      --bg-card: #FFFFFF;
+      --text: #1A1A2E;
+      --text-light: #6B7280;
+      --border: #E5E5E5;
+    }
+
+    .style-d .status-bar {
+      background: #FAFAFA;
+      color: #1A1A2E;
+    }
+
+    .style-d .page {
+      background: #FAFAFA;
+      min-height: 100%;
+      padding-bottom: 100px;
+    }
+
+    .style-d .nav-bar {
+      background: #1A1A2E;
+      padding: 50px 24px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .style-d .nav-bar::before {
+      content: 'TODAY\'S MENU';
+      position: absolute;
+      top: 50px;
+      right: -20px;
+      font-size: 80px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.03);
+      letter-spacing: 4px;
+      transform: rotate(-5deg);
+    }
+
+    .style-d .nav-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -1px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .style-d .nav-title span {
+      color: #E94560;
+    }
+
+    .style-d .date-title {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .style-d .tab-bar {
+      display: flex;
+      gap: 0;
+      padding: 20px 24px;
+      background: #1A1A2E;
+    }
+
+    .style-d .tab-item {
+      flex: 1;
+      padding: 14px 8px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .style-d .tab-item.active {
+      color: #fff;
+    }
+
+    .style-d .tab-item .tab-icon {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .style-d .tab-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: #E94560;
+      border-radius: 3px 3px 0 0;
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+
+    .style-d .tab-item.active::after {
+      transform: scaleX(1);
+    }
+
+    .style-d .conflict-banner {
+      margin: 16px 24px;
+      padding: 14px 18px;
+      background: #FFF5F5;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 4px solid #E94560;
+    }
+
+    .style-d .conflict-icon {
+      font-size: 18px;
+    }
+
+    .style-d .conflict-text {
+      font-size: 12px;
+      color: #E94560;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .style-d .dish-list {
+      padding: 0 24px;
+    }
+
+    .style-d .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #9CA3AF;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      padding-left: 4px;
+    }
+
+    .style-d .dish-card {
+      background: #fff;
+      border-radius: 0;
+      padding: 0;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: stretch;
+      transition: all 0.2s;
+      border: 1px solid #E5E5E5;
+      overflow: hidden;
+    }
+
+    .style-d .dish-card:active {
+      background: #FAFAFA;
+    }
+
+    .style-d .dish-emoji {
+      width: 70px;
+      background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .style-d .dish-info {
+      flex: 1;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .style-d .dish-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1A1A2E;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .style-d .tag {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .style-d .tag-info {
+      background: #1A1A2E;
+      color: #fff;
+    }
+
+    .style-d .heat-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #6B7280;
+      margin-right: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .style-d .heat-tag.safe { color: #10B981; }
+    .style-d .heat-tag.danger { color: #EF4444; }
+    .style-d .heat-tag.warning { color: #F59E0B; }
+
+    .style-d .conflict-tag {
+      color: #EF4444;
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .style-d .dish-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .style-d .dish-remove {
+      width: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #D1D5DB;
+      font-size: 20px;
+      flex-shrink: 0;
+      border-left: 1px solid #E5E5E5;
+      background: #FAFAFA;
+    }
+
+    .style-d .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      background: #fff;
+      border: 1px solid #E5E5E5;
+    }
+
+    .style-d .empty-state .icon {
+      font-size: 48px;
+      opacity: 0.3;
+    }
+
+    .style-d .empty-state .text {
+      display: block;
+      font-size: 14px;
+      color: #6B7280;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+
+    .style-d .empty-state .text-small {
+      font-size: 12px;
+      color: #9CA3AF;
+      margin-top: 8px;
+    }
+
+    .style-d .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      padding-bottom: calc(16px + var(--safe-bottom));
+      background: #1A1A2E;
+    }
+
+    .style-d .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: #E94560;
+      color: #fff;
+      border: none;
+      border-radius: 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Tab content visibility */
+    .style-content { display: none; }
+    .style-content.active { display: block; }
+
+    /* Info section */
+    .style-info {
+      margin-top: 30px;
+      padding: 24px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .style-info h3 {
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .style-info ul {
+      font-size: 13px;
+      line-height: 1.8;
+      padding-left: 20px;
+    }
+
+    .style-info li {
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <div class="demo-header">
+      <h1>家庭饮食管家 - 设计风格预览</h1>
+      <p>点击下方标签切换不同设计风格</p>
+    </div>
+
+    <div class="style-tabs">
+      <button class="style-tab active" data-style="a">A. 温暖治愈系</button>
+      <button class="style-tab" data-style="b">B. 现代简约北欧风</button>
+      <button class="style-tab" data-style="c">C. 活泼清新风</button>
+      <button class="style-tab" data-style="d">D. 杂志风格 ✨</button>
+    </div>
+
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>信号 Wi-Fi 电池</span>
+        </div>
+
+        <!-- STYLE A: 温暖治愈系 -->
+        <div class="phone-content style-content style-a active" id="style-a">
+          <div class="page">
+            <div class="nav-bar">
+              <div class="nav-title">今日菜单</div>
+              <div class="date-title">2026年5月5日 星期二</div>
+            </div>
+
+            <div class="tab-bar">
+              <view class="tab-item active">
+                <text class="tab-icon">🌅</text>
+                <text>早餐</text>
+                <view class="tab-badge">2</view>
+              </view>
+              <view class="tab-item">
+                <text class="tab-icon">☀️</text>
+                <text>午餐</text>
+              </view>
+              <view class="tab-item">
+                <text class="tab-icon">🌙</text>
+                <text>晚餐</text>
+              </view>
+            </div>
+
+            <div class="conflict-banner">
+              <text class="conflict-icon">⚠️</text>
+              <text class="conflict-text">检测到食材搭配存在相克风险</text>
+            </div>
+
+            <div class="dish-list">
+              <div class="dish-card">
+                <div class="dish-emoji">🍳</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    番茄炒蛋
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag safe">✅ 可微波</span>
+                    <span class="conflict-tag">⚠️ 可能相克</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🥛</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    水煮蛋
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag danger">🔴 禁微波</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🍚</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    米饭
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag safe">✅ 可微波</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="empty-state" style="display:none">
+                <text class="icon">🍽️</text>
+                <text class="text">暂无菜品</text>
+                <text class="text-small">去点餐页面添加</text>
+              </div>
+            </div>
+
+            <div class="bottom-bar">
+              <button class="btn-primary">确认菜单并扣减食材</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STYLE B: 现代简约北欧风 -->
+        <div class="phone-content style-content style-b" id="style-b">
+          <div class="page">
+            <div class="nav-bar">
+              <div class="nav-title">Today's Menu</div>
+              <div class="date-title">Tuesday, May 5</div>
+            </div>
+
+            <div class="tab-bar">
+              <view class="tab-item active">
+                <text class="tab-icon">🌅</text>
+                <text>Breakfast</text>
+              </view>
+              <view class="tab-item">
+                <text class="tab-icon">☀️</text>
+                <text>Lunch</text>
+              </view>
+              <view class="tab-item">
+                <text class="tab-icon">🌙</text>
+                <text>Dinner</text>
+              </view>
+            </div>
+
+            <div class="conflict-banner">
+              <text class="conflict-icon">⚠️</text>
+              <text class="conflict-text">食材搭配存在相克风险，请注意</text>
+            </div>
+
+            <div class="dish-list">
+              <div class="dish-card">
+                <div class="dish-emoji">🍳</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    番茄炒蛋
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag safe">微波安全</span>
+                    <span class="conflict-tag">食材相克</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🥛</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    水煮蛋
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag danger">禁微波</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🍚</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    米饭
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag safe">微波安全</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+            </div>
+
+            <div class="bottom-bar">
+              <button class="btn-primary">确认菜单</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STYLE C: 活泼清新风 -->
+        <div class="phone-content style-content style-c" id="style-c">
+          <div class="page">
+            <div class="nav-bar">
+              <div class="nav-title">今日菜单</div>
+              <div class="date-title">2026年5月5日</div>
+            </div>
+
+            <div class="tab-bar">
+              <view class="tab-item active">
+                <text class="tab-icon">🌅</text>
+                <text>早餐</text>
+              </view>
+              <view class="tab-item">
+                <text class="tab-icon">☀️</text>
+                <text>午餐</text>
+              </view>
+              <view class="tab-item">
+                <text class="tab-icon">🌙</text>
+                <text>晚餐</text>
+              </view>
+            </div>
+
+            <div class="conflict-banner">
+              <text class="conflict-icon">⚠️</text>
+              <text class="conflict-text">检测到食材搭配风险，请留意</text>
+            </div>
+
+            <div class="dish-list">
+              <div class="dish-card">
+                <div class="dish-emoji">🍳</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    番茄炒蛋
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag">✅ 可微波</span>
+                    <span class="conflict-tag">⚠️ 可能相克</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🥛</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    水煮蛋
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag danger">🔴 禁微波</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🍚</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    米饭
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag">✅ 可微波</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+            </div>
+
+            <div class="bottom-bar">
+              <button class="btn-primary">确认菜单并扣减食材</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STYLE D: 杂志风格 -->
+        <div class="phone-content style-content style-d" id="style-d">
+          <div class="page">
+            <div class="nav-bar">
+              <div class="nav-title">Today<span>'</span>s Menu</div>
+              <div class="date-title">May 5, 2026</div>
+            </div>
+
+            <div class="tab-bar">
+              <view class="tab-item active">
+                <text class="tab-icon">🌅</text>
+                <text>Morning</text>
+              </view>
+              <view class="tab-item">
+                <text class="tab-icon">☀️</text>
+                <text>Noon</text>
+              </view>
+              <view class="tab-item">
+                <text class="tab-icon">🌙</text>
+                <text>Evening</text>
+              </view>
+            </div>
+
+            <div class="conflict-banner">
+              <text class="conflict-icon">⚠️</text>
+              <text class="conflict-text">食材相克警告</text>
+            </div>
+
+            <div class="dish-list">
+              <p class="section-label">Breakfast · 早餐</p>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🍳</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    番茄炒蛋
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag safe">✓ Microwave</span>
+                    <span class="conflict-tag">⚠ Alert</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🥛</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    水煮蛋
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag danger">✗ Microwave</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+
+              <div class="dish-card">
+                <div class="dish-emoji">🍚</div>
+                <div class="dish-info">
+                  <div class="dish-name">
+                    米饭
+                    <span class="tag tag-info">内置</span>
+                  </div>
+                  <div class="dish-tags">
+                    <span class="heat-tag safe">✓ Microwave</span>
+                  </div>
+                </div>
+                <div class="dish-remove">×</div>
+              </div>
+            </div>
+
+            <div class="bottom-bar">
+              <button class="btn-primary">确认菜单</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="style-info">
+      <h3>风格特点说明</h3>
+      <ul id="style-description">
+        <li><strong>A. 温暖治愈系</strong>：柔和的大地色调，手写字体，圆润的卡片，给人家一般的温馨感</li>
+        <li><strong>B. 现代简约北欧风</strong>：大量留白，克制的色彩，细线条图标，高级感与功能平衡</li>
+        <li><strong>C. 活泼清新风</strong>：渐变色彩，几何装饰，充满活力的动画，适合年轻用户</li>
+        <li><strong>D. 杂志风格 ✨</strong>：大胆的排版设计，强烈的视觉对比，中英双语，个性化十足</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const styleDescriptions = {
+      a: `<li><strong>A. 温暖治愈系</strong>：柔和的大地色调，手写字体，圆润的卡片，给人家一般的温馨感</li>
+          <li><strong>B. 现代简约北欧风</strong>：大量留白，克制的色彩，细线条图标，高级感与功能平衡</li>
+          <li><strong>C. 活泼清新风</strong>：渐变色彩，几何装饰，充满活力的动画，适合年轻用户</li>
+          <li><strong>D. 杂志风格 ✨</strong>：大胆的排版设计，强烈的视觉对比，中英双语，个性化十足</li>`,
+      b: `<li><strong>B. 现代简约北欧风</strong>：大量留白，克制的色彩，细线条图标，高级感与功能平衡</li>
+          <li><strong>A. 温暖治愈系</strong>：柔和的大地色调，手写字体，圆润的卡片，给人家一般的温馨感</li>
+          <li><strong>C. 活泼清新风</strong>：渐变色彩，几何装饰，充满活力的动画，适合年轻用户</li>
+          <li><strong>D. 杂志风格 ✨</strong>：大胆的排版设计，强烈的视觉对比，中英双语，个性化十足</li>`,
+      c: `<li><strong>C. 活泼清新风</strong>：渐变色彩，几何装饰，充满活力的动画，适合年轻用户</li>
+          <li><strong>A. 温暖治愈系</strong>：柔和的大地色调，手写字体，圆润的卡片，给人家一般的温馨感</li>
+          <li><strong>B. 现代简约北欧风</strong>：大量留白，克制的色彩，细线条图标，高级感与功能平衡</li>
+          <li><strong>D. 杂志风格 ✨</strong>：大胆的排版设计，强烈的视觉对比，中英双语，个性化十足</li>`,
+      d: `<li><strong>D. 杂志风格 ✨</strong>：大胆的排版设计，强烈的视觉对比，中英双语，个性化十足</li>
+          <li><strong>A. 温暖治愈系</strong>：柔和的大地色调，手写字体，圆润的卡片，给人家一般的温馨感</li>
+          <li><strong>B. 现代简约北欧风</strong>：大量留白，克制的色彩，细线条图标，高级感与功能平衡</li>
+          <li><strong>C. 活泼清新风</strong>：渐变色彩，几何装饰，充满活力的动画，适合年轻用户</li>`
+    };
+
+    document.querySelectorAll('.style-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const style = tab.dataset.style;
+
+        document.querySelectorAll('.style-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        document.querySelectorAll('.style-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`style-${style}`).classList.add('active');
+
+        document.getElementById('style-description').innerHTML = styleDescriptions[style];
+      });
+    });
+  </script>
+</body>
+</html>

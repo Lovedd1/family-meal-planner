@@ -115,28 +115,19 @@
       </button>
     </view>
 
-    <!-- 体重趋势图 -->
+    <!-- 体重趋势折线图 -->
     <view class="card" wx:if="{{weightRecords.length > 0}}">
       <view class="card-header">
-        <text class="card-title">📊 体重趋势 (最近14次)</text>
+        <text class="card-title">📊 30天体重趋势</text>
       </view>
-      <view class="weight-chart">
-        <view class="chart-bars">
-          <view
-            class="chart-bar"
-            wx:for="{{chartData}}"
-            wx:key="index"
-            style="height: {{item.height}}%"
-          >
-            <text class="bar-value">{{item.weight}}</text>
-          </view>
-        </view>
+      <view class="chart-container">
+        <!-- 进度条 -->
         <view class="progress-bar">
           <view class="progress-inner" style="width: {{weightStats.progress}}%"></view>
         </view>
         <view class="progress-label">
           <text>当前 {{weightStats.current}}kg</text>
-          <text class="text-success">{{weightStats.diff > 0 ? '距目标还有' : '已达标'}}{{Math.abs(weightStats.diff)}}kg</text>
+          <text class="text-success">{{weightStats.diff > 0 ? '距目标还有' : '已达标'}}{{weightStats.absDiff}}kg</text>
           <text>目标 {{weightStats.target}}kg</text>
         </view>
       </view>
@@ -146,7 +137,7 @@
     <view class="card">
       <view class="card-header">
         <text class="card-title">🌸 生理期追踪</text>
-        <text class="edit-btn" bindtap="showMenstrualSettings">设置</text>
+        <text class="edit-btn" bindtap="openMenstrualSettings">设置</text>
       </view>
 
       <block wx:if="{{menstrualSettings.lastPeriodDate}}">
@@ -154,14 +145,14 @@
           <view class="phase-badge phase-{{currentPhase}}">
             {{getPhaseLabel(currentPhase)}}
           </view>
-          <text class="phase-day">第{{phaseDay}}天</text>
+          <text class="phase-day">第{{phaseDay}}天 / {{menstrualSettings.cycleDays}}天周期</text>
         </view>
 
         <view class="calendar-view">
           <view class="calendar-legend">
             <view class="legend-item">
               <view class="legend-dot period"></view>
-              <text>经期</text>
+              <text>经期(1-{{menstrualSettings.periodDays}}天)</text>
             </view>
             <view class="legend-item">
               <view class="legend-dot fertile"></view>
@@ -173,9 +164,13 @@
             </view>
           </view>
           <view class="calendar-grid">
-            <text class="day-cell" wx:for="{{28}}" wx:key="*this">
-              {{index + 1}}
-            </text>
+            <view
+              class="day-cell {{getDayClass(index + 1, phaseDay, menstrualSettings.periodDays)}}"
+              wx:for="{{menstrualSettings.cycleDays}}"
+              wx:key="*this"
+            >
+              <text>{{index + 1}}</text>
+            </view>
           </view>
         </view>
 
@@ -205,11 +200,61 @@
       <button class="btn btn-primary" bindtap="generateDietPlan">
         生成饮食计划
       </button>
+      <!-- 最新计划列表 -->
+      <view class="plan-history" wx:if="{{dietPlanHistory.length > 0}}">
+        <view class="plan-history-title">历史计划</view>
+        <view
+          class="plan-history-item"
+          wx:for="{{dietPlanHistory}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="viewDietPlan"
+        >
+          <view class="plan-history-info">
+            <text class="plan-history-name">{{item.name}}</text>
+            <text class="plan-history-date">{{item.date}}</text>
+          </view>
+          <text class="plan-history-arrow">›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 健康报告列表 -->
+    <view class="card" wx:if="{{healthReports.length > 0}}">
+      <view class="card-header">
+        <text class="card-title">📋 健康报告</text>
+      </view>
+      <view class="report-list">
+        <view
+          class="report-card"
+          wx:for="{{healthReports}}"
+          wx:key="id"
+          data-report="{{item}}"
+          bindtap="showReport"
+        >
+          <view class="report-header">
+            <view class="report-title">{{item.title}}</view>
+            <view class="report-date">{{item.date}}</view>
+          </view>
+          <view class="report-summary">{{item.summary}}</view>
+          <view class="report-tags">
+            <text
+              class="report-tag {{getReportTagClass(tag)}}"
+              wx:for="{{item.tags}}"
+              wx:key="*this"
+            >{{tag}}</text>
+          </view>
+          <view class="report-meta">
+            <view class="report-score">综合评分 {{item.score}}</view>
+            <view class="report-view">查看详情 ›</view>
+          </view>
+        </view>
+      </view>
     </view>
   </scroll-view>
 
   <!-- 编辑档案弹窗 -->
-  <view class="modal" wx:if="{{showEditProfile}}" bindtap="closeEditProfile">
+  <view class="modal" wx:if="{{showEditProfile}}">
     <view class="modal-content" catchtap="">
       <view class="modal-header">
         <text class="modal-title">编辑健康档案</text>
@@ -243,7 +288,7 @@
   </view>
 
   <!-- 饮食计划弹窗 -->
-  <view class="modal" wx:if="{{showDietPlan}}" bindtap="closeDietPlan">
+  <view class="modal" wx:if="{{showDietPlan}}">
     <view class="modal-content diet-plan-modal" catchtap="">
       <view class="modal-header">
         <text class="modal-title">AI 饮食计划</text>
@@ -290,7 +335,7 @@
                   <text class="meal-effect">{{item.breakfast.effect}}</text>
                   <view class="meal-ingredients">
                     <text class="ing-label">食材：</text>
-                    <text class="ing-list">{{item.breakfast.ingredients.join('、')}}</text>
+                    <text class="ing-list">{{item.breakfast._ingredientsStr}}</text>
                   </view>
                 </view>
               </view>
@@ -302,7 +347,7 @@
                   <text class="meal-effect">{{item.lunch.effect}}</text>
                   <view class="meal-ingredients">
                     <text class="ing-label">食材：</text>
-                    <text class="ing-list">{{item.lunch.ingredients.join('、')}}</text>
+                    <text class="ing-list">{{item.lunch._ingredientsStr}}</text>
                   </view>
                 </view>
               </view>
@@ -314,7 +359,7 @@
                   <text class="meal-effect">{{item.dinner.effect}}</text>
                   <view class="meal-ingredients">
                     <text class="ing-label">食材：</text>
-                    <text class="ing-list">{{item.dinner.ingredients.join('、')}}</text>
+                    <text class="ing-list">{{item.dinner._ingredientsStr}}</text>
                   </view>
                 </view>
               </view>
@@ -364,6 +409,87 @@
       <view class="modal-footer">
         <button bindtap="setData({showPlateauAlert: false})">暂不调整</button>
         <button type="primary" bindtap="setData({showPlateauAlert: false})">调整计划</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 健康报告详情弹窗 -->
+  <view class="modal" wx:if="{{showReportModal}}">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">{{currentReport.title}}</text>
+        <text class="modal-close" bindtap="closeReportModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="report-detail-date">{{currentReport.date}}</view>
+        <view class="report-detail-summary">{{currentReport.summary}}</view>
+        <view class="report-detail-tags">
+          <text
+            class="report-tag {{getReportTagClass(tag)}}"
+            wx:for="{{currentReport.tags}}"
+            wx:key="*this"
+          >{{tag}}</text>
+        </view>
+        <view class="report-detail-score">
+          <text>综合评分</text>
+          <text class="score-num">{{currentReport.score}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 生理期设置弹窗 -->
+  <view class="modal" wx:if="{{showMenstrualSettings}}">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">🌸 生理期设置</text>
+        <text class="modal-close" bindtap="closeMenstrualSettings">×</text>
+      </view>
+      <view class="modal-body menstrual-settings-body">
+        <view class="settings-tip">设置后日历将自动计算经期和易孕期</view>
+
+        <view class="form-item">
+          <label>上次月经开始日期</label>
+          <picker mode="date" value="{{tempMenstrual.lastPeriodDate}}" bindchange="bindPeriodDateChange">
+            <view class="picker-value {{tempMenstrual.lastPeriodDate ? '' : 'placeholder'}}">
+              {{tempMenstrual.lastPeriodDate || '请选择日期'}}
+            </view>
+          </picker>
+        </view>
+
+        <view class="form-item">
+          <label>月经周期（天）</label>
+          <view class="stepper-input">
+            <view class="stepper-btn" bindtap="adjustCycleDays" data delta="-1">−</view>
+            <input
+              class="stepper-value"
+              type="number"
+              value="{{tempMenstrual.cycleDays}}"
+              bindinput="inputCycleDays"
+            />
+            <view class="stepper-btn" bindtap="adjustCycleDays" data-delta="1">+</view>
+          </view>
+          <text class="form-hint">两次月经第一天的间隔天数，默认28天</text>
+        </view>
+
+        <view class="form-item">
+          <label>经期时长（天）</label>
+          <view class="stepper-input">
+            <view class="stepper-btn" bindtap="adjustPeriodDays" data-delta="-1">−</view>
+            <input
+              class="stepper-value"
+              type="number"
+              value="{{tempMenstrual.periodDays}}"
+              bindinput="inputPeriodDays"
+            />
+            <view class="stepper-btn" bindtap="adjustPeriodDays" data-delta="1">+</view>
+          </view>
+          <text class="form-hint">月经持续的天数，默认5天</text>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button type="default" catchtap="closeMenstrualSettings">取消</button>
+        <button type="primary" bindtap="saveMenstrualSettings">保存</button>
       </view>
     </view>
   </view>

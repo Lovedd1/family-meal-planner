@@ -63,29 +63,37 @@
   <!-- 食材列表 -->
   <view class="item-list">
     <block wx:if="{{items.length > 0}}">
-      <view
-        class="item-card {{getDaysLeftClass(item.daysLeft)}}"
-        wx:for="{{items}}"
-        wx:key="id"
-        wx:if="{{filterCategory === 'all' || item.category === filterCategory}}"
-      >
-        <view class="item-left">
-          <text class="item-category-tag">{{item.category === 'meat' ? '🥩' : item.category === 'vegetable' ? '🥬' : '🧂'}}</text>
-          <view class="item-info">
-            <text class="item-name">{{item.name}}</text>
-            <view class="item-meta">
-              <text>{{item.amount}}</text>
-              <text class="days-left {{getDaysLeftClass(item.daysLeft)}}">
-                剩余{{item.daysLeft}}天
-              </text>
-            </view>
-          </view>
+      <!-- 按到期日期分组显示 -->
+      <view class="group-section" wx:for="{{groupedItems}}" wx:key="label">
+        <view class="group-header {{item.class}}">
+          <text class="group-label">{{item.label}}</text>
+          <text class="group-count">{{item.items.length}}项</text>
         </view>
         <view
-          class="item-delete"
-          data-index="{{index}}"
-          bindtap="deleteItem"
-        >删除</view>
+          class="item-card {{getDaysLeftClass(subItem.daysLeft)}}"
+          wx:for="{{item.items}}"
+          wx:for-item="subItem"
+          wx:key="id"
+          wx:if="{{filterCategory === 'all' || subItem.category === filterCategory}}"
+        >
+          <view class="item-left">
+            <text class="item-category-tag">{{subItem.category === 'meat' ? '🥩' : subItem.category === 'vegetable' ? '🥬' : '🧂'}}</text>
+            <view class="item-info">
+              <text class="item-name">{{subItem.name}}</text>
+              <view class="item-meta">
+                <text>{{subItem.amount}}</text>
+                <text class="days-left {{getDaysLeftClass(subItem.daysLeft)}}">
+                  {{subItem.daysLeft <= 0 ? '今日到期' : '剩余' + subItem.daysLeft + '天'}}
+                </text>
+              </view>
+            </view>
+          </view>
+          <view
+            class="item-delete"
+            data-id="{{subItem.id}}"
+            bindtap="deleteItem"
+          >删除</view>
+        </view>
       </view>
     </block>
     <view class="empty-state" wx:else>
@@ -135,14 +143,14 @@
 
   <!-- 智能推荐弹窗 -->
   <view class="modal" wx:if="{{showRecommendModal}}" bindtap="closeRecommendModal">
-    <view class="modal-content" catchtap="">
+    <view class="modal-content recommend-modal" catchtap="">
       <view class="modal-header">
         <text class="modal-title">智能搭配推荐</text>
         <text class="modal-close" bindtap="closeRecommendModal">×</text>
       </view>
       <view class="modal-body">
         <view class="recommend-tip">
-          基于最快过期食材优先匹配
+          🤖 基于最快过期食材优先匹配 · 匹配度≥50%
         </view>
         <view class="recommend-list">
           <view
@@ -150,19 +158,27 @@
             wx:for="{{recommendations}}"
             wx:key="id"
           >
-            <text class="emoji">{{item.emoji}}</text>
+            <text class="recommend-emoji">{{item.emoji}}</text>
             <view class="recommend-info">
-              <text class="name">{{item.name}}</text>
-              <text class="matched">匹配食材: {{item.matchedIngredients}}</text>
+              <view class="recommend-header">
+                <text class="recommend-name">{{item.name}}</text>
+                <text class="recommend-ratio {{item.matchRatio >= 80 ? 'high' : item.matchRatio >= 60 ? 'mid' : 'low'}}">{{item.matchRatio}}%</text>
+              </view>
+              <view class="recommend-tags">
+                <text class="match-tag success">✓ {{item.matchedCount}}项可配</text>
+                <text class="match-tag danger" wx:if="{{item.missingIngredients}}">✗ {{item.missingIngredients}}</text>
+              </view>
+              <text class="recommend-category">{{item.category}}</text>
             </view>
             <button
               class="btn-mini"
               data-food="{{item}}"
               bindtap="addToDinner"
-            >加入晚餐</button>
+            >+ 晚餐</button>
           </view>
           <view class="empty-recommend" wx:if="{{recommendations.length === 0}}">
-            <text>添加更多食材后查看推荐</text>
+            <text>🧊 添加更多食材后查看推荐</text>
+            <text class="empty-hint">至少需要50%食材匹配才能推荐</text>
           </view>
         </view>
       </view>

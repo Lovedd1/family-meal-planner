@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>页面排版方案预览</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #C48B8B;
+      --primary-light: #E8D5D8;
+      --primary-dark: #A67070;
+      --bg-start: #FDF8F8;
+      --bg-end: #F5EEF0;
+      --bg-card: #FFFFFF;
+      --text-primary: #5D4A4A;
+      --text-secondary: #8A6A6A;
+      --text-placeholder: #BDBDBD;
+      --success: #5A8A6A;
+      --warning: #D4A828;
+      --danger: #C45C5C;
+      --border-light: #E8D5D8;
+      --border-lighter: rgba(0,0,0,0.05);
+      --shadow-sm: 0 2rpx 8rpx rgba(139,115,85,0.08);
+      --shadow-md: 0 4rpx 12rpx rgba(139,115,85,0.12);
+      --radius-sm: 8rpx;
+      --radius-md: 16rpx;
+      --radius-lg: 24rpx;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .page-section {
+      margin-bottom: 50px;
+    }
+
+    .page-title {
+      font-size: 18px;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 20px;
+      padding-left: 10px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .versions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .phone-frame {
+      background: #000;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .phone-frame:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 35px 60px rgba(0,0,0,0.6);
+    }
+
+    .phone-screen {
+      width: 100%;
+      aspect-ratio: 9/19.5;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: #fff;
+    }
+
+    .notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+      z-index: 100;
+    }
+
+    .status-bar {
+      height: 44px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      position: relative;
+      z-index: 50;
+    }
+
+    .phone-content {
+      height: calc(100% - 44px);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .phone-content::-webkit-scrollbar { display: none; }
+
+    /* ==================== 全局样式 ==================== */
+    .page { min-height: 100%; padding-bottom: 100px; }
+
+    .nav-bar {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      padding: 50px 24px 60px;
+      position: relative;
+    }
+
+    .nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: var(--bg-end);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .nav-title {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 26px;
+      color: var(--text-primary);
+    }
+
+    .date-title {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* ==================== 通用组件 ==================== */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-lighter);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .tag-primary { background: var(--primary-light); color: var(--primary-dark); }
+    .tag-success { background: #E8F5E9; color: var(--success); }
+    .tag-warning { background: #FFF8E6; color: var(--warning); }
+    .tag-danger { background: #FDEDED; color: var(--danger); }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px;
+      background: linear-gradient(180deg, transparent 0%, var(--bg-end) 30%);
+    }
+
+    /* ==================== 点餐页面 V1: 列表视图 ==================== */
+    .v1-list .search-bar {
+      margin: 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .v1-list .search-icon { font-size: 18px; color: var(--text-secondary); }
+    .v1-list .search-input { flex: 1; border: none; font-size: 14px; }
+
+    .v1-list .category-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 12px;
+      overflow-x: auto;
+    }
+
+    .v1-list .category-tab {
+      flex: 0 0 auto;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+    }
+
+    .v1-list .category-tab.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .v1-list .dish-list {
+      padding: 0 16px;
+    }
+
+    .v1-list .dish-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-lighter);
+    }
+
+    .v1-list .dish-emoji {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .v1-list .dish-info { flex: 1; }
+    .v1-list .dish-name { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .v1-list .dish-meta { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+    .v1-list .dish-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .v1-list .add-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(196,139,139,0.3);
+    }
+
+    /* ==================== 点餐页面 V2: 紧凑网格 ==================== */
+    .v2-grid .search-bar {
+      margin: 12px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .v2-grid .search-icon { font-size: 16px; color: var(--text-secondary); }
+    .v2-grid .search-input { flex: 1; border: none; font-size: 13px; }
+
+    .v2-grid .category-scroll {
+      display: flex;
+      gap: 6px;
+      padding: 0 12px 10px;
+      overflow-x: auto;
+    }
+
+    .v2-grid .category-tab {
+      flex: 0 0 auto;
+      padding: 6px 16px;
+      border-radius: 16px;
+      font-size: 12px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .v2-grid .category-tab.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .v2-grid .dish-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 0 12px;
+    }
+
+    .v2-grid .dish-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+
+    .v2-grid .dish-emoji {
+      width: 100%;
+      height: 60px;
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .v2-grid .dish-name { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .v2-grid .dish-price { font-size: 13px; color: var(--primary); font-weight: 600; }
+    .v2-grid .add-btn {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      margin-top: 6px;
+    }
+
+    /* ==================== 点餐页面 V3: 侧边分类 ==================== */
+    .v3-sidebar { display: flex; height: 100%; }
+    .v3-sidebar .category-nav {
+      width: 80px;
+      background: var(--bg-card);
+      padding: 16px 0;
+      border-right: 1px solid var(--border-lighter);
+    }
+
+    .v3-sidebar .category-item {
+      padding: 14px 8px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-secondary);
+      border-left: 3px solid transparent;
+    }
+
+    .v3-sidebar .category-item.active {
+      background: var(--bg-start);
+      color: var(--primary);
+      border-left-color: var(--primary);
+    }
+
+    .v3-sidebar .category-item .icon { font-size: 24px; display: block; margin-bottom: 4px; }
+    .v3-sidebar .dish-area { flex: 1; padding: 12px; }
+    .v3-sidebar .dish-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .v3-sidebar .dish-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .v3-sidebar .dish-emoji {
+      width: 100%;
+      height: 70px;
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    .v3-sidebar .dish-name { font-size: 13px; font-weight: 600; color: var(--text-primary); text-align: center; margin-bottom: 4px; }
+    .v3-sidebar .dish-footer { display: flex; justify-content: space-between; align-items: center; }
+    .v3-sidebar .dish-price { font-size: 12px; color: var(--primary); font-weight: 600; }
+    .v3-sidebar .add-btn {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* ==================== 冰箱页面 V1: 大卡片 ==================== */
+    .fv1-big .category-scroll {
+      display: flex;
+      gap: 12px;
+      padding: 20px 16px 16px;
+      overflow-x: auto;
+      margin-top: -30px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .fv1-big .category-card {
+      flex: 0 0 auto;
+      min-width: 100px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .fv1-big .category-icon { font-size: 28px; margin-bottom: 4px; }
+    .fv1-big .category-name { font-size: 11px; color: var(--text-secondary); }
+    .fv1-big .category-count { font-size: 20px; font-weight: 700; color: var(--primary); margin-top: 4px; }
+
+    .fv1-big .item-list { padding: 0 16px; }
+    .fv1-big .item-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--success);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fv1-big .item-card.warning { border-left-color: var(--warning); }
+    .fv1-big .item-card.danger { border-left-color: var(--danger); }
+    .fv1-big .item-icon { font-size: 32px; }
+    .fv1-big .item-info { flex: 1; }
+    .fv1-big .item-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .fv1-big .item-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .fv1-big .days-left { color: var(--success); font-weight: 500; }
+    .fv1-big .days-left.warning { color: var(--warning); }
+    .fv1-big .days-left.danger { color: var(--danger); }
+    .fv1-big .item-delete { color: var(--danger); font-size: 14px; padding: 8px; }
+
+    /* ==================== 冰箱页面 V2: 网格布局 ==================== */
+    .fv2-grid .category-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 16px;
+      margin-top: -10px;
+    }
+
+    .fv2-grid .category-chip {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .fv2-grid .category-chip .icon { font-size: 22px; }
+    .fv2-grid .category-chip .name { font-size: 10px; color: var(--text-secondary); margin-top: 2px; }
+    .fv2-grid .category-chip .count { font-size: 16px; font-weight: 700; color: var(--primary); }
+
+    .fv2-grid .item-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 0 16px;
+    }
+
+    .fv2-grid .item-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+
+    .fv2-grid .item-icon { font-size: 36px; margin-bottom: 6px; }
+    .fv2-grid .item-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .fv2-grid .days-left { font-size: 12px; color: var(--success); margin-top: 4px; }
+    .fv2-grid .days-left.warning { color: var(--warning); }
+    .fv2-grid .days-left.danger { color: var(--danger); }
+
+    /* ==================== 冰箱页面 V3: 时间线 ==================== */
+    .fv3-timeline { padding: 16px; }
+    .fv3-timeline .date-header {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fv3-timeline .date-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-light);
+    }
+
+    .fv3-timeline .item-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fv3-timeline .item-icon { font-size: 28px; }
+    .fv3-timeline .item-info { flex: 1; }
+    .fv3-timeline .item-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .fv3-timeline .item-days { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .fv3-timeline .days-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .fv3-timeline .days-badge.safe { background: #E8F5E9; color: var(--success); }
+    .fv3-timeline .days-badge.warning { background: #FFF8E6; color: var(--warning); }
+    .fv3-timeline .days-badge.danger { background: #FDEDED; color: var(--danger); }
+
+    /* ==================== 健康页面 V1: 仪表盘 ==================== */
+    .hv1-dashboard .hero-card {
+      margin: 16px;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      color: #fff;
+    }
+
+    .hv1-dashboard .hero-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+    .hv1-dashboard .hero-value { font-size: 36px; font-weight: 700; }
+    .hv1-dashboard .hero-unit { font-size: 14px; opacity: 0.8; }
+    .hv1-dashboard .hero-trend { font-size: 12px; margin-top: 8px; opacity: 0.9; }
+
+    .hv1-dashboard .stats-row {
+      display: flex;
+      gap: 10px;
+      padding: 0 16px;
+      margin-top: -10px;
+    }
+
+    .hv1-dashboard .stat-card {
+      flex: 1;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      box-shadow: var(--shadow-md);
+      text-align: center;
+    }
+
+    .hv1-dashboard .stat-icon { font-size: 24px; margin-bottom: 4px; }
+    .hv1-dashboard .stat-value { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+    .hv1-dashboard .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+    .hv1-dashboard .section { margin: 16px; }
+    .hv1-dashboard .section-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
+
+    .hv1-dashboard .chart-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hv1-dashboard .chart-bars {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 80px;
+      padding-bottom: 30px;
+    }
+
+    .hv1-dashboard .chart-bar {
+      flex: 1;
+      background: linear-gradient(to top, var(--primary-light), var(--primary));
+      border-radius: 4px 4px 0 0;
+      margin: 0 2px;
+      min-height: 10px;
+      position: relative;
+    }
+
+    .hv1-dashboard .bar-label {
+      position: absolute;
+      bottom: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      color: var(--text-secondary);
+    }
+
+    /* ==================== 健康页面 V2: 卡片堆叠 ==================== */
+    .hv2-stack .card {
+      margin: 16px;
+      border-radius: var(--radius-md);
+    }
+
+    .hv2-stack .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .hv2-stack .card-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .hv2-stack .card-action { font-size: 12px; color: var(--primary); }
+
+    .hv2-stack .phase-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .hv2-stack .phase-badge {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .hv2-stack .phase-badge.active { background: var(--primary-light); color: var(--primary-dark); }
+    .hv2-stack .phase-badge { background: var(--bg-start); color: var(--text-secondary); }
+
+    .hv2-stack .record-list { margin-top: 12px; }
+    .hv2-stack .record-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-lighter);
+      font-size: 13px;
+    }
+
+    .hv2-stack .record-item:last-child { border-bottom: none; }
+    .hv2-stack .record-date { color: var(--text-secondary); }
+    .hv2-stack .record-value { font-weight: 600; color: var(--text-primary); }
+
+    /* ==================== 健康页面 V3: 时间线 ==================== */
+    .hv3-timeline { padding: 16px; }
+    .hv3-timeline .timeline-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .hv3-timeline .timeline-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .hv3-timeline .timeline-dot {
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .hv3-timeline .timeline-line {
+      position: absolute;
+      left: 5px;
+      top: 16px;
+      bottom: -16px;
+      width: 2px;
+      background: var(--border-light);
+    }
+
+    .hv3-timeline .timeline-content {
+      flex: 1;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hv3-timeline .timeline-date { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+    .hv3-timeline .timeline-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .hv3-timeline .timeline-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* ==================== 设置页面 V1: 卡片分组 ==================== */
+    .sv1-card .user-card {
+      margin: 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .sv1-card .avatar {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .sv1-card .user-name { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .sv1-card .user-id { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+    .sv1-card .group-card {
+      margin: 12px 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sv1-card .group-title {
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg-start);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .sv1-card .group-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-lighter);
+    }
+
+    .sv1-card .group-item:last-child { border-bottom: none; }
+    .sv1-card .item-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      margin-right: 12px;
+    }
+
+    .sv1-card .item-name { flex: 1; font-size: 14px; color: var(--text-primary); }
+    .sv1-card .item-arrow { color: var(--text-placeholder); font-size: 14px; }
+
+    /* ==================== 设置页面 V2: 列表分组 ==================== */
+    .sv2-list .user-header {
+      margin: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sv2-list .avatar {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .sv2-list .user-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .sv2-list .user-status { font-size: 11px; color: var(--success); margin-top: 2px; }
+
+    .sv2-list .section { margin: 16px 0; }
+    .sv2-list .section-title {
+      padding: 0 16px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .sv2-list .menu-list {
+      background: var(--bg-card);
+      margin: 0 16px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sv2-list .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-lighter);
+    }
+
+    .sv2-list .menu-item:last-child { border-bottom: none; }
+    .sv2-list .menu-item .icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      margin-right: 12px;
+    }
+
+    .sv2-list .menu-item .icon.blue { background: #E3F2FD; }
+    .sv2-list .menu-item .icon.green { background: #E8F5E9; }
+    .sv2-list .menu-item .icon.yellow { background: #FFF8E6; }
+    .sv2-list .menu-item .icon.purple { background: #F5F0F8; }
+
+    .sv2-list .menu-item .text { flex: 1; font-size: 14px; color: var(--text-primary); }
+    .sv2-list .menu-item .arrow { color: var(--text-placeholder); font-size: 12px; }
+
+    /* ==================== 设置页面 V3: 杂志风 ==================== */
+    .sv3-mag .user-hero {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      padding: 30px 20px;
+      color: #fff;
+      text-align: center;
+    }
+
+    .sv3-mag .avatar {
+      width: 70px;
+      height: 70px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 12px;
+    }
+
+    .sv3-mag .user-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .sv3-mag .user-id { font-size: 12px; opacity: 0.8; }
+
+    .sv3-mag .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 16px;
+      margin-top: -10px;
+    }
+
+    .sv3-mag .feature-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .sv3-mag .feature-icon { font-size: 28px; margin-bottom: 8px; }
+    .sv3-mag .feature-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .sv3-mag .feature-desc { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+    .sv3-mag .divider {
+      height: 1px;
+      background: var(--border-light);
+      margin: 12px 16px;
+    }
+
+    .sv3-mag .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--bg-card);
+    }
+
+    .sv3-mag .menu-item .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-right: 12px;
+    }
+
+    .sv3-mag .menu-item .text { flex: 1; font-size: 14px; color: var(--text-primary); }
+    .sv3-mag .menu-item .arrow { color: var(--text-placeholder); }
+
+    /* 标注 */
+    .version-label {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .version-label strong {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>页面排版方案预览</h1>
+      <p>点击手机预览查看效果，Hover 可放大</p>
+    </div>
+
+    <!-- 点餐页面 -->
+    <div class="page-section">
+      <div class="page-title">点餐页面 - 3种布局方案</div>
+      <div class="versions-grid">
+        <!-- V1: 列表视图 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content v1-list">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">点餐</div>
+                    <div class="date-title">选择今日菜品</div>
+                  </div>
+                  <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input class="search-input" placeholder="搜索菜品...">
+                  </div>
+                  <div class="category-tabs">
+                    <span class="category-tab active">全部</span>
+                    <span class="category-tab">荤菜</span>
+                    <span class="category-tab">素菜</span>
+                    <span class="category-tab">汤品</span>
+                    <span class="category-tab">主食</span>
+                  </div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍖</div>
+                      <div class="dish-info">
+                        <div class="dish-name">红烧排骨</div>
+                        <div class="dish-meta">荤菜 · 微波安全</div>
+                        <div class="dish-tags">
+                          <span class="tag tag-success">✅ 可微波</span>
+                        </div>
+                      </div>
+                      <div class="add-btn">+</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥚</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋</div>
+                        <div class="dish-meta">素菜 · 微波安全</div>
+                        <div class="dish-tags">
+                          <span class="tag tag-success">✅ 可微波</span>
+                          <span class="tag tag-warning">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="add-btn">+</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍲</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄牛肉汤</div>
+                        <div class="dish-meta">汤品 · 微波安全</div>
+                        <div class="dish-tags">
+                          <span class="tag tag-success">✅ 可微波</span>
+                        </div>
+                      </div>
+                      <div class="add-btn">+</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V1</strong> 列表视图 - 信息密度高</div>
+        </div>
+
+        <!-- V2: 紧凑网格 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content v2-grid">
+                <div class="page">
+                  <div class="nav-bar" style="padding: 40px 20px 40px;">
+                    <div class="nav-title">点餐</div>
+                  </div>
+                  <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input class="search-input" placeholder="搜索...">
+                  </div>
+                  <div class="category-scroll">
+                    <span class="category-tab active">全部</span>
+                    <span class="category-tab">荤</span>
+                    <span class="category-tab">素</span>
+                    <span class="category-tab">汤</span>
+                    <span class="category-tab">主食</span>
+                  </div>
+                  <div class="dish-grid">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍖</div>
+                      <div class="dish-name">红烧排骨</div>
+                      <div class="dish-price">¥12</div>
+                      <div class="add-btn">+</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥚</div>
+                      <div class="dish-name">番茄炒蛋</div>
+                      <div class="dish-price">¥8</div>
+                      <div class="add-btn">+</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍲</div>
+                      <div class="dish-name">番茄汤</div>
+                      <div class="dish-price">¥10</div>
+                      <div class="add-btn">+</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥦</div>
+                      <div class="dish-name">西兰花</div>
+                      <div class="dish-price">¥6</div>
+                      <div class="add-btn">+</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍚</div>
+                      <div class="dish-name">米饭</div>
+                      <div class="dish-price">¥2</div>
+                      <div class="add-btn">+</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥟</div>
+                      <div class="dish-name">蒸饺</div>
+                      <div class="dish-price">¥8</div>
+                      <div class="add-btn">+</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V2</strong> 紧凑网格 - 视觉冲击强</div>
+        </div>
+
+        <!-- V3: 侧边分类 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content v3-sidebar">
+                <div class="page" style="display:flex;padding:0;">
+                  <div class="category-nav">
+                    <div class="category-item active">
+                      <span class="icon">🍖</span>
+                      荤菜
+                    </div>
+                    <div class="category-item">
+                      <span class="icon">🥬</span>
+                      素菜
+                    </div>
+                    <div class="category-item">
+                      <span class="icon">🍲</span>
+                      汤品
+                    </div>
+                    <div class="category-item">
+                      <span class="icon">🍚</span>
+                      主食
+                    </div>
+                  </div>
+                  <div class="dish-area">
+                    <div style="padding: 12px 0 8px;">
+                      <div class="nav-title" style="font-size: 18px;">荤菜</div>
+                    </div>
+                    <div class="dish-grid">
+                      <div class="dish-card">
+                        <div class="dish-emoji">🍖</div>
+                        <div class="dish-name">红烧排骨</div>
+                        <div class="dish-footer">
+                          <span class="dish-price">¥12</span>
+                          <span class="add-btn">+</span>
+                        </div>
+                      </div>
+                      <div class="dish-card">
+                        <div class="dish-emoji">🐟</div>
+                        <div class="dish-name">清蒸鲈鱼</div>
+                        <div class="dish-footer">
+                          <span class="dish-price">¥18</span>
+                          <span class="add-btn">+</span>
+                        </div>
+                      </div>
+                      <div class="dish-card">
+                        <div class="dish-emoji">🍗</div>
+                        <div class="dish-name">炒鸡胸</div>
+                        <div class="dish-footer">
+                          <span class="dish-price">¥14</span>
+                          <span class="add-btn">+</span>
+                        </div>
+                      </div>
+                      <div class="dish-card">
+                        <div class="dish-emoji">🦐</div>
+                        <div class="dish-name">白灼虾</div>
+                        <div class="dish-footer">
+                          <span class="dish-price">¥20</span>
+                          <span class="add-btn">+</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V3</strong> 侧边分类 - 快速切换</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 我的冰箱页面 -->
+    <div class="page-section">
+      <div class="page-title">我的冰箱页面 - 3种布局方案</div>
+      <div class="versions-grid">
+        <!-- V1: 大卡片 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content fv1-big">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">我的冰箱</div>
+                    <div class="date-title">3 种食材即将过期</div>
+                  </div>
+                  <div class="category-scroll">
+                    <div class="category-card">
+                      <div class="category-icon">🥬</div>
+                      <div class="category-name">蔬菜</div>
+                      <div class="category-count">5</div>
+                    </div>
+                    <div class="category-card">
+                      <div class="category-icon">🥩</div>
+                      <div class="category-name">肉类</div>
+                      <div class="category-count">3</div>
+                    </div>
+                    <div class="category-card">
+                      <div class="category-icon">🥚</div>
+                      <div class="category-name">蛋类</div>
+                      <div class="category-count">8</div>
+                    </div>
+                    <div class="category-card">
+                      <div class="category-icon">🍎</div>
+                      <div class="category-name">水果</div>
+                      <div class="category-count">4</div>
+                    </div>
+                  </div>
+                  <div class="item-list">
+                    <div class="item-card">
+                      <div class="item-icon">🥩</div>
+                      <div class="item-info">
+                        <div class="item-name">鸡胸肉</div>
+                        <div class="item-meta">剩余 <span class="days-left danger">2天</span></div>
+                      </div>
+                      <div class="item-delete">🗑</div>
+                    </div>
+                    <div class="item-card warning">
+                      <div class="item-icon">🥬</div>
+                      <div class="item-info">
+                        <div class="item-name">西兰花</div>
+                        <div class="item-meta">剩余 <span class="days-left warning">4天</span></div>
+                      </div>
+                      <div class="item-delete">🗑</div>
+                    </div>
+                    <div class="item-card">
+                      <div class="item-icon">🥚</div>
+                      <div class="item-info">
+                        <div class="item-name">鸡蛋</div>
+                        <div class="item-meta">剩余 <span class="days-left">7天</span></div>
+                      </div>
+                      <div class="item-delete">🗑</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar">
+                    <button class="btn btn-primary" style="width:100%">+ 添加食材</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V1</strong> 大卡片 - 分类清晰</div>
+        </div>
+
+        <!-- V2: 网格布局 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content fv2-grid">
+                <div class="page">
+                  <div class="nav-bar" style="padding: 40px 20px 50px;">
+                    <div class="nav-title">我的冰箱</div>
+                  </div>
+                  <div class="category-row">
+                    <div class="category-chip">
+                      <div class="icon">🥬</div>
+                      <div class="name">蔬菜</div>
+                      <div class="count">5</div>
+                    </div>
+                    <div class="category-chip">
+                      <div class="icon">🥩</div>
+                      <div class="name">肉类</div>
+                      <div class="count">3</div>
+                    </div>
+                    <div class="category-chip">
+                      <div class="icon">🥚</div>
+                      <div class="name">蛋类</div>
+                      <div class="count">8</div>
+                    </div>
+                    <div class="category-chip">
+                      <div class="icon">🍎</div>
+                      <div class="name">水果</div>
+                      <div class="count">4</div>
+                    </div>
+                  </div>
+                  <div class="item-grid">
+                    <div class="item-card">
+                      <div class="item-icon">🥩</div>
+                      <div class="item-name">鸡胸肉</div>
+                      <div class="days-left danger">2天</div>
+                    </div>
+                    <div class="item-card">
+                      <div class="item-icon">🥬</div>
+                      <div class="item-name">西兰花</div>
+                      <div class="days-left warning">4天</div>
+                    </div>
+                    <div class="item-card">
+                      <div class="item-icon">🥚</div>
+                      <div class="item-name">鸡蛋</div>
+                      <div class="days-left">7天</div>
+                    </div>
+                    <div class="item-card">
+                      <div class="item-icon">🍎</div>
+                      <div class="item-name">苹果</div>
+                      <div class="days-left">5天</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V2</strong> 网格布局 - 紧凑高效</div>
+        </div>
+
+        <!-- V3: 时间线 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content fv3-timeline">
+                <div class="page">
+                  <div class="nav-bar" style="padding: 40px 20px 20px;">
+                    <div class="nav-title">我的冰箱</div>
+                  </div>
+                  <div style="padding: 0 16px;">
+                    <div class="date-header">即将过期</div>
+                    <div class="item-card">
+                      <div class="item-icon">🥩</div>
+                      <div class="item-info">
+                        <div class="item-name">鸡胸肉</div>
+                        <div class="item-days">剩余 2 天</div>
+                      </div>
+                      <span class="days-badge danger">紧急</span>
+                    </div>
+                    <div class="item-card">
+                      <div class="item-icon">🥬</div>
+                      <div class="item-info">
+                        <div class="item-name">西兰花</div>
+                        <div class="item-days">剩余 4 天</div>
+                      </div>
+                      <span class="days-badge warning">注意</span>
+                    </div>
+
+                    <div class="date-header">本周内</div>
+                    <div class="item-card">
+                      <div class="item-icon">🥚</div>
+                      <div class="item-info">
+                        <div class="item-name">鸡蛋</div>
+                        <div class="item-days">剩余 7 天</div>
+                      </div>
+                      <span class="days-badge safe">充足</span>
+                    </div>
+                    <div class="item-card">
+                      <div class="item-icon">🍎</div>
+                      <div class="item-info">
+                        <div class="item-name">苹果</div>
+                        <div class="item-days">剩余 5 天</div>
+                      </div>
+                      <span class="days-badge safe">充足</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V3</strong> 时间线 - 优先级明确</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 健康计划页面 -->
+    <div class="page-section">
+      <div class="page-title">健康计划页面 - 3种布局方案</div>
+      <div class="versions-grid">
+        <!-- V1: 仪表盘 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content hv1-dashboard">
+                <div class="page">
+                  <div class="nav-bar" style="padding: 40px 20px 80px;">
+                    <div class="nav-title">健康计划</div>
+                  </div>
+                  <div class="hero-card">
+                    <div class="hero-title">当前体重</div>
+                    <div class="hero-value">65.8 <span class="hero-unit">kg</span></div>
+                    <div class="hero-trend">↓ 0.3kg 较上周</div>
+                  </div>
+                  <div class="stats-row">
+                    <div class="stat-card">
+                      <div class="stat-icon">🔥</div>
+                      <div class="stat-value">1680</div>
+                      <div class="stat-label">今日摄入</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="stat-icon">🏃</div>
+                      <div class="stat-value">45</div>
+                      <div class="stat-label">活动分钟</div>
+                    </div>
+                    <div class="stat-card">
+                      <div class="stat-icon">💧</div>
+                      <div class="stat-value">1800</div>
+                      <div class="stat-label">饮水量 ml</div>
+                    </div>
+                  </div>
+                  <div class="section" style="margin-top: 20px;">
+                    <div class="section-title">体重趋势</div>
+                    <div class="chart-card">
+                      <div class="chart-bars">
+                        <div class="chart-bar" style="height: 40px;"><span class="bar-label">一</span></div>
+                        <div class="chart-bar" style="height: 55px;"><span class="bar-label">二</span></div>
+                        <div class="chart-bar" style="height: 50px;"><span class="bar-label">三</span></div>
+                        <div class="chart-bar" style="height: 65px;"><span class="bar-label">四</span></div>
+                        <div class="chart-bar" style="height: 60px;"><span class="bar-label">五</span></div>
+                        <div class="chart-bar" style="height: 70px;"><span class="bar-label">六</span></div>
+                        <div class="chart-bar" style="height: 75px;"><span class="bar-label">日</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V1</strong> 仪表盘 - 数据可视化</div>
+        </div>
+
+        <!-- V2: 卡片堆叠 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content hv2-stack">
+                <div class="page">
+                  <div class="nav-bar" style="padding: 40px 20px 20px;">
+                    <div class="nav-title">健康计划</div>
+                  </div>
+                  <div class="card">
+                    <div class="card-header">
+                      <div class="card-title">体重记录</div>
+                      <div class="card-action">查看全部 →</div>
+                    </div>
+                    <div class="phase-row">
+                      <div class="phase-badge active">本周</div>
+                      <div class="phase-badge">本月</div>
+                      <div class="phase-badge">全部</div>
+                    </div>
+                    <div class="record-list">
+                      <div class="record-item">
+                        <span class="record-date">今天 09:30</span>
+                        <span class="record-value">65.8 kg</span>
+                      </div>
+                      <div class="record-item">
+                        <span class="record-date">昨天 08:45</span>
+                        <span class="record-value">66.1 kg</span>
+                      </div>
+                      <div class="record-item">
+                        <span class="record-date">5月3日 09:00</span>
+                        <span class="record-value">66.3 kg</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <div class="card-header">
+                      <div class="card-title">生理期追踪</div>
+                      <div class="card-action">设置 →</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                      <span style="background: #FDEDED; color: #C45C5C; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;">经期第3天</span>
+                      <span style="font-size: 13px; color: #8A6A6A;">预计还有 23 天</span>
+                    </div>
+                    <div class="record-list">
+                      <div class="record-item">
+                        <span class="record-date">开始日期</span>
+                        <span class="record-value">5月2日</span>
+                      </div>
+                      <div class="record-item">
+                        <span class="record-date">持续时间</span>
+                        <span class="record-value">5 天</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V2</strong> 卡片堆叠 - 分类清晰</div>
+        </div>
+
+        <!-- V3: 时间线 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content hv3-timeline">
+                <div class="page">
+                  <div class="nav-bar" style="padding: 40px 20px 20px;">
+                    <div class="nav-title">健康计划</div>
+                  </div>
+                  <div style="padding: 0 16px;">
+                    <div class="timeline-header">健康动态</div>
+                    <div class="timeline-item">
+                      <div class="timeline-dot"></div>
+                      <div class="timeline-line"></div>
+                      <div class="timeline-content">
+                        <div class="timeline-date">今天 09:30</div>
+                        <div class="timeline-title">记录体重</div>
+                        <div class="timeline-desc">65.8 kg，较昨日下降 0.3kg</div>
+                      </div>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-dot"></div>
+                      <div class="timeline-line"></div>
+                      <div class="timeline-content">
+                        <div class="timeline-date">今天 08:00</div>
+                        <div class="timeline-title">晨跑完成</div>
+                        <div class="timeline-desc">跑步 3.2 公里，消耗 256 卡路里</div>
+                      </div>
+                    </div>
+                    <div class="timeline-item">
+                      <div class="timeline-dot"></div>
+                      <div class="timeline-line"></div>
+                      <div class="timeline-content">
+                        <div class="timeline-date">昨天 20:00</div>
+                        <div class="timeline-title">饮食记录</div>
+                        <div class="timeline-desc">摄入 1720 卡路里</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V3</strong> 时间线 - 记录清晰</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 设置页面 -->
+    <div class="page-section">
+      <div class="page-title">设置页面 - 3种布局方案</div>
+      <div class="versions-grid">
+        <!-- V1: 卡片分组 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content sv1-card">
+                <div class="page">
+                  <div class="nav-bar" style="padding: 40px 20px 20px;">
+                    <div class="nav-title">设置</div>
+                  </div>
+                  <div class="user-card">
+                    <div class="avatar">👤</div>
+                    <div>
+                      <div class="user-name">张小明</div>
+                      <div class="user-id">ID: abc123456</div>
+                    </div>
+                  </div>
+                  <div class="group-card">
+                    <div class="group-title">数据同步</div>
+                    <div class="group-item">
+                      <div class="item-icon">🔄</div>
+                      <div class="item-name">数据同步</div>
+                      <div class="item-arrow">→</div>
+                    </div>
+                    <div class="group-item">
+                      <div class="item-icon">📤</div>
+                      <div class="item-name">导出数据</div>
+                      <div class="item-arrow">→</div>
+                    </div>
+                  </div>
+                  <div class="group-card">
+                    <div class="group-title">配对</div>
+                    <div class="group-item">
+                      <div class="item-icon">💕</div>
+                      <div class="item-name">我的伴侣</div>
+                      <div class="item-arrow">已连接 →</div>
+                    </div>
+                  </div>
+                  <div class="group-card">
+                    <div class="group-title">其他</div>
+                    <div class="group-item">
+                      <div class="item-icon">ℹ️</div>
+                      <div class="item-name">关于</div>
+                      <div class="item-arrow">→</div>
+                    </div>
+                    <div class="group-item">
+                      <div class="item-icon" style="background: #FDEDED; color: var(--danger);">🗑</div>
+                      <div class="item-name" style="color: var(--danger);">重置数据</div>
+                      <div class="item-arrow">→</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V1</strong> 卡片分组 - 层次分明</div>
+        </div>
+
+        <!-- V2: 列表分组 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content sv2-list">
+                <div class="page">
+                  <div class="nav-bar" style="padding: 40px 20px 20px;">
+                    <div class="nav-title">设置</div>
+                  </div>
+                  <div class="user-header">
+                    <div class="avatar">👤</div>
+                    <div>
+                      <div class="user-name">张小明</div>
+                      <div class="user-status">● 已连接伴侣</div>
+                    </div>
+                  </div>
+                  <div class="section">
+                    <div class="section-title">同步</div>
+                    <div class="menu-list">
+                      <div class="menu-item">
+                        <div class="icon blue">🔄</div>
+                        <div class="text">数据同步</div>
+                        <div class="arrow">→</div>
+                      </div>
+                      <div class="menu-item">
+                        <div class="icon green">📤</div>
+                        <div class="text">导出数据</div>
+                        <div class="arrow">→</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section">
+                    <div class="section-title">配对</div>
+                    <div class="menu-list">
+                      <div class="menu-item">
+                        <div class="icon" style="background: #FFE8E8;">💕</div>
+                        <div class="text">我的伴侣</div>
+                        <div class="arrow">已连接 →</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="section">
+                    <div class="section-title">其他</div>
+                    <div class="menu-list">
+                      <div class="menu-item">
+                        <div class="icon purple">ℹ️</div>
+                        <div class="text">关于</div>
+                        <div class="arrow">→</div>
+                      </div>
+                      <div class="menu-item">
+                        <div class="icon" style="background: #FDEDED; color: var(--danger);">🗑</div>
+                        <div class="text" style="color: var(--danger);">重置数据</div>
+                        <div class="arrow">→</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V2</strong> 列表分组 - 简洁高效</div>
+        </div>
+
+        <!-- V3: 杂志风 -->
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content sv3-mag">
+                <div class="page">
+                  <div class="user-hero">
+                    <div class="avatar">👤</div>
+                    <div class="user-name">张小明</div>
+                    <div class="user-id">ID: abc123456</div>
+                  </div>
+                  <div class="feature-grid">
+                    <div class="feature-card">
+                      <div class="feature-icon">🔄</div>
+                      <div class="feature-name">同步</div>
+                      <div class="feature-desc">实时云端同步</div>
+                    </div>
+                    <div class="feature-card">
+                      <div class="feature-icon">💕</div>
+                      <div class="feature-name">伴侣</div>
+                      <div class="feature-desc">已连接</div>
+                    </div>
+                    <div class="feature-card">
+                      <div class="feature-icon">📤</div>
+                      <div class="feature-name">导出</div>
+                      <div class="feature-desc">数据备份</div>
+                    </div>
+                    <div class="feature-card">
+                      <div class="feature-icon">ℹ️</div>
+                      <div class="feature-name">关于</div>
+                      <div class="feature-desc">v1.0.0</div>
+                    </div>
+                  </div>
+                  <div class="divider"></div>
+                  <div class="menu-item">
+                    <div class="icon" style="background: var(--primary-light);">📊</div>
+                    <div class="text">健康报告</div>
+                    <div class="arrow">→</div>
+                  </div>
+                  <div class="menu-item">
+                    <div class="icon" style="background: #E8F5E9;">🎯</div>
+                    <div class="text">目标设置</div>
+                    <div class="arrow">→</div>
+                  </div>
+                  <div class="menu-item">
+                    <div class="icon" style="background: #FFF8E6;">🔔</div>
+                    <div class="text">提醒设置</div>
+                    <div class="arrow">→</div>
+                  </div>
+                  <div style="padding: 12px 16px;">
+                    <button class="btn btn-primary" style="width: 100%; background: #FDEDED; color: var(--danger);">退出登录</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-label"><strong>V3</strong> 杂志风 - 个性鲜明</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -223,7 +223,7 @@
   margin-top: 24rpx;
 }
 
-/* ========== 体重趋势图 ========== */
+/* 旧柱状图样式保留（兼容） */
 .weight-chart {
   padding: 20rpx 0;
 }
@@ -371,6 +371,28 @@
   color: #8A6A6A;
 }
 
+.day-cell.period {
+  background: rgba(196, 92, 92, 0.15);
+  color: #C45C5C;
+  font-weight: 700;
+}
+
+.day-cell.fertile {
+  background: rgba(212, 168, 40, 0.15);
+  color: #D4A828;
+}
+
+.day-cell.today {
+  background: #C48B8B;
+  color: #fff;
+  font-weight: 700;
+}
+
+.day-cell.today.period {
+  background: linear-gradient(135deg, #C45C5C 50%, #C48B8B 50%);
+  color: #fff;
+}
+
 .phase-tips {
   background: #FDF8F8;
   padding: 24rpx;
@@ -397,12 +419,150 @@
   color: #8A6A6A;
 }
 
+/* ========== 生理期设置弹窗 ========== */
+.menstrual-settings-body {
+  padding: 20rpx 30rpx;
+}
+
+.settings-tip {
+  text-align: center;
+  font-size: 24rpx;
+  color: #8A6A6A;
+  background: #FDF8F8;
+  padding: 16rpx;
+  border-radius: 12rpx;
+  margin-bottom: 30rpx;
+}
+
+.menstrual-settings-body .form-item {
+  margin-bottom: 30rpx;
+}
+
+.menstrual-settings-body .form-item label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+  margin-bottom: 14rpx;
+}
+
+.picker-value {
+  height: 80rpx;
+  line-height: 80rpx;
+  border: 2rpx solid #E8D5D8;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  background: #FDF8F8;
+  color: #5D4A4A;
+}
+
+.picker-value.placeholder {
+  color: #BDBDBD;
+}
+
+.stepper-input {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 2rpx solid #E8D5D8;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: #FDF8F8;
+}
+
+.stepper-btn {
+  width: 80rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #C48B8B;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.stepper-btn:active {
+  background: #F5EEF0;
+}
+
+.stepper-value {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #5D4A4A;
+  border: none;
+  background: transparent;
+  font-family: monospace;
+}
+
+.form-hint {
+  display: block;
+  font-size: 22rpx;
+  color: #BDBDBD;
+  margin-top: 10rpx;
+}
+
+
 /* ========== AI饮食计划 ========== */
 .ai-hint {
   font-size: 26rpx;
   color: #8A6A6A;
   margin-bottom: 24rpx;
   line-height: 1.6;
+}
+
+.plan-history {
+  margin-top: 24rpx;
+  border-top: 2rpx dashed #E8D5D8;
+  padding-top: 24rpx;
+}
+
+.plan-history-title {
+  font-family: monospace;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #C48B8B;
+  letter-spacing: 2rpx;
+  text-transform: uppercase;
+  margin-bottom: 16rpx;
+}
+
+.plan-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  background: #FDF8F8;
+  border-radius: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.plan-history-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.plan-history-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+}
+
+.plan-history-date {
+  font-size: 24rpx;
+  color: #8A6A6A;
+  margin-top: 4rpx;
+}
+
+.plan-history-arrow {
+  font-size: 36rpx;
+  color: #C48B8B;
+  font-weight: 700;
 }
 
 /* ========== 弹窗 ========== */
@@ -720,4 +880,159 @@
   display: block;
   margin-top: 12rpx;
   color: #8A6A6A;
+}
+
+/* ========== 健康报告卡片 ========== */
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.report-card {
+  background: #FDF8F8;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.report-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 48rpx 48rpx 0;
+  border-color: transparent #E8D5D8 transparent transparent;
+  opacity: 0.5;
+}
+
+.report-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: repeating-linear-gradient(
+    90deg,
+    #C48B8B 0rpx,
+    #C48B8B 6rpx,
+    #E8D5D8 6rpx,
+    #E8D5D8 12rpx
+  );
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+}
+
+.report-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+}
+
+.report-date {
+  font-size: 24rpx;
+  color: #8A6A6A;
+}
+
+.report-summary {
+  font-size: 26rpx;
+  color: #8A6A6A;
+  line-height: 1.5;
+  margin-bottom: 16rpx;
+  padding: 16rpx;
+  background: #fff;
+  border-radius: 12rpx;
+}
+
+.report-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 16rpx;
+}
+
+.report-tag {
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  background: rgba(90, 138, 106, 0.12);
+  color: #5A8A6A;
+}
+
+.report-tag.warning {
+  background: rgba(212, 168, 40, 0.12);
+  color: #D4A828;
+}
+
+.report-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16rpx;
+  border-top: 2rpx dashed #E8D5D8;
+}
+
+.report-score {
+  font-family: monospace;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #C48B8B;
+}
+
+.report-view {
+  font-size: 26rpx;
+  color: #C48B8B;
+  font-weight: 600;
+}
+
+/* 健康报告详情弹窗 */
+.report-detail-date {
+  font-size: 24rpx;
+  color: #8A6A6A;
+  margin-bottom: 16rpx;
+}
+
+.report-detail-summary {
+  font-size: 28rpx;
+  color: #5D4A4A;
+  line-height: 1.6;
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  background: #FDF8F8;
+  border-radius: 16rpx;
+}
+
+.report-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 24rpx;
+}
+
+.report-detail-score {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 28rpx;
+  color: #8A6A6A;
+  padding-top: 16rpx;
+  border-top: 2rpx dashed #E8D5D8;
+}
+
+.score-num {
+  font-family: monospace;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #C48B8B;
 }

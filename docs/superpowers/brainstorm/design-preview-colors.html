@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>配色方案预览 - 温暖治愈系</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: #1a1a2e;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .demo-container {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .demo-header {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #fff;
+    }
+
+    .demo-header h1 {
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .demo-header p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .color-section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 16px;
+      padding-left: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 16px;
+      background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.3) 100%);
+      border-radius: 2px;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .phone-frame {
+      background: #000;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+    }
+
+    .phone-frame:hover {
+      transform: scale(1.02);
+      transition: transform 0.3s;
+    }
+
+    .phone-screen {
+      width: 100%;
+      aspect-ratio: 9/19.5;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: #fff;
+    }
+
+    .notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+      z-index: 100;
+    }
+
+    .status-bar {
+      height: 44px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      position: relative;
+      z-index: 50;
+    }
+
+    .phone-content {
+      height: calc(100% - 44px);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .phone-content::-webkit-scrollbar { display: none; }
+
+    .page {
+      min-height: 100%;
+      padding-bottom: 100px;
+    }
+
+    .nav-bar {
+      padding: 50px 24px 32px;
+      position: relative;
+    }
+
+    .nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 40px;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .nav-title {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 26px;
+      letter-spacing: 2px;
+    }
+
+    .date-title {
+      font-size: 12px;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+
+    .tab-bar {
+      display: flex;
+      gap: 8px;
+      padding: 30px 20px 16px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .tab-item {
+      flex: 1;
+      padding: 14px 8px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 13px;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .tab-item .tab-icon {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .tab-item.active {
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .tab-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .conflict-banner {
+      margin: 0 20px 16px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 4px solid;
+    }
+
+    .conflict-icon { font-size: 16px; }
+
+    .conflict-text {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .dish-list {
+      padding: 0 20px;
+    }
+
+    .dish-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.3s;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .dish-emoji {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .dish-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .dish-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .heat-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .conflict-tag {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dish-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .dish-remove {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      opacity: 0.5;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 20px;
+      padding-bottom: calc(16px + var(--safe-bottom));
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .color-label {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .color-label strong {
+      display: block;
+      font-size: 13px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    /* ==================== 浅色系配色 ==================== */
+
+    /* A1: 燕麦奶白 - 温暖米色系 */
+    .a1 .status-bar { background: #FAF7F2; color: #5D5045; }
+    .a1 .page { background: linear-gradient(180deg, #FAF7F2 0%, #F5F0E8 100%); }
+    .a1 .nav-bar { background: linear-gradient(135deg, #E8DFD3 0%, #DED4C6 100%); }
+    .a1 .nav-bar::after { background: #F5F0E8; }
+    .a1 .nav-title { color: #5D5045; }
+    .a1 .date-title { color: #8B7355; }
+    .a1 .tab-item { background: rgba(255,255,255,0.6); color: #8B7355; }
+    .a1 .tab-item.active { background: #fff; border-color: #E8DFD3; color: #6B5B45; }
+    .a1 .tab-badge { background: #CD853F; }
+    .a1 .conflict-banner { background: #FFF8F0; border-color: #CD853F; }
+    .a1 .conflict-text { color: #8B6914; }
+    .a1 .heat-tag { background: #F5F0E8; color: #7D6B5D; }
+    .a1 .heat-tag.safe { background: #EDF7F2; color: #4A7C59; }
+    .a1 .heat-tag.danger { background: #FDEDED; color: #C45C5C; }
+    .a1 .conflict-tag { background: #FFF0E6; color: #B86E3A; }
+    .a1 .dish-emoji { background: linear-gradient(135deg, #FAF7F2 0%, #F5F0E8 100%); }
+    .a1 .dish-name { color: #4A4A4A; }
+    .a1 .tag { background: #EDE8E0; color: #7D6B5D; }
+    .a1 .dish-remove { background: #F5F0E8; color: #999; }
+    .a1 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #F5F0E8 20%); }
+    .a1 .btn-primary { background: linear-gradient(135deg, #8B7355 0%, #6B5B45 100%); }
+
+    /* A2: 抹茶绿 - 自然清新 */
+    .a2 .status-bar { background: #F8FAF5; color: #4A5D3A; }
+    .a2 .page { background: linear-gradient(180deg, #F8FAF5 0%, #EEF2EB 100%); }
+    .a2 .nav-bar { background: linear-gradient(135deg, #C5D6B5 0%, #A8C498 100%); }
+    .a2 .nav-bar::after { background: #EEF2EB; }
+    .a2 .nav-title { color: #3D4F30; }
+    .a2 .date-title { color: #5A7048; }
+    .a2 .tab-item { background: rgba(255,255,255,0.7); color: #5A7048; }
+    .a2 .tab-item.active { background: #fff; border-color: #C5D6B5; color: #3D4F30; }
+    .a2 .tab-badge { background: #6B8E23; }
+    .a2 .conflict-banner { background: #F5F9F0; border-color: #6B8E23; }
+    .a2 .conflict-text { color: #5A7A28; }
+    .a2 .heat-tag { background: #E8F0E0; color: #5A7048; }
+    .a2 .heat-tag.safe { background: #E8F0E0; color: #4A7C59; }
+    .a2 .heat-tag.danger { background: #FDEDED; color: #C45C5C; }
+    .a2 .conflict-tag { background: #FFF0E6; color: #B86E3A; }
+    .a2 .dish-emoji { background: linear-gradient(135deg, #F8FAF5 0%, #E8F0E0 100%); }
+    .a2 .dish-name { color: #3D4F30; }
+    .a2 .tag { background: #E0E8D0; color: #5A7048; }
+    .a2 .dish-remove { background: #E8F0E0; color: #7A9A5A; }
+    .a2 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #EEF2EB 20%); }
+    .a2 .btn-primary { background: linear-gradient(135deg, #6B8E23 0%, #5A7A28 100%); }
+
+    /* A3: 玫瑰盐粉 - 柔和粉棕 */
+    .a3 .status-bar { background: #FDF8F8; color: #6D5A5A; }
+    .a3 .page { background: linear-gradient(180deg, #FDF8F8 0%, #F5EEF0 100%); }
+    .a3 .nav-bar { background: linear-gradient(135deg, #E8D5D8 0%, #DCC0C5 100%); }
+    .a3 .nav-bar::after { background: #F5EEF0; }
+    .a3 .nav-title { color: #5D4A4A; }
+    .a3 .date-title { color: #8A6A6A; }
+    .a3 .tab-item { background: rgba(255,255,255,0.7); color: #8A6A6A; }
+    .a3 .tab-item.active { background: #fff; border-color: #E8D5D8; color: #6D5A5A; }
+    .a3 .tab-badge { background: #C48B8B; }
+    .a3 .conflict-banner { background: #FDF5F5; border-color: #C48B8B; }
+    .a3 .conflict-text { color: #A67070; }
+    .a3 .heat-tag { background: #F5EEF0; color: #7D6A6A; }
+    .a3 .heat-tag.safe { background: #EDF5F0; color: #5A8A6A; }
+    .a3 .heat-tag.danger { background: #FDEDED; color: #C45C5C; }
+    .a3 .conflict-tag { background: #FFE8E8; color: #B87070; }
+    .a3 .dish-emoji { background: linear-gradient(135deg, #FDF8F8 0%, #F5EEF0 100%); }
+    .a3 .dish-name { color: #5D4A4A; }
+    .a3 .tag { background: #EDE5E8; color: #8A6A6A; }
+    .a3 .dish-remove { background: #F5EEF0; color: #C4A0A0; }
+    .a3 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #F5EEF0 20%); }
+    .a3 .btn-primary { background: linear-gradient(135deg, #C48B8B 0%, #A67070 100%); }
+
+    /* A4: 柠檬黄奶 - 明亮温暖 */
+    .a4 .status-bar { background: #FFFEF5; color: #5D5A45; }
+    .a4 .page { background: linear-gradient(180deg, #FFFEF5 0%, #FFF8E8 100%); }
+    .a4 .nav-bar { background: linear-gradient(135deg, #F5E5B8 0%, #E8D498 100%); }
+    .a4 .nav-bar::after { background: #FFF8E8; }
+    .a4 .nav-title { color: #5A4A30; }
+    .a4 .date-title { color: #8A7A48; }
+    .a4 .tab-item { background: rgba(255,255,255,0.7); color: #8A7A48; }
+    .a4 .tab-item.active { background: #fff; border-color: #F5E5B8; color: #5A4A30; }
+    .a4 .tab-badge { background: #D4A828; }
+    .a4 .conflict-banner { background: #FFFEF5; border-color: #D4A828; }
+    .a4 .conflict-text { color: #8A7A28; }
+    .a4 .heat-tag { background: #FFF5E0; color: #7A6A48; }
+    .a4 .heat-tag.safe { background: #F5F5E0; color: #5A7A48; }
+    .a4 .heat-tag.danger { background: #FDEDED; color: #C45C5C; }
+    .a4 .conflict-tag { background: #FFF0D0; color: #A68A28; }
+    .a4 .dish-emoji { background: linear-gradient(135deg, #FFFEF5 0%, #FFF5E0 100%); }
+    .a4 .dish-name { color: #4A4A30; }
+    .a4 .tag { background: #F5EDD8; color: #7A6A48; }
+    .a4 .dish-remove { background: #FFF5E0; color: #C4A028; }
+    .a4 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #FFF8E8 20%); }
+    .a4 .btn-primary { background: linear-gradient(135deg, #D4A828 0%, #B8922A 100%); }
+
+    /* ==================== 深色系配色 ==================== */
+
+    /* B1: 深森林绿 */
+    .b1 .status-bar { background: #1E2A24; color: #C5D6B5; }
+    .b1 .page { background: linear-gradient(180deg, #1E2A24 0%, #151D18 100%); }
+    .b1 .nav-bar { background: linear-gradient(135deg, #2D3B30 0%, #1E2A24 100%); }
+    .b1 .nav-bar::after { background: #151D18; }
+    .b1 .nav-title { color: #E8F0E0; }
+    .b1 .date-title { color: #A8C498; }
+    .b1 .tab-item { background: rgba(255,255,255,0.08); color: #A8C498; }
+    .b1 .tab-item.active { background: rgba(255,255,255,0.12); border-color: #4A6B3A; color: #C5D6B5; }
+    .b1 .tab-badge { background: #6B8E23; }
+    .b1 .conflict-banner { background: rgba(107,142,35,0.15); border-color: #6B8E23; }
+    .b1 .conflict-text { color: #A8C498; }
+    .b1 .heat-tag { background: rgba(255,255,255,0.1); color: #C5D6B5; }
+    .b1 .heat-tag.safe { background: rgba(106,142,35,0.2); color: #A8C498; }
+    .b1 .heat-tag.danger { background: rgba(196,92,92,0.2); color: #E8A0A0; }
+    .b1 .conflict-tag { background: rgba(184,110,58,0.2); color: #E8C4A0; }
+    .b1 .dish-emoji { background: linear-gradient(135deg, #2D3B30 0%, #1E2A24 100%); }
+    .b1 .dish-card { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); }
+    .b1 .dish-name { color: #E8F0E0; }
+    .b1 .tag { background: rgba(255,255,255,0.1); color: #A8C498; }
+    .b1 .dish-remove { background: rgba(255,255,255,0.08); color: #6A8A58; }
+    .b1 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #151D18 30%); }
+    .b1 .btn-primary { background: linear-gradient(135deg, #6B8E23 0%, #5A7A28 100%); }
+
+    /* B2: 深焦糖棕 */
+    .b2 .status-bar { background: #1A1512; color: #D4C4B0; }
+    .b2 .page { background: linear-gradient(180deg, #1A1512 0%, #0F0D0A 100%); }
+    .b2 .nav-bar { background: linear-gradient(135deg, #2A2420 0%, #1A1512 100%); }
+    .b2 .nav-bar::after { background: #0F0D0A; }
+    .b2 .nav-title { color: #E8DCD0; }
+    .b2 .date-title { color: #C4A880; }
+    .b2 .tab-item { background: rgba(255,255,255,0.06); color: #C4A880; }
+    .b2 .tab-item.active { background: rgba(255,255,255,0.1); border-color: #6B5030; color: #D4C4B0; }
+    .b2 .tab-badge { background: #8B6535; }
+    .b2 .conflict-banner { background: rgba(139,101,53,0.15); border-color: #8B6535; }
+    .b2 .conflict-text { color: #C4A880; }
+    .b2 .heat-tag { background: rgba(255,255,255,0.08); color: #D4C4B0; }
+    .b2 .heat-tag.safe { background: rgba(74,124,89,0.2); color: #A0C4A8; }
+    .b2 .heat-tag.danger { background: rgba(196,92,92,0.2); color: #E8A0A0; }
+    .b2 .conflict-tag { background: rgba(184,110,58,0.2); color: #E8C4A0; }
+    .b2 .dish-emoji { background: linear-gradient(135deg, #2A2420 0%, #1A1512 100%); }
+    .b2 .dish-card { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.06); }
+    .b2 .dish-name { color: #E8DCD0; }
+    .b2 .tag { background: rgba(255,255,255,0.08); color: #C4A880; }
+    .b2 .dish-remove { background: rgba(255,255,255,0.06); color: #8A7050; }
+    .b2 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #0F0D0A 30%); }
+    .b2 .btn-primary { background: linear-gradient(135deg, #8B6535 0%, #6B5030 100%); }
+
+    /* B3: 深玫瑰酒红 */
+    .b3 .status-bar { background: #1A1215; color: #D8C0C5; }
+    .b3 .page { background: linear-gradient(180deg, #1A1215 0%, #0F0A0D 100%); }
+    .b3 .nav-bar { background: linear-gradient(135deg, #2A1A20 0%, #1A1215 100%); }
+    .b3 .nav-bar::after { background: #0F0A0D; }
+    .b3 .nav-title { color: #E8D8DC; }
+    .b3 .date-title { color: #C49098; }
+    .b3 .tab-item { background: rgba(255,255,255,0.06); color: #C49098; }
+    .b3 .tab-item.active { background: rgba(255,255,255,0.1); border-color: #6B3545; color: #D8C0C5; }
+    .b3 .tab-badge { background: #8B4558; }
+    .b3 .conflict-banner { background: rgba(139,69,88,0.15); border-color: #8B4558; }
+    .b3 .conflict-text { color: #C49098; }
+    .b3 .heat-tag { background: rgba(255,255,255,0.08); color: #D8C0C5; }
+    .b3 .heat-tag.safe { background: rgba(74,124,89,0.2); color: #A0C4A8; }
+    .b3 .heat-tag.danger { background: rgba(196,92,92,0.2); color: #E8A0A0; }
+    .b3 .conflict-tag { background: rgba(184,110,58,0.2); color: #E8C4A0; }
+    .b3 .dish-emoji { background: linear-gradient(135deg, #2A1A20 0%, #1A1215 100%); }
+    .b3 .dish-card { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.06); }
+    .b3 .dish-name { color: #E8D8DC; }
+    .b3 .tag { background: rgba(255,255,255,0.08); color: #C49098; }
+    .b3 .dish-remove { background: rgba(255,255,255,0.06); color: #A06070; }
+    .b3 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #0F0A0D 30%); }
+    .b3 .btn-primary { background: linear-gradient(135deg, #8B4558 0%, #6B3545 100%); }
+
+    /* B4: 深墨蓝 - 优雅深邃 */
+    .b4 .status-bar { background: #0D1117; color: #A8C4E0; }
+    .b4 .page { background: linear-gradient(180deg, #0D1117 0%, #080B10 100%); }
+    .b4 .nav-bar { background: linear-gradient(135deg, #151D28 0%, #0D1117 100%); }
+    .b4 .nav-bar::after { background: #080B10; }
+    .b4 .nav-title { color: #E0E8F0; }
+    .b4 .date-title { color: #7090B0; }
+    .b4 .tab-item { background: rgba(255,255,255,0.05); color: #7090B0; }
+    .b4 .tab-item.active { background: rgba(255,255,255,0.08); border-color: #304560; color: #A8C4E0; }
+    .b4 .tab-badge { background: #4A7090; }
+    .b4 .conflict-banner { background: rgba(74,112,144,0.15); border-color: #4A7090; }
+    .b4 .conflict-text { color: #A8C4E0; }
+    .b4 .heat-tag { background: rgba(255,255,255,0.06); color: #A8C4E0; }
+    .b4 .heat-tag.safe { background: rgba(74,124,89,0.2); color: #90C4A8; }
+    .b4 .heat-tag.danger { background: rgba(196,92,92,0.2); color: #E8A0A0; }
+    .b4 .conflict-tag { background: rgba(184,110,58,0.2); color: #E8C4A0; }
+    .b4 .dish-emoji { background: linear-gradient(135deg, #151D28 0%, #0D1117 100%); }
+    .b4 .dish-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.05); }
+    .b4 .dish-name { color: #E0E8F0; }
+    .b4 .tag { background: rgba(255,255,255,0.06); color: #7090B0; }
+    .b4 .dish-remove { background: rgba(255,255,255,0.05); color: #506080; }
+    .b4 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #080B10 30%); }
+    .b4 .btn-primary { background: linear-gradient(135deg, #4A7090 0%, #304060 100%); }
+
+    /* B5: 深薰衣草紫 */
+    .b5 .status-bar { background: #12101A; color: #C4B8D8; }
+    .b5 .page { background: linear-gradient(180deg, #12101A 0%, #0A0810 100%); }
+    .b5 .nav-bar { background: linear-gradient(135deg, #1A1525 0%, #12101A 100%); }
+    .b5 .nav-bar::after { background: #0A0810; }
+    .b5 .nav-title { color: #E0D8F0; }
+    .b5 .date-title { color: #9888B8; }
+    .b5 .tab-item { background: rgba(255,255,255,0.05); color: #9888B8; }
+    .b5 .tab-item.active { background: rgba(255,255,255,0.08); border-color: #504070; color: #C4B8D8; }
+    .b5 .tab-badge { background: #7060A0; }
+    .b5 .conflict-banner { background: rgba(112,96,160,0.15); border-color: #7060A0; }
+    .b5 .conflict-text { color: #C4B8D8; }
+    .b5 .heat-tag { background: rgba(255,255,255,0.06); color: #C4B8D8; }
+    .b5 .heat-tag.safe { background: rgba(74,124,89,0.2); color: #90C4A8; }
+    .b5 .heat-tag.danger { background: rgba(196,92,92,0.2); color: #E8A0A0; }
+    .b5 .conflict-tag { background: rgba(184,110,58,0.2); color: #E8C4A0; }
+    .b5 .dish-emoji { background: linear-gradient(135deg, #1A1525 0%, #12101A 100%); }
+    .b5 .dish-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.05); }
+    .b5 .dish-name { color: #E0D8F0; }
+    .b5 .tag { background: rgba(255,255,255,0.06); color: #9888B8; }
+    .b5 .dish-remove { background: rgba(255,255,255,0.05); color: #706090; }
+    .b5 .bottom-bar { background: linear-gradient(180deg, transparent 0%, #0A0810 30%); }
+    .b5 .btn-primary { background: linear-gradient(135deg, #7060A0 0%, #504080 100%); }
+
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <div class="demo-header">
+      <h1>温暖治愈系 - 配色方案</h1>
+      <p>保持 A 的温暖布局，提供多套配色选择</p>
+    </div>
+
+    <!-- 浅色系 -->
+    <div class="color-section">
+      <div class="section-title">浅色系</div>
+      <div class="color-grid">
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content a1">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>A1 燕麦奶白</strong>温暖米色</div>
+        </div>
+
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content a2">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>A2 抹茶绿</strong>自然清新</div>
+        </div>
+
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content a3">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>A3 玫瑰盐粉</strong>柔和粉棕</div>
+        </div>
+
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content a4">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>A4 柠檬黄奶</strong>明亮温暖</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 深色系 -->
+    <div class="color-section">
+      <div class="section-title">深色系</div>
+      <div class="color-grid">
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content b1">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>B1 深森林绿</strong>自然深邃</div>
+        </div>
+
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content b2">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>B2 深焦糖棕</strong>温暖醇厚</div>
+        </div>
+
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content b3">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>B3 深玫瑰酒红</strong>优雅浪漫</div>
+        </div>
+
+        <div>
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content b4">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>B4 深墨蓝</strong>优雅深邃</div>
+        </div>
+
+        <div style="grid-column: span 2; max-width: 200px; margin: 0 auto;">
+          <div class="phone-frame">
+            <div class="phone-screen">
+              <div class="notch"></div>
+              <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+              <div class="phone-content b5">
+                <div class="page">
+                  <div class="nav-bar">
+                    <div class="nav-title">今日菜单</div>
+                    <div class="date-title">2026年5月5日 星期二</div>
+                  </div>
+                  <div class="tab-bar">
+                    <view class="tab-item active"><text class="tab-icon">🌅</text><text>早餐</text><view class="tab-badge">2</view></view>
+                    <view class="tab-item"><text class="tab-icon">☀️</text><text>午餐</text></view>
+                    <view class="tab-item"><text class="tab-icon">🌙</text><text>晚餐</text></view>
+                  </div>
+                  <div class="conflict-banner"><text class="conflict-icon">⚠️</text><text class="conflict-text">检测到食材搭配风险</text></div>
+                  <div class="dish-list">
+                    <div class="dish-card">
+                      <div class="dish-emoji">🍳</div>
+                      <div class="dish-info">
+                        <div class="dish-name">番茄炒蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags">
+                          <span class="heat-tag safe">✅ 可微波</span>
+                          <span class="conflict-tag">⚠️ 相克</span>
+                        </div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                    <div class="dish-card">
+                      <div class="dish-emoji">🥛</div>
+                      <div class="dish-info">
+                        <div class="dish-name">水煮蛋 <span class="tag">内置</span></div>
+                        <div class="dish-tags"><span class="heat-tag danger">🔴 禁微波</span></div>
+                      </div>
+                      <div class="dish-remove">×</div>
+                    </div>
+                  </div>
+                  <div class="bottom-bar"><button class="btn-primary">确认菜单</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="color-label"><strong>B5 深薰衣草紫</strong>神秘优雅</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

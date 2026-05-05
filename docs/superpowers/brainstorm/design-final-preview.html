@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>选定方案预览</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #C48B8B;
+      --primary-light: #E8D5D8;
+      --primary-dark: #A67070;
+      --bg-start: #FDF8F8;
+      --bg-end: #F5EEF0;
+      --bg-card: #FFFFFF;
+      --text-primary: #5D4A4A;
+      --text-secondary: #8A6A6A;
+      --text-placeholder: #BDBDBD;
+      --success: #5A8A6A;
+      --warning: #D4A828;
+      --danger: #C45C5C;
+      --border-light: #E8D5D8;
+      --border-lighter: rgba(0,0,0,0.05);
+      --shadow-sm: 0 2rpx 8rpx rgba(139,115,85,0.08);
+      --shadow-md: 0 4rpx 12rpx rgba(139,115,85,0.12);
+      --radius-sm: 8rpx;
+      --radius-md: 16rpx;
+      --radius-lg: 24rpx;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: #fff;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .selection-summary {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .selection-tag {
+      background: rgba(196,139,139,0.2);
+      border: 1px solid var(--primary);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .pages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+      justify-items: center;
+    }
+
+    .phone-frame {
+      background: #000;
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      transition: transform 0.3s, box-shadow 0.3s;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .phone-frame:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 35px 70px rgba(0,0,0,0.6);
+    }
+
+    .phone-screen {
+      width: 100%;
+      aspect-ratio: 9/19.5;
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      background: #fff;
+    }
+
+    .notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #000;
+      border-radius: 0 0 20px 20px;
+      z-index: 100;
+    }
+
+    .status-bar {
+      height: 44px;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      position: relative;
+      z-index: 50;
+    }
+
+    .phone-content {
+      height: calc(100% - 44px);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .phone-content::-webkit-scrollbar { display: none; }
+
+    /* ==================== 全局样式 ==================== */
+    .page { min-height: 100%; padding-bottom: 100px; }
+
+    .nav-bar {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      padding: 50px 24px 60px;
+      position: relative;
+    }
+
+    .nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: var(--bg-end);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .nav-title {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 26px;
+      color: var(--text-primary);
+    }
+
+    .date-title {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-lighter);
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .tag-primary { background: var(--primary-light); color: var(--primary-dark); }
+    .tag-success { background: #E8F5E9; color: var(--success); }
+    .tag-warning { background: #FFF8E6; color: var(--warning); }
+    .tag-danger { background: #FDEDED; color: var(--danger); }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px;
+      background: linear-gradient(180deg, transparent 0%, var(--bg-end) 30%);
+    }
+
+    .section-label {
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.8);
+      font-weight: 500;
+    }
+
+    /* ==================== 点餐页面 V1 (美团风格) ==================== */
+    .order-v1 .search-bar {
+      margin: 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+    }
+
+    .order-v1 .search-icon { font-size: 18px; color: var(--text-secondary); }
+    .order-v1 .search-input { flex: 1; border: none; font-size: 14px; background: transparent; }
+
+    .order-v1 .promo-banner {
+      margin: 0 16px 16px;
+      background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      color: #fff;
+    }
+
+    .order-v1 .promo-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .order-v1 .promo-sub { font-size: 12px; opacity: 0.9; }
+
+    .order-v1 .category-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 0 16px 12px;
+      overflow-x: auto;
+    }
+
+    .order-v1 .category-tab {
+      flex: 0 0 auto;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+    }
+
+    .order-v1 .category-tab.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .order-v1 .dish-list {
+      padding: 0 16px;
+    }
+
+    .order-v1 .dish-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-lighter);
+    }
+
+    .order-v1 .dish-emoji {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+
+    .order-v1 .dish-info { flex: 1; min-width: 0; }
+    .order-v1 .dish-name { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .order-v1 .dish-meta { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; display: flex; gap: 8px; }
+    .order-v1 .dish-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .order-v1 .dish-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+
+    .order-v1 .dish-price {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--danger);
+    }
+
+    .order-v1 .dish-price small {
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .order-v1 .add-btn {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(196,139,139,0.4);
+    }
+
+    /* ==================== 冰箱页面 V1+V3 混合 ==================== */
+    .fridge-mix .category-scroll {
+      display: flex;
+      gap: 12px;
+      padding: 20px 16px 16px;
+      overflow-x: auto;
+      margin-top: -30px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .fridge-mix .category-card {
+      flex: 0 0 auto;
+      min-width: 90px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
+      text-align: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .fridge-mix .category-icon { font-size: 26px; margin-bottom: 4px; }
+    .fridge-mix .category-name { font-size: 11px; color: var(--text-secondary); }
+    .fridge-mix .category-count { font-size: 18px; font-weight: 700; color: var(--primary); margin-top: 4px; }
+
+    .fridge-mix .timeline-section { padding: 0 16px; }
+    .fridge-mix .date-header {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin: 16px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fridge-mix .date-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-light);
+    }
+
+    .fridge-mix .item-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-left: 4px solid var(--success);
+    }
+
+    .fridge-mix .item-card.warning { border-left-color: var(--warning); }
+    .fridge-mix .item-card.danger { border-left-color: var(--danger); }
+
+    .fridge-mix .item-icon { font-size: 28px; }
+    .fridge-mix .item-info { flex: 1; }
+    .fridge-mix .item-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .fridge-mix .item-days { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .fridge-mix .days-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .fridge-mix .days-badge.safe { background: #E8F5E9; color: var(--success); }
+    .fridge-mix .days-badge.warning { background: #FFF8E6; color: var(--warning); }
+    .fridge-mix .days-badge.danger { background: #FDEDED; color: var(--danger); }
+
+    .fridge-mix .item-delete {
+      width: 32px;
+      height: 32px;
+      background: #FFF5F5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--danger);
+      font-size: 14px;
+    }
+
+    /* ==================== 健康页面 V3 时间线 ==================== */
+    .health-v3 { padding: 16px; }
+    .health-v3 .timeline-header {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .health-v3 .timeline-header span { font-size: 12px; color: var(--primary); }
+
+    .health-v3 .timeline-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .health-v3 .timeline-dot {
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    .health-v3 .timeline-line {
+      position: absolute;
+      left: 5px;
+      top: 16px;
+      bottom: -16px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--primary), var(--border-light));
+    }
+
+    .health-v3 .timeline-content {
+      flex: 1;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .health-v3 .timeline-date { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+    .health-v3 .timeline-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .health-v3 .timeline-desc { font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
+
+    .health-v3 .timeline-value {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .health-v3 .health-hero {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .health-v3 .hero-title { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
+    .health-v3 .hero-value { font-size: 32px; font-weight: 700; }
+    .health-v3 .hero-value small { font-size: 14px; font-weight: 400; opacity: 0.8; }
+    .health-v3 .hero-trend { font-size: 12px; margin-top: 8px; opacity: 0.9; }
+
+    /* ==================== 设置页面 V1 卡片分组 ==================== */
+    .settings-v1 .user-card {
+      margin: 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-lighter);
+    }
+
+    .settings-v1 .avatar {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+
+    .settings-v1 .user-name { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+    .settings-v1 .user-id { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .settings-v1 .user-status { font-size: 11px; color: var(--success); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+    .settings-v1 .group-card {
+      margin: 12px 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-lighter);
+    }
+
+    .settings-v1 .group-title {
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      background: var(--bg-start);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .settings-v1 .group-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-lighter);
+    }
+
+    .settings-v1 .group-item:last-child { border-bottom: none; }
+
+    .settings-v1 .item-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-right: 14px;
+    }
+
+    .settings-v1 .item-icon.sync { background: #E8F5E9; }
+    .settings-v1 .item-icon.export { background: #E3F2FD; }
+    .settings-v1 .item-icon.heart { background: #FFE8E8; }
+    .settings-v1 .item-icon.about { background: #F5F0F8; }
+    .settings-v1 .item-icon.reset { background: #FDEDED; color: var(--danger); }
+
+    .settings-v1 .item-content { flex: 1; }
+    .settings-v1 .item-name { font-size: 15px; color: var(--text-primary); font-weight: 500; }
+    .settings-v1 .item-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .settings-v1 .item-arrow { color: var(--text-placeholder); font-size: 14px; }
+
+    .settings-v1 .pair-card {
+      margin: 12px 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-lighter);
+      border-left: 6px solid var(--primary);
+    }
+
+    .settings-v1 .pair-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .settings-v1 .pair-title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .settings-v1 .pair-status { font-size: 12px; color: var(--success); display: flex; align-items: center; gap: 4px; }
+
+    .settings-v1 .pair-code-box {
+      background: var(--bg-start);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .settings-v1 .code-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 6px; }
+    .settings-v1 .code-value { font-size: 28px; font-weight: 700; color: var(--primary); letter-spacing: 6px; font-family: monospace; }
+
+    .settings-v1 .pair-btn {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .settings-v1 .pair-btn.primary { background: var(--primary); color: #fff; }
+    .settings-v1 .pair-btn.secondary { background: var(--bg-start); color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>选定方案组合预览</h1>
+      <p>各页面选定的布局组合效果</p>
+      <div class="selection-summary">
+        <span class="selection-tag">点餐 V1 美团风格</span>
+        <span class="selection-tag">冰箱 V1+V3 混合</span>
+        <span class="selection-tag">健康 V3 时间线</span>
+        <span class="selection-tag">设置 V1 卡片分组</span>
+      </div>
+    </div>
+
+    <div class="pages-grid">
+
+      <!-- 点餐页面 V1 (美团风格) -->
+      <div>
+        <div class="section-label">点餐页面 - V1 美团外卖风格</div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="notch"></div>
+            <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+            <div class="phone-content order-v1">
+              <div class="page">
+                <div class="nav-bar">
+                  <div class="nav-title">点餐</div>
+                  <div class="date-title">发现美味</div>
+                </div>
+                <div class="search-bar">
+                  <span class="search-icon">🔍</span>
+                  <input class="search-input" placeholder="搜索你喜欢的菜品...">
+                </div>
+                <div class="promo-banner">
+                  <div class="promo-title"> 🎉 限时特惠</div>
+                  <div class="promo-sub">今日新品 8折起</div>
+                </div>
+                <div class="category-tabs">
+                  <span class="category-tab active">推荐</span>
+                  <span class="category-tab">荤菜</span>
+                  <span class="category-tab">素菜</span>
+                  <span class="category-tab">汤品</span>
+                  <span class="category-tab">主食</span>
+                </div>
+                <div class="dish-list">
+                  <div class="dish-card">
+                    <div class="dish-emoji">🍖</div>
+                    <div class="dish-info">
+                      <div class="dish-name">红烧排骨</div>
+                      <div class="dish-meta">
+                        <span>荤菜</span>
+                        <span>·</span>
+                        <span>微波安全</span>
+                      </div>
+                      <div class="dish-tags">
+                        <span class="tag tag-success">可微波</span>
+                        <span class="tag tag-primary">招牌</span>
+                      </div>
+                      <div class="dish-footer">
+                        <div class="dish-price"><small>¥</small>12</div>
+                      </div>
+                    </div>
+                    <div class="add-btn">+</div>
+                  </div>
+                  <div class="dish-card">
+                    <div class="dish-emoji">🥚</div>
+                    <div class="dish-info">
+                      <div class="dish-name">番茄炒蛋</div>
+                      <div class="dish-meta">
+                        <span>素菜</span>
+                        <span>·</span>
+                        <span>微波安全</span>
+                      </div>
+                      <div class="dish-tags">
+                        <span class="tag tag-success">可微波</span>
+                        <span class="tag tag-warning">相克提示</span>
+                      </div>
+                      <div class="dish-footer">
+                        <div class="dish-price"><small>¥</small>8</div>
+                      </div>
+                    </div>
+                    <div class="add-btn">+</div>
+                  </div>
+                  <div class="dish-card">
+                    <div class="dish-emoji">🍲</div>
+                    <div class="dish-info">
+                      <div class="dish-name">番茄牛肉汤</div>
+                      <div class="dish-meta">
+                        <span>汤品</span>
+                        <span>·</span>
+                        <span>微波安全</span>
+                      </div>
+                      <div class="dish-tags">
+                        <span class="tag tag-success">可微波</span>
+                        <span class="tag tag-primary">热销</span>
+                      </div>
+                      <div class="dish-footer">
+                        <div class="dish-price"><small>¥</small>10</div>
+                      </div>
+                    </div>
+                    <div class="add-btn">+</div>
+                  </div>
+                </div>
+                <div class="bottom-bar">
+                  <button class="btn btn-primary" style="width:100%">🛒 查看购物车 (3)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 冰箱页面 V1+V3 混合 -->
+      <div>
+        <div class="section-label">我的冰箱 - V1大卡片 + V3时间线混合</div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="notch"></div>
+            <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+            <div class="phone-content fridge-mix">
+              <div class="page">
+                <div class="nav-bar">
+                  <div class="nav-title">我的冰箱</div>
+                  <div class="date-title">食材管理</div>
+                </div>
+                <div class="category-scroll">
+                  <div class="category-card">
+                    <div class="category-icon">🥬</div>
+                    <div class="category-name">蔬菜</div>
+                    <div class="category-count">5</div>
+                  </div>
+                  <div class="category-card">
+                    <div class="category-icon">🥩</div>
+                    <div class="category-name">肉类</div>
+                    <div class="category-count">3</div>
+                  </div>
+                  <div class="category-card">
+                    <div class="category-icon">🥚</div>
+                    <div class="category-name">蛋类</div>
+                    <div class="category-count">8</div>
+                  </div>
+                  <div class="category-card">
+                    <div class="category-icon">🍎</div>
+                    <div class="category-name">水果</div>
+                    <div class="category-count">4</div>
+                  </div>
+                </div>
+                <div class="timeline-section">
+                  <div class="date-header">即将过期</div>
+                  <div class="item-card danger">
+                    <div class="item-icon">🥩</div>
+                    <div class="item-info">
+                      <div class="item-name">鸡胸肉</div>
+                      <div class="item-days">剩余 2 天 · 200g</div>
+                    </div>
+                    <span class="days-badge danger">紧急</span>
+                    <div class="item-delete">🗑</div>
+                  </div>
+                  <div class="item-card warning">
+                    <div class="item-icon">🥬</div>
+                    <div class="item-info">
+                      <div class="item-name">西兰花</div>
+                      <div class="item-days">剩余 4 天 · 150g</div>
+                    </div>
+                    <span class="days-badge warning">注意</span>
+                    <div class="item-delete">🗑</div>
+                  </div>
+
+                  <div class="date-header">本周内</div>
+                  <div class="item-card">
+                    <div class="item-icon">🥚</div>
+                    <div class="item-info">
+                      <div class="item-name">鸡蛋</div>
+                      <div class="item-days">剩余 7 天 · 6个</div>
+                    </div>
+                    <span class="days-badge safe">充足</span>
+                    <div class="item-delete">🗑</div>
+                  </div>
+                  <div class="item-card">
+                    <div class="item-icon">🍎</div>
+                    <div class="item-info">
+                      <div class="item-name">苹果</div>
+                      <div class="item-days">剩余 5 天 · 3个</div>
+                    </div>
+                    <span class="days-badge safe">充足</span>
+                    <div class="item-delete">🗑</div>
+                  </div>
+                </div>
+                <div class="bottom-bar">
+                  <button class="btn btn-primary" style="width:100%">+ 添加食材</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 健康页面 V3 时间线 -->
+      <div>
+        <div class="section-label">健康计划 - V3 时间线</div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="notch"></div>
+            <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+            <div class="phone-content health-v3">
+              <div class="page">
+                <div class="nav-bar" style="padding: 40px 20px 20px;">
+                  <div class="nav-title">健康计划</div>
+                </div>
+                <div style="padding: 0 16px;">
+                  <div class="health-hero">
+                    <div class="hero-title">当前体重</div>
+                    <div class="hero-value">65.8 <small>kg</small></div>
+                    <div class="hero-trend">↓ 0.3kg 较上周</div>
+                  </div>
+
+                  <div class="timeline-header">
+                    健康动态 <span>查看全部 →</span>
+                  </div>
+
+                  <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-content">
+                      <div class="timeline-date">今天 09:30</div>
+                      <div class="timeline-title">记录体重</div>
+                      <div class="timeline-desc">晨起空腹体重</div>
+                      <span class="timeline-value">65.8 kg</span>
+                    </div>
+                  </div>
+
+                  <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-content">
+                      <div class="timeline-date">今天 08:00</div>
+                      <div class="timeline-title">晨跑完成</div>
+                      <div class="timeline-desc">跑步 3.2 公里</div>
+                      <span class="timeline-value">🔥 256 卡</span>
+                    </div>
+                  </div>
+
+                  <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-content">
+                      <div class="timeline-date">昨天 20:00</div>
+                      <div class="timeline-title">饮食记录</div>
+                      <div class="timeline-desc">午餐 + 晚餐</div>
+                      <span class="timeline-value">🍽 1720 卡</span>
+                    </div>
+                  </div>
+
+                  <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-content">
+                      <div class="timeline-date">昨天 14:00</div>
+                      <div class="timeline-title">生理期记录</div>
+                      <div class="timeline-desc">经期第2天</div>
+                      <span class="timeline-value">💧 轻微不适</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 设置页面 V1 卡片分组 -->
+      <div>
+        <div class="section-label">设置页面 - V1 卡片分组</div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="notch"></div>
+            <div class="status-bar"><span>9:41</span><span>信号 Wi-Fi 电池</span></div>
+            <div class="phone-content settings-v1">
+              <div class="page">
+                <div class="nav-bar" style="padding: 40px 20px 20px;">
+                  <div class="nav-title">设置</div>
+                </div>
+                <div class="user-card">
+                  <div class="avatar">👤</div>
+                  <div>
+                    <div class="user-name">张小明</div>
+                    <div class="user-id">ID: abc123456</div>
+                    <div class="user-status">● 已连接伴侣</div>
+                  </div>
+                </div>
+
+                <div class="group-card">
+                  <div class="group-title">数据同步</div>
+                  <div class="group-item">
+                    <div class="item-icon sync">🔄</div>
+                    <div class="item-content">
+                      <div class="item-name">数据同步</div>
+                      <div class="item-desc">与伴侣实时共享数据</div>
+                    </div>
+                    <div class="item-arrow">→</div>
+                  </div>
+                  <div class="group-item">
+                    <div class="item-icon export">📤</div>
+                    <div class="item-content">
+                      <div class="item-name">导出数据</div>
+                      <div class="item-desc">导出 JSON 格式备份</div>
+                    </div>
+                    <div class="item-arrow">→</div>
+                  </div>
+                </div>
+
+                <div class="pair-card">
+                  <div class="pair-header">
+                    <div class="pair-title">💕 配对</div>
+                    <div class="pair-status">● 已连接</div>
+                  </div>
+                  <div class="pair-code-box">
+                    <div class="code-label">邀请码（24小时有效）</div>
+                    <div class="code-value">ABC123</div>
+                  </div>
+                  <div style="display: flex; gap: 10px;">
+                    <div class="pair-btn primary">复制</div>
+                    <div class="pair-btn secondary">解除</div>
+                  </div>
+                </div>
+
+                <div class="group-card">
+                  <div class="group-title">其他</div>
+                  <div class="group-item">
+                    <div class="item-icon heart">❤️</div>
+                    <div class="item-content">
+                      <div class="item-name">关于</div>
+                      <div class="item-desc">v1.0.0 · 家庭饮食健康管家</div>
+                    </div>
+                    <div class="item-arrow">→</div>
+                  </div>
+                  <div class="group-item" style="background: #FFF5F5;">
+                    <div class="item-icon reset">🗑</div>
+                    <div class="item-content">
+                      <div class="item-name" style="color: var(--danger);">重置数据</div>
+                      <div class="item-desc">清除所有本地数据</div>
+                    </div>
+                    <div class="item-arrow">→</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

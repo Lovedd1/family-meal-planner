@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>家庭饮食健康管家</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --primary: #C48B8B;
+      --primary-light: #E8D5D8;
+      --primary-dark: #A67070;
+      --bg-start: #FDF8F8;
+      --bg-end: #F5EEF0;
+      --bg-card: #FFFFFF;
+      --text-primary: #5D4A4A;
+      --text-secondary: #8A6A6A;
+      --text-placeholder: #BDBDBD;
+      --success: #5A8A6A;
+      --warning: #D4A828;
+      --danger: #C45C5C;
+      --info: #7A8AA0;
+      --border-light: #E8D5D8;
+      --border-lighter: rgba(0, 0, 0, 0.05);
+      --shadow-sm: 0 4px 16rpx rgba(93, 74, 74, 0.08);
+      --shadow-md: 0 6px 20rpx rgba(93, 74, 74, 0.12);
+      --shadow-lg: 0 8px 24rpx rgba(93, 74, 74, 0.16);
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+    }
+
+    html { font-size: 16px; }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .phone-frame {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pop-dots-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: radial-gradient(var(--primary-light) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page { padding-bottom: 100px; position: relative; z-index: 1; }
+
+    /* 导航栏 */
+    .nav-bar {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      padding: 60px 24px 40px;
+      position: relative;
+    }
+    .nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; left: 0; right: 0;
+      height: 40px;
+      background: var(--bg-end);
+      border-radius: 20px 20px 0 0;
+    }
+    .nav-bar::before {
+      content: '';
+      position: absolute;
+      top: 50px; right: 30px;
+      width: 60px; height: 60px;
+      background: repeating-conic-gradient(var(--primary) 0deg 15deg, transparent 15deg 30deg);
+      border-radius: 50%;
+      opacity: 0.3;
+    }
+    .nav-title { font-family: 'Noto Sans SC', serif; font-size: 32px; color: var(--text-primary); letter-spacing: 2px; }
+    .date-title { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
+
+    /* Tab 栏 */
+    .tab-bar {
+      display: flex; gap: 6px; margin: 0 20px 16px;
+      background: var(--bg-card); border-radius: var(--radius-md); padding: 6px;
+      box-shadow: var(--shadow-sm); position: relative; z-index: 10;
+    }
+    .tab-item {
+      flex: 1; text-align: center; padding: 16px 8px; font-size: 13px; font-weight: 600;
+      color: var(--text-secondary); border-radius: var(--radius-sm); transition: all 0.25s ease;
+      cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .tab-item.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(196, 139, 139, 0.35); }
+    .tab-icon { font-size: 24px; }
+    .tab-badge {
+      min-width: 20px; height: 20px; background: rgba(196, 139, 139, 0.15); color: var(--primary);
+      border-radius: 10px; font-size: 11px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .tab-item.active .tab-badge { background: rgba(255, 255, 255, 0.3); color: #fff; }
+
+    /* 今日菜单 */
+    .conflict-banner {
+      display: flex; align-items: center; gap: 12px; padding: 16px 20px;
+      background: rgba(196, 92, 92, 0.08); border-radius: var(--radius-md); margin: 0 20px 20px;
+      border-left: 4px solid var(--danger);
+    }
+    .conflict-icon { font-size: 18px; }
+    .conflict-text { font-size: 14px; color: var(--danger); font-weight: 500; }
+
+    .dish-list { padding: 0 20px; }
+    .dish-card {
+      background: var(--bg-card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 14px; position: relative; overflow: hidden;
+      box-shadow: var(--shadow-sm); transition: transform 0.2s;
+    }
+    .dish-card::before {
+      content: ''; position: absolute; top: 0; right: 0; width: 0; height: 0;
+      border-style: solid; border-width: 0 32px 32px 0;
+      border-color: transparent var(--primary-light) transparent transparent; opacity: 0.5;
+    }
+    .dish-card::after {
+      content: ''; position: absolute; bottom: 6px; right: 6px; width: 10px; height: 10px;
+      background: var(--primary); border-radius: 50%; opacity: 0.3;
+    }
+    .dish-card:active { transform: scale(0.98); }
+
+    .dish-emoji {
+      width: 52px; height: 52px; background: linear-gradient(135deg, var(--bg-start) 0%, var(--primary-light) 100%);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0; position: relative;
+    }
+    .dish-emoji::after {
+      content: ''; position: absolute; bottom: -5px; right: -5px; width: 12px; height: 12px;
+      background: var(--primary); border-radius: 4px; opacity: 0.25;
+    }
+    .dish-info { flex: 1; min-width: 0; }
+    .dish-name { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .dish-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .heat-tag {
+      display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700;
+      padding: 4px 10px; border-radius: 6px; background: rgba(93, 74, 74, 0.06); color: var(--text-secondary);
+    }
+    .heat-tag.safe { background: rgba(90, 138, 106, 0.12); color: var(--success); }
+    .heat-tag.danger { background: rgba(196, 92, 92, 0.12); color: var(--danger); }
+    .heat-tag.warning { background: rgba(212, 168, 40, 0.12); color: var(--warning); }
+    .tag-custom {
+      display: inline-flex; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+      background: rgba(122, 138, 160, 0.12); color: var(--info);
+    }
+    .conflict-tag {
+      background: rgba(212, 168, 40, 0.12); color: var(--warning); padding: 4px 10px; border-radius: 6px;
+      font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .dish-remove {
+      width: 36px; height: 36px; background: var(--bg-start); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; color: var(--text-placeholder);
+      font-size: 24px; flex-shrink: 0; cursor: pointer;
+    }
+
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 20px;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 20px));
+      background: linear-gradient(180deg, transparent 0%, var(--bg-end) 30%);
+    }
+    .btn {
+      padding: 16px 32px; border-radius: var(--radius-md); font-size: 15px; font-weight: 600;
+      border: none; transition: transform 0.2s; cursor: pointer; display: block; width: 100%; text-align: center;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--primary); color: #fff; border: none; border-radius: var(--radius-md);
+      font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; padding: 18px;
+      position: relative; overflow: hidden; box-shadow: 0 6px 20px rgba(196, 139, 139, 0.4);
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.3) 0px, rgba(255,255,255,0.3) 8px, transparent 8px, transparent 16px);
+    }
+
+    /* 点餐页面 */
+    .search-bar {
+      background: var(--bg-card); border-radius: var(--radius-md); padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px; margin: 0 20px 16px;
+      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    }
+    .search-bar::before {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 4px, var(--primary-light) 4px, var(--primary-light) 8px);
+    }
+    .search-icon { color: var(--text-placeholder); font-size: 18px; }
+    .search-placeholder { flex: 1; font-size: 14px; color: var(--text-placeholder); letter-spacing: 0.5px; }
+
+    .category-tabs { display: flex; gap: 8px; padding: 0 20px; margin-bottom: 16px; flex-wrap: wrap; }
+    .category-tab {
+      padding: 8px 16px; background: var(--bg-card); border-radius: 20px;
+      font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700;
+      color: var(--text-secondary); border: 1.5px solid var(--border-light); cursor: pointer; transition: all 0.2s;
+    }
+    .category-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .dish-list-order { padding: 16px 20px 180px; }
+    .dish-card-order {
+      display: flex; background: var(--bg-card); border-radius: var(--radius-md); padding: 16px;
+      margin-bottom: 12px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+      align-items: center;
+    }
+    .dish-card-order::before {
+      content: ''; position: absolute; top: 0; right: 0; width: 0; height: 0; border-style: solid;
+      border-width: 0 36px 36px 0; border-color: transparent var(--primary-light) transparent transparent; opacity: 0.4;
+    }
+    .dish-card-order::after {
+      content: ''; position: absolute; bottom: 8px; right: 8px; width: 10px; height: 10px;
+      background: var(--primary); border-radius: 50%; opacity: 0.3;
+    }
+    .dish-emoji-order {
+      width: 56px; height: 56px; background: linear-gradient(135deg, var(--bg-start) 0%, var(--primary-light) 100%);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 28px; flex-shrink: 0; position: relative;
+    }
+    .dish-emoji-order::after {
+      content: ''; position: absolute; bottom: -4px; right: -4px; width: 12px; height: 12px;
+      background: var(--primary); border-radius: 4px; opacity: 0.2;
+    }
+    .dish-info-order {
+      flex: 1; display: flex; flex-direction: column; justify-content: space-between;
+      padding-left: 16px; min-height: 100px;
+    }
+    .dish-name-order { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .dish-meta-order { font-size: 13px; color: var(--text-secondary); }
+    .dish-footer-order { display: flex; justify-content: flex-end; align-items: center; height: 100%; }
+    .add-btn-circle {
+      width: 44px; height: 44px; background: var(--primary); color: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 300;
+      box-shadow: 0 4px 16px rgba(196, 139, 139, 0.35); cursor: pointer; position: relative;
+    }
+    .add-btn-circle::after {
+      content: ''; position: absolute; top: 6px; left: 6px; width: 10px; height: 10px;
+      background: rgba(255,255,255,0.3); border-radius: 2px;
+    }
+
+    .add-dish-btn-wrap {
+      padding: 0 20px 16px;
+    }
+    .add-dish-btn {
+      width: 100%; padding: 14px; background: var(--bg-card); border: 2px dashed var(--border-light);
+      border-radius: var(--radius-md); text-align: center; font-size: 14px; font-weight: 600;
+      color: var(--primary); cursor: pointer; transition: all 0.2s;
+    }
+    .add-dish-btn:active { background: var(--primary-light); border-color: var(--primary); }
+
+    .cart-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 20px;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 20px));
+      background: var(--bg-card); display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08); border-radius: 20px 20px 0 0; z-index: 100;
+    }
+    .cart-info { display: flex; align-items: center; gap: 16px; }
+    .cart-icon { position: relative; font-size: 32px; }
+    .cart-count {
+      position: absolute; top: -8px; right: -12px; min-width: 22px; height: 22px;
+      background: var(--danger); color: #fff; border-radius: 11px; font-size: 12px;
+      display: flex; align-items: center; justify-content: center; padding: 0 6px;
+    }
+    .cart-total { font-size: 14px; color: var(--text-secondary); }
+    .cart-total-num { font-size: 24px; font-weight: 700; color: var(--primary); }
+    .cart-btn {
+      padding: 14px 32px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff; border-radius: 25px; font-size: 14px; font-weight: 600;
+      box-shadow: 0 4px 20px rgba(196, 139, 139, 0.4); cursor: pointer;
+    }
+
+    /* 冰箱页面 */
+    .category-scroll {
+      margin: -40px 20px 20px; position: relative; z-index: 10; display: flex; gap: 10px;
+      overflow-x: auto; padding: 10px 0; -webkit-overflow-scrolling: touch;
+    }
+    .category-scroll::-webkit-scrollbar { display: none; }
+    .category-card {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-width: 72px; height: 80px; background: var(--bg-card); border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm); padding: 8px; flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .category-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 3px, var(--primary-light) 3px, var(--primary-light) 6px);
+    }
+    .category-card::after {
+      content: ''; position: absolute; top: 8px; right: 6px; width: 8px; height: 8px;
+      background: var(--primary-light); border-radius: 50%; opacity: 0.6;
+    }
+    .category-emoji { font-size: 24px; margin-bottom: 4px; }
+    .category-name {
+      font-family: 'Space Mono', monospace; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.5px; color: var(--text-secondary); text-transform: uppercase;
+    }
+    .category-count { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; color: var(--primary); }
+
+    .date-header { display: flex; align-items: center; padding: 16px 0; position: relative; }
+    .date-header::after {
+      content: ''; position: absolute; left: 80px; right: 0; top: 50%; height: 1px;
+      background: linear-gradient(90deg, var(--border-light) 0%, transparent 100%);
+    }
+    .date-label {
+      background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%); padding-right: 12px;
+      font-size: 14px; font-weight: 600; color: var(--text-primary); position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .date-label .emoji { font-size: 18px; }
+    .date-label.safe { color: var(--success); }
+    .date-label.warning { color: var(--warning); }
+    .date-label.danger { color: var(--danger); }
+
+    .item-list { padding: 0 20px; }
+    .item-card {
+      display: flex; align-items: center; background: var(--bg-card); border-radius: var(--radius-md);
+      padding: 14px; margin-bottom: 10px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    }
+    .item-card::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; }
+    .item-card.safe::before { background: repeating-linear-gradient(180deg, var(--success) 0px, var(--success) 6px, transparent 6px, transparent 12px); }
+    .item-card.warning::before { background: repeating-linear-gradient(180deg, var(--warning) 0px, var(--warning) 6px, transparent 6px, transparent 12px); }
+    .item-card.danger::before { background: repeating-linear-gradient(180deg, var(--danger) 0px, var(--danger) 6px, transparent 6px, transparent 12px); }
+
+    .item-emoji { font-size: 28px; margin-right: 14px; flex-shrink: 0; position: relative; }
+    .item-emoji::after {
+      content: ''; position: absolute; top: -3px; right: -3px; width: 8px; height: 8px;
+      background: var(--primary-light); border-radius: 3px; transform: rotate(45deg);
+    }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .item-meta { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-secondary); }
+    .item-quantity { display: flex; align-items: center; gap: 4px; }
+    .days-badge {
+      display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;
+    }
+    .days-badge.safe { background: rgba(90, 138, 106, 0.12); color: var(--success); }
+    .days-badge.warning { background: rgba(212, 168, 40, 0.12); color: var(--warning); }
+    .days-badge.danger { background: rgba(196, 92, 92, 0.12); color: var(--danger); }
+    .item-delete {
+      width: 40px; height: 40px; background: #FFF5F5; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+      color: var(--danger); flex-shrink: 0; cursor: pointer;
+    }
+    .fab {
+      position: fixed; right: 24px; bottom: calc(100px + env(safe-area-inset-bottom, 20px));
+      width: 56px; height: 56px; border-radius: 16px; background: var(--primary);
+      box-shadow: 0 6px 24px rgba(196, 139, 139, 0.5); display: flex; align-items: center;
+      justify-content: center; font-size: 28px; color: #fff; z-index: 100; cursor: pointer;
+    }
+    .fab::before {
+      content: ''; position: absolute; top: 6px; left: 6px; width: 10px; height: 10px;
+      background: rgba(255,255,255,0.3); border-radius: 3px;
+    }
+
+    /* 健康页面 */
+    .health-hero {
+      margin: 20px; padding: 32px 24px;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      border-radius: var(--radius-lg); color: #fff; position: relative; overflow: hidden;
+    }
+    .health-hero::before {
+      content: ''; position: absolute; top: -40%; right: -15%; width: 200px; height: 200px;
+      background: repeating-conic-gradient(var(--primary) 0deg 15deg, transparent 15deg 30deg);
+      border-radius: 50%; opacity: 0.3;
+    }
+    .health-hero::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 6px;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.5) 0px, rgba(255,255,255,0.5) 8px, transparent 8px, transparent 16px);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-label { font-size: 13px; opacity: 0.9; margin-bottom: 6px; }
+    .hero-value { font-size: 48px; font-weight: 700; line-height: 1.1; }
+    .hero-unit { font-size: 16px; font-weight: 400; opacity: 0.85; margin-left: 6px; }
+    .hero-change {
+      display: inline-block; margin-top: 10px; font-size: 12px; padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.2); border-radius: 12px;
+    }
+    .hero-meta { display: flex; justify-content: space-between; margin-top: 20px; font-size: 12px; opacity: 0.8; }
+
+    .health-card {
+      background: var(--bg-card); border-radius: var(--radius-md); padding: 16px;
+      margin: 0 20px 12px; position: relative; overflow: hidden; box-shadow: var(--shadow-sm);
+    }
+    .health-card::before {
+      content: ''; position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
+      background: repeating-conic-gradient(var(--primary-light) 0deg 30deg, transparent 30deg 60deg);
+      border-radius: 50%; opacity: 0.5;
+    }
+    .health-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 4px, var(--primary-light) 4px, var(--primary-light) 8px);
+    }
+    .health-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .health-title {
+      font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
+      color: var(--text-primary); letter-spacing: 1px;
+    }
+
+    /* 折线图 */
+    .line-chart-container {
+      width: 100%; height: 160px; position: relative;
+    }
+    .line-chart-svg { width: 100%; height: 100%; }
+    .chart-grid-line { stroke: var(--border-light); stroke-width: 1; }
+    .chart-line {
+      fill: none; stroke: var(--primary); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .chart-area {
+      fill: url(#chartGradient); opacity: 0.3;
+    }
+    .chart-dot {
+      fill: var(--primary); stroke: var(--bg-card); stroke-width: 2;
+    }
+    .chart-label {
+      font-family: 'Space Mono', monospace; font-size: 10px; fill: var(--text-secondary);
+    }
+    .chart-value {
+      font-family: 'Space Mono', monospace; font-size: 9px; fill: var(--text-placeholder);
+    }
+
+    .function-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 16px 20px;
+    }
+    .function-card {
+      background: var(--bg-card); border-radius: var(--radius-md); padding: 24px 16px;
+      box-shadow: var(--shadow-sm); display: flex; flex-direction: column; align-items: center;
+      text-align: center; transition: transform 0.2s; position: relative; overflow: hidden; cursor: pointer;
+    }
+    .function-card::after {
+      content: ''; position: absolute; top: 8px; right: 8px; width: 10px; height: 10px;
+      background: var(--primary-light); border-radius: 2px; transform: rotate(45deg); opacity: 0.5;
+    }
+    .function-card:active { transform: scale(0.97); }
+    .function-icon {
+      width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 12px; font-size: 26px; color: #fff;
+    }
+    .function-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .function-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+    /* 报告列表 */
+    .report-list { padding: 0 20px; }
+    .report-card {
+      background: var(--bg-card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px;
+      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    }
+    .report-card::before {
+      content: ''; position: absolute; top: 0; right: 0; width: 0; height: 0;
+      border-style: solid; border-width: 0 32px 32px 0;
+      border-color: transparent var(--primary-light) transparent transparent; opacity: 0.5;
+    }
+    .report-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: repeating-linear-gradient(90deg, var(--primary) 0px, var(--primary) 4px, var(--primary-light) 4px, var(--primary-light) 8px);
+    }
+    .report-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .report-title { font-size: 15px; font-weight: 600; color: var(--text-primary); }
+    .report-date { font-size: 12px; color: var(--text-secondary); }
+    .report-summary {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.5;
+      margin-bottom: 12px; padding: 12px; background: var(--bg-start); border-radius: var(--radius-sm);
+    }
+    .report-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .report-tag {
+      padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+      background: rgba(90, 138, 106, 0.12); color: var(--success);
+    }
+    .report-tag.warning { background: rgba(212, 168, 40, 0.12); color: var(--warning); }
+    .report-meta {
+      display: flex; justify-content: space-between; align-items: center; margin-top: 12px;
+      padding-top: 12px; border-top: 1px dashed var(--border-light);
+    }
+    .report-score { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: var(--primary); }
+    .report-view { font-size: 13px; color: var(--primary); font-weight: 600; }
+
+    /* 设置页面 */
+    .user-card {
+      display: flex; align-items: center; gap: 14px; background: var(--bg-card);
+      border-radius: var(--radius-md); padding: 16px; margin: 20px;
+      position: relative; overflow: hidden; box-shadow: var(--shadow-sm);
+    }
+    .user-card::before {
+      content: ''; position: absolute; top: 0; right: 0; width: 60px; height: 60px;
+      background: repeating-conic-gradient(var(--primary-light) 0deg 30deg, transparent 30deg 60deg);
+      border-radius: 50%; opacity: 0.45;
+    }
+    .user-avatar {
+      width: 48px; height: 48px; background: var(--primary); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 24px; position: relative; z-index: 1;
+    }
+    .user-avatar::after {
+      content: ''; position: absolute; bottom: -3px; right: -3px; width: 14px; height: 14px;
+      background: var(--success); border-radius: 4px; border: 2px solid var(--bg-card);
+    }
+    .user-info { flex: 1; position: relative; z-index: 1; }
+    .user-name { font-family: 'Space Mono', monospace; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+    .user-id { font-size: 11px; color: var(--text-secondary); }
+    .user-status { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: var(--success); }
+
+    .settings-section { margin: 24px 20px; }
+    .section-title {
+      font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; color: var(--primary);
+      margin-bottom: 10px; padding-left: 8px; letter-spacing: 2px; text-transform: uppercase;
+    }
+    .settings-list { background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+    .settings-item {
+      display: flex; align-items: center; padding: 14px 16px;
+      border-bottom: 1px dashed var(--border-light); cursor: pointer;
+    }
+    .settings-item:last-child { border-bottom: none; }
+    .settings-icon {
+      width: 36px; height: 36px; background: var(--bg-start); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      margin-right: 12px; position: relative;
+    }
+    .settings-icon::after {
+      content: ''; position: absolute; top: -2px; right: -2px; width: 8px; height: 8px;
+      background: var(--primary-light); border-radius: 2px; transform: rotate(45deg);
+    }
+    .settings-icon.sync { background: #E8F5E9; }
+    .settings-icon.export { background: #E3F2FD; }
+    .settings-icon.reset { background: #FFF8E6; }
+    .settings-icon.about { background: #F5F0F8; }
+    .settings-content { flex: 1; }
+    .settings-name { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .settings-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .settings-arrow { color: var(--text-placeholder); font-size: 16px; font-weight: 300; }
+
+    .pair-card {
+      background: var(--bg-card); border-radius: var(--radius-md); padding: 16px; margin: 16px 20px;
+      box-shadow: var(--shadow-sm); border-left: 6px solid var(--primary);
+    }
+    .pair-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .pair-title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .pair-status { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--success); }
+    .pair-status.disconnected { color: var(--text-secondary); }
+    .pair-code {
+      background: var(--bg-start); border-radius: var(--radius-md); padding: 16px; text-align: center; margin-bottom: 12px;
+    }
+    .code-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+    .code-value { font-size: 32px; font-weight: 700; color: var(--primary); letter-spacing: 6px; font-family: monospace; }
+    .code-hint { font-size: 12px; color: var(--text-placeholder); margin-top: 6px; }
+    .pair-actions { display: flex; gap: 10px; }
+    .pair-btn { flex: 1; padding: 12px; border-radius: var(--radius-md); font-size: 14px; text-align: center; cursor: pointer; }
+    .pair-btn.primary { background: var(--primary); color: #fff; }
+    .pair-btn.secondary { background: var(--bg-start); color: var(--text-secondary); }
+
+    .version-info { text-align: center; padding: 24px; font-size: 12px; color: var(--text-placeholder); }
+
+    /* 底部导航 */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card);
+      display: flex; padding: 8px 0;
+      padding-bottom: calc(8px + env(safe-area-inset-bottom, 20px));
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06); z-index: 1000;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; padding: 6px 0;
+      color: var(--text-placeholder); font-size: 10px; cursor: pointer; transition: all 0.2s;
+    }
+    .nav-item.active { color: var(--primary); }
+    .nav-item-icon { font-size: 24px; margin-bottom: 2px; }
+    .nav-item-label { font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; }
+
+    .hidden { display: none !important; }
+    .page-content { animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="pop-dots-bg"></div>
+
+  <div class="phone-frame">
+    <!-- ==================== 今日菜单页面 ==================== -->
+    <div id="page-today" class="page page-content">
+      <view class="nav-bar">
+        <view class="nav-title">今日菜单</view>
+        <view class="date-title">2026年5月5日 星期二</view>
+      </view>
+
+      <view class="tab-bar">
+        <view class="tab-item active" data-page="today">
+          <text class="tab-icon">🌅</text>
+          <text>早餐</text>
+          <view class="tab-badge">2</view>
+        </view>
+        <view class="tab-item" data-page="lunch">
+          <text class="tab-icon">☀️</text>
+          <text>午餐</text>
+          <view class="tab-badge">3</view>
+        </view>
+        <view class="tab-item" data-page="dinner">
+          <text class="tab-icon">🌙</text>
+          <text>晚餐</text>
+          <view class="tab-badge">1</view>
+        </view>
+      </view>
+
+      <view class="conflict-banner">
+        <text class="conflict-icon">⚠️</text>
+        <text class="conflict-text">当前菜单存在食材搭配风险</text>
+      </view>
+
+      <view class="dish-list">
+        <div class="dish-card">
+          <div class="dish-emoji">🍳</div>
+          <div class="dish-info">
+            <div class="dish-name">番茄炒蛋 <span class="tag-custom">热门</span></div>
+            <div class="dish-tags"><span class="heat-tag safe">✅微波安全</span></div>
+          </div>
+          <div class="dish-remove">×</div>
+        </div>
+        <div class="dish-card">
+          <div class="dish-emoji">🥛</div>
+          <div class="dish-info">
+            <div class="dish-name">水煮蛋 <span class="conflict-tag">⚠️ 可能相克</span></div>
+            <div class="dish-tags"><span class="heat-tag danger">🔴禁微波</span></div>
+          </div>
+          <div class="dish-remove">×</div>
+        </div>
+      </view>
+
+      <div class="bottom-bar"><button class="btn btn-primary">确认菜单并扣减食材</button></div>
+    </div>
+
+    <!-- ==================== 点餐页面（无价格） ==================== -->
+    <div id="page-order" class="page hidden page-content">
+      <view class="nav-bar">
+        <view class="nav-title">点餐</view>
+        <view class="date-title">发现美味</view>
+      </view>
+
+      <view class="search-bar">
+        <text class="search-icon">🔍</text>
+        <text class="search-placeholder">搜索菜品...</text>
+      </view>
+
+      <view class="category-tabs">
+        <view class="category-tab active">全部</view>
+        <view class="category-tab">荤菜</view>
+        <view class="category-tab">素菜</view>
+        <view class="category-tab">汤品</view>
+        <view class="category-tab">主食</view>
+      </view>
+
+      <view class="add-dish-btn-wrap">
+        <div class="add-dish-btn">+ 新增菜品</div>
+      </view>
+
+      <view class="dish-list-order">
+        <div class="dish-card-order">
+          <div class="dish-emoji-order">🥩</div>
+          <div class="dish-info-order">
+            <div class="dish-name-order">土豆炖牛肉</div>
+            <div class="dish-meta-order">荤菜 · 微波安全</div>
+          </div>
+          <div class="add-btn-circle">+</div>
+        </div>
+        <div class="dish-card-order">
+          <div class="dish-emoji-order">🍅</div>
+          <div class="dish-info-order">
+            <div class="dish-name-order">番茄炒蛋</div>
+            <div class="dish-meta-order">素菜 · 微波安全 · 热门</div>
+          </div>
+          <div class="add-btn-circle">+</div>
+        </div>
+        <div class="dish-card-order">
+          <div class="dish-emoji-order">🐔</div>
+          <div class="dish-info-order">
+            <div class="dish-name-order">西兰花炒鸡胸肉</div>
+            <div class="dish-meta-order">荤菜 · 微波安全</div>
+          </div>
+          <div class="add-btn-circle">+</div>
+        </div>
+        <div class="dish-card-order">
+          <div class="dish-emoji-order">🍲</div>
+          <div class="dish-info-order">
+            <div class="dish-name-order">番茄牛肉汤</div>
+            <div class="dish-meta-order">汤品 · 微波安全</div>
+          </div>
+          <div class="add-btn-circle">+</div>
+        </div>
+        <div class="dish-card-order">
+          <div class="dish-emoji-order">🥟</div>
+          <div class="dish-info-order">
+            <div class="dish-name-order">蒸饺</div>
+            <div class="dish-meta-order">主食 · 仅蒸制</div>
+          </div>
+          <div class="add-btn-circle">+</div>
+        </div>
+      </view>
+
+      <view class="cart-bar">
+        <div class="cart-info">
+          <div class="cart-icon">🛒<span class="cart-count">3</span></div>
+          <div class="cart-total">已选 <span class="cart-total-num">3</span> 道菜</div>
+        </div>
+        <div class="cart-btn">添加到菜单</div>
+      </view>
+    </div>
+
+    <!-- ==================== 冰箱页面 ==================== -->
+    <div id="page-fridge" class="page hidden page-content">
+      <view class="nav-bar">
+        <view class="nav-title">我的冰箱</view>
+        <view class="date-title">食材管理</view>
+      </view>
+
+      <view class="category-scroll">
+        <div class="category-card"><div class="category-emoji">🥬</div><div class="category-name">蔬菜</div><div class="category-count">8</div></div>
+        <div class="category-card"><div class="category-emoji">🥩</div><div class="category-name">肉类</div><div class="category-count">5</div></div>
+        <div class="category-card"><div class="category-emoji">🥚</div><div class="category-name">蛋类</div><div class="category-count">12</div></div>
+        <div class="category-card"><div class="category-emoji">🥛</div><div class="category-name">奶类</div><div class="category-count">2</div></div>
+        <div class="category-card"><div class="category-emoji">🍎</div><div class="category-name">水果</div><div class="category-count">4</div></div>
+      </view>
+
+      <view class="date-header">
+        <view class="date-label safe"><span class="emoji">📅</span>今日到期</view>
+      </view>
+      <view class="item-list">
+        <div class="item-card safe">
+          <div class="item-emoji">🥬</div>
+          <div class="item-info">
+            <div class="item-name">西兰花</div>
+            <div class="item-meta"><span class="item-quantity">剩余 2.5 斤</span><span class="days-badge safe">还剩 3 天</span></div>
+          </div>
+          <div class="item-delete">🗑</div>
+        </div>
+        <div class="item-card warning">
+          <div class="item-emoji">🥚</div>
+          <div class="item-info">
+            <div class="item-name">鸡蛋</div>
+            <div class="item-meta"><span class="item-quantity">剩余 8 个</span><span class="days-badge warning">还剩 1 天</span></div>
+          </div>
+          <div class="item-delete">🗑</div>
+        </div>
+        <div class="item-card danger">
+          <div class="item-emoji">🥩</div>
+          <div class="item-info">
+            <div class="item-name">鸡胸肉</div>
+            <div class="item-meta"><span class="item-quantity">剩余 300g</span><span class="days-badge danger">今天到期</span></div>
+          </div>
+          <div class="item-delete">🗑</div>
+        </div>
+      </view>
+
+      <view class="date-header" style="margin-top: 16px;">
+        <view class="date-label"><span class="emoji">📅</span>明天到期</view>
+      </view>
+      <view class="item-list">
+        <div class="item-card safe">
+          <div class="item-emoji">🍅</div>
+          <div class="item-info">
+            <div class="item-name">番茄</div>
+            <div class="item-meta"><span class="item-quantity">剩余 5 个</span><span class="days-badge safe">还剩 2 天</span></div>
+          </div>
+          <div class="item-delete">🗑</div>
+        </div>
+      </view>
+      <div class="fab">+</div>
+    </div>
+
+    <!-- ==================== 健康页面（折线图+报告列表） ==================== -->
+    <div id="page-health" class="page hidden page-content">
+      <view class="nav-bar">
+        <view class="nav-title">健康计划</view>
+        <view class="date-title">记录追踪</view>
+      </view>
+
+      <div class="health-hero">
+        <div class="hero-content">
+          <div class="hero-label">当前体重</div>
+          <div class="hero-value">65.8<span class="hero-unit">kg</span></div>
+          <div class="hero-change">↓ 0.3kg 本周</div>
+          <div class="hero-meta"><span>目标: 62kg</span><span>BMI: 22.1</span></div>
+        </div>
+      </div>
+
+      <div class="health-card">
+        <div class="health-header"><span class="health-title">30天体重趋势</span></div>
+        <div class="line-chart-container">
+          <svg class="line-chart-svg" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--primary);stop-opacity:0.4" />
+                <stop offset="100%" style="stop-color:var(--primary);stop-opacity:0" />
+              </linearGradient>
+            </defs>
+            <!-- 网格线 -->
+            <line x1="30" y1="20" x2="310" y2="20" class="chart-grid-line" stroke-dasharray="4,4" opacity="0.5"/>
+            <line x1="30" y1="50" x2="310" y2="50" class="chart-grid-line" stroke-dasharray="4,4" opacity="0.5"/>
+            <line x1="30" y1="80" x2="310" y2="80" class="chart-grid-line" stroke-dasharray="4,4" opacity="0.5"/>
+            <line x1="30" y1="110" x2="310" y2="110" class="chart-grid-line" stroke-dasharray="4,4" opacity="0.5"/>
+            <!-- Y轴标签 -->
+            <text x="25" y="24" class="chart-value" text-anchor="end">68</text>
+            <text x="25" y="54" class="chart-value" text-anchor="end">67</text>
+            <text x="25" y="84" class="chart-value" text-anchor="end">66</text>
+            <text x="25" y="114" class="chart-value" text-anchor="end">65</text>
+            <!-- 面积 -->
+            <path class="chart-area" d="M30,50 C60,52 90,48 120,55 C150,62 180,58 210,70 C240,82 270,75 300,80 L300,110 L30,110 Z"/>
+            <!-- 折线 -->
+            <path class="chart-line" d="M30,50 C60,52 90,48 120,55 C150,62 180,58 210,70 C240,82 270,75 300,80"/>
+            <!-- 数据点 -->
+            <circle cx="30" cy="50" r="4" class="chart-dot"/>
+            <circle cx="90" cy="48" r="4" class="chart-dot"/>
+            <circle cx="150" cy="62" r="4" class="chart-dot"/>
+            <circle cx="210" cy="70" r="4" class="chart-dot"/>
+            <circle cx="270" cy="75" r="4" class="chart-dot"/>
+            <circle cx="300" cy="80" r="5" class="chart-dot" stroke-width="3"/>
+            <!-- X轴标签 -->
+            <text x="30" y="128" class="chart-label" text-anchor="middle">4/5</text>
+            <text x="150" y="128" class="chart-label" text-anchor="middle">4/20</text>
+            <text x="300" y="128" class="chart-label" text-anchor="middle">5/5</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="function-grid">
+        <div class="function-card"><div class="function-icon">⚖️</div><div class="function-title">体重记录</div><div class="function-desc">每日追踪体重变化</div></div>
+        <div class="function-card"><div class="function-icon">🩺</div><div class="function-title">生理期追踪</div><div class="function-desc">记录生理期周期</div></div>
+        <div class="function-card"><div class="function-icon">🤖</div><div class="function-title">AI饮食计划</div><div class="function-desc">智能生成健康菜单</div></div>
+        <div class="function-card"><div class="function-icon">📊</div><div class="function-title">健康报告</div><div class="function-desc">查看健康数据统计</div></div>
+      </div>
+
+      <!-- 报告列表 -->
+      <div class="week-title" style="margin: 20px;">健康报告</div>
+
+      <div class="report-list">
+        <div class="report-card">
+          <div class="report-header">
+            <div class="report-title">5月健康月报</div>
+            <div class="report-date">2026-05-01</div>
+          </div>
+          <div class="report-summary">
+            本月体重下降1.2kg，体脂率从24.5%降至23.8%。饮食均衡度提升明显，蔬菜摄入达标率85%。
+            建议继续保持当前饮食结构，适当增加蛋白质摄入。
+          </div>
+          <div class="report-tags">
+            <span class="report-tag">体重下降</span>
+            <span class="report-tag">饮食均衡</span>
+            <span class="report-tag warning">蛋白质不足</span>
+          </div>
+          <div class="report-meta">
+            <span class="report-score">综合评分 88</span>
+            <span class="report-view">查看详情 ›</span>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-header">
+            <div class="report-title">第18周健康报告</div>
+            <div class="report-date">2026-04-28</div>
+          </div>
+          <div class="report-summary">
+            本周平均体重66.3kg，较上周下降0.4kg。运动天数4天，达到目标。
+            睡眠质量良好，平均睡眠时长7.2小时。
+          </div>
+          <div class="report-tags">
+            <span class="report-tag">目标达成</span>
+            <span class="report-tag">睡眠良好</span>
+          </div>
+          <div class="report-meta">
+            <span class="report-score">综合评分 92</span>
+            <span class="report-view">查看详情 ›</span>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-header">
+            <div class="report-title">第17周健康报告</div>
+            <div class="report-date">2026-04-21</div>
+          </div>
+          <div class="report-summary">
+            本周体重持平66.7kg，主要原因是周末聚餐较多。蔬菜摄入有所下降，建议增加蔬果比例。
+            水分摄入达标，继续保持。
+          </div>
+          <div class="report-tags">
+            <span class="report-tag warning">体重持平</span>
+            <span class="report-tag warning">蔬菜不足</span>
+            <span class="report-tag">饮水达标</span>
+          </div>
+          <div class="report-meta">
+            <span class="report-score">综合评分 78</span>
+            <span class="report-view">查看详情 ›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 设置页面 ==================== -->
+    <div id="page-settings" class="page hidden page-content">
+      <view class="nav-bar">
+        <view class="nav-title">设置</view>
+        <view class="date-title">个性化配置</view>
+      </view>
+
+      <div class="user-card">
+        <div class="user-avatar">👤</div>
+        <div class="user-info">
+          <div class="user-name">张小明</div>
+          <div class="user-id">ID: f2d8a9c3</div>
+          <div class="user-status"><span>●</span> 已同步到云端</div>
+        </div>
+      </div>
+
+      <div class="pair-card">
+        <div class="pair-header">
+          <span class="pair-title">双人同步</span>
+          <span class="pair-status"><span>●</span> 已配对</span>
+        </div>
+        <div class="pair-code">
+          <div class="code-label">邀请码（24小时有效）</div>
+          <div class="code-value">ABC123</div>
+          <div class="code-hint">分享给另一半开始同步</div>
+        </div>
+        <div class="pair-actions">
+          <div class="pair-btn secondary">解除配对</div>
+          <div class="pair-btn primary">复制邀请码</div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-title">数据管理</div>
+        <div class="settings-list">
+          <div class="settings-item">
+            <div class="settings-icon sync">🔄</div>
+            <div class="settings-content">
+              <div class="settings-name">数据同步</div>
+              <div class="settings-desc">自动同步到云端</div>
+            </div>
+            <span class="settings-arrow">›</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-icon export">📤</div>
+            <div class="settings-content">
+              <div class="settings-name">导出数据</div>
+              <div class="settings-desc">导出为JSON文件</div>
+            </div>
+            <span class="settings-arrow">›</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-icon reset">🔄</div>
+            <div class="settings-content">
+              <div class="settings-name">重置数据</div>
+              <div class="settings-desc">清空本地缓存数据</div>
+            </div>
+            <span class="settings-arrow">›</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="section-title">关于</div>
+        <div class="settings-list">
+          <div class="settings-item">
+            <div class="settings-icon about">ℹ️</div>
+            <div class="settings-content">
+              <div class="settings-name">关于我们</div>
+              <div class="settings-desc">version 1.0.0</div>
+            </div>
+            <span class="settings-arrow">›</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="version-info">家庭饮食健康管家 v1.0.0<br>Made with ❤️</div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+      <div class="nav-item active" data-page="today"><span class="nav-item-icon">🍽️</span><span class="nav-item-label">今日</span></div>
+      <div class="nav-item" data-page="order"><span class="nav-item-icon">📋</span><span class="nav-item-label">点餐</span></div>
+      <div class="nav-item" data-page="fridge"><span class="nav-item-icon">🧊</span><span class="nav-item-label">冰箱</span></div>
+      <div class="nav-item" data-page="health"><span class="nav-item-icon">💪</span><span class="nav-item-label">健康</span></div>
+      <div class="nav-item" data-page="settings"><span class="nav-item-icon">⚙️</span><span class="nav-item-label">设置</span></div>
+    </nav>
+  </div>
+
+  <script>
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page');
+    const tabItems = document.querySelectorAll('.tab-item');
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const pageName = item.dataset.page;
+        navItems.forEach(n => n.classList.remove('active'));
+        item.classList.add('active');
+        pages.forEach(p => {
+          p.id === `page-${pageName}` ? p.classList.remove('hidden') : p.classList.add('hidden');
+        });
+      });
+    });
+
+    tabItems.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabItems.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+
+    const categoryTabs = document.querySelectorAll('.category-tab');
+    categoryTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        categoryTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
