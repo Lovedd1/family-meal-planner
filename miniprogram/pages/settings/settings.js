@@ -3,45 +3,43 @@ const storageAdapter = require('../../utils/storageAdapter.js')
 
 Page({
   data: {
-    userInfo: {
-      nickname: '我',
-      avatar: ''
-    },
-    partnerInfo: {
-      nickname: 'TA',
-      connected: false
-    },
-    syncStatus: 'disconnected',
-    lastSyncTime: '',
+    myNickname: '',
+    myPin: '',
+    partnerConnected: false,
+    partnerNickname: '',
+    version: 'V2.2.0',
+
+    // 弹窗
+    showMyInfoModal: false,
+    showPairModal: false,
+    showPrivacyModal: false,
+    showResetConfirm: false,
+    savingInfo: false,
+    pairing: false,
+
+    // 临时表单数据
+    tempMyNickname: '',
+    tempMyPin: '',
+    tempPartnerNickname: '',
+    tempPartnerPin: '',
+
+    // 数据统计
     dataStats: {
       fridgeItems: 0,
       customFoods: 0,
       weightRecords: 0
     },
+
+    // 生理期
     menstrualSettings: {
       lastPeriodDate: '',
       currentPhase: '',
       cycleDays: 28
-    },
-    isLoggedIn: false,
-    version: 'V2.1.0',
-    showPrivacyModal: false,
-    showResetConfirm: false,
-    showBindPartnerModal: false,
-    inviteCode: '',
-    isGeneratingCode: false,
-    isBinding: false
+    }
   },
 
   onLoad() {
     this.loadSettings()
-    // 监听伴侣数据更新
-    storageAdapter.onPartnerUpdate((key, data) => {
-      if (key === 'fridgeItems') {
-        // 刷新冰箱数据
-        this.loadSettings()
-      }
-    })
   },
 
   onShow() {
@@ -49,161 +47,220 @@ Page({
   },
 
   loadSettings() {
-    // 检查登录状态
-    const userProfile = storageAdapter.get('userProfile') || {}
-    const isLoggedIn = !!(userProfile.nickname && userProfile.localAvatarPath)
-
-    // 同步状态
-    const partnerId = wx.getStorageSync('partnerId')
+    const myNickname = wx.getStorageSync('myNickname') || ''
+    const myPin = wx.getStorageSync('myPin') || ''
+    const partnerNickname = wx.getStorageSync('partnerNickname') || ''
+    const partnerConnected = !!(myNickname && partnerNickname)
 
     // 数据统计
-    const fridgeItems = storageAdapter.get('fridgeItems')?.length || 0
-    const customFoods = storageAdapter.get('customFoods')?.length || 0
-    const weightRecords = storageAdapter.get('weightRecords')?.length || 0
+    const fridgeItems = (wx.getStorageSync('fridgeItems') || []).length
+    const customFoods = (wx.getStorageSync('customFoods') || []).length
+    const weightRecords = (wx.getStorageSync('weightRecords') || []).length
 
-    // 生理期设置
-    const menstrualSettings = storageAdapter.get('menstrualSettings') || {}
+    // 生理期
+    const menstrualSettings = wx.getStorageSync('menstrualSettings') || {}
 
-    // 合并所有 setData 调用
     this.setData({
-      isLoggedIn,
-      userInfo: {
-        nickname: userProfile.nickname || '我',
-        avatar: userProfile.localAvatarPath || userProfile.nickname?.charAt(0) || '',
-        localAvatarPath: userProfile.localAvatarPath || ''
-      },
-      partnerInfo: {
-        nickname: wx.getStorageSync('partnerNickname') || 'TA',
-        connected: !!partnerId
-      },
-      syncStatus: partnerId ? 'connected' : 'disconnected',
-      lastSyncTime: wx.getStorageSync('lastSyncTime') || '',
+      myNickname,
+      myPin,
+      partnerNickname,
+      partnerConnected,
       dataStats: { fridgeItems, customFoods, weightRecords },
       menstrualSettings
     })
-  },
 
-  onGetUserProfile(e) {
-    if (!e.detail || !e.detail.userInfo) {
-      wx.showToast({ title: '需要授权才能登录', icon: 'none' })
-      return
+    // 如果有昵称和PIN，检查云端配对状态
+    if (myNickname && myPin) {
+      this.checkPairStatus()
     }
-    const { nickName, avatarUrl } = e.detail.userInfo
-    this.saveUserProfile(nickName, avatarUrl)
   },
 
-  async saveUserProfile(nickname, avatarUrl) {
-    wx.showLoading({ title: '登录中...' })
-
+  // 检查云端配对状态
+  async checkPairStatus() {
     try {
-      // 1. 下载头像
-      const localPath = await this.downloadAvatar(avatarUrl)
-
-      // 2. 保存到本地
-      const profile = {
-        nickname,
-        localAvatarPath: localPath,
-        wechatAvatarUrl: avatarUrl,
-        updateTime: Date.now()
-      }
-      storageAdapter.set('userProfile', profile)
-
-      // 3. 同步到云端
-      await this.syncToCloud(profile)
-
-      // 4. 更新页面
-      this.setData({
-        userInfo: {
-          nickname,
-          avatar: localPath || nickname.charAt(0),
-          localAvatarPath: localPath
-        },
-        isLoggedIn: true
-      })
-
-      wx.hideLoading()
-      wx.showToast({ title: '登录成功', icon: 'success' })
-    } catch (err) {
-      wx.hideLoading()
-      console.error('登录失败', err)
-      wx.showToast({ title: '登录失败，请重试', icon: 'none' })
-    }
-  },
-
-  downloadAvatar(url) {
-    return new Promise((resolve) => {
-      if (!url) {
-        resolve('')
-        return
-      }
-      wx.downloadFile({
-        url,
-        filePath: wx.env.USER_DATA_PATH + '/avatar_' + Date.now() + '.jpg',
-        success: res => {
-          if (res.statusCode === 200) {
-            resolve(res.filePath)
-          } else {
-            resolve('')
-          }
-        },
-        fail: err => {
-          console.error('下载头像失败', err)
-          resolve('')
+      const res = await wx.cloud.callFunction({
+        name: 'pairPartner',
+        data: {
+          action: 'checkStatus',
+          nickname: this.data.myNickname,
+          pin: this.data.myPin
         }
       })
-    })
-  },
-
-  async syncToCloud(profile) {
-    const app = getApp()
-    if (!app.globalData.userId) {
-      console.warn('userId 未准备好，跳过云端同步')
-      return
-    }
-    try {
-      const db = wx.cloud.database()
-      await db.collection('user_profiles').doc(app.globalData.userId).set({
-        data: profile
-      })
-    } catch (err) {
-      console.error('同步到云端失败', err)
-    }
-  },
-
-  showEditNickname() {
-    wx.showModal({
-      title: '修改昵称',
-      editable: true,
-      placeholderText: '请输入昵称',
-      success: (res) => {
-        if (res.confirm && res.content) {
-          const userProfile = storageAdapter.get('userProfile') || {}
-          userProfile.nickname = res.content
-          storageAdapter.set('userProfile', userProfile)
+      if (res.result && res.result.success) {
+        const { registered, paired, partnerNickname } = res.result
+        if (registered) {
+          wx.setStorageSync('partnerNickname', partnerNickname || '')
           this.setData({
-            'userInfo.nickname': res.content,
-            'userInfo.avatar': res.content.charAt(0)
+            partnerConnected: paired,
+            partnerNickname: partnerNickname || ''
           })
-          wx.showToast({ title: '昵称已修改', icon: 'success' })
         }
       }
+    } catch (err) {
+      console.error('检查配对状态失败', err)
+    }
+  },
+
+  // ========== 我的信息弹窗 ==========
+  openMyInfoModal() {
+    this.setData({
+      showMyInfoModal: true,
+      tempMyNickname: this.data.myNickname || '',
+      tempMyPin: this.data.myPin || ''
     })
   },
 
-  syncData() {
-    wx.showToast({ title: '正在同步...', icon: 'loading' })
-
-    // 触发全量同步
-    storageAdapter.syncAll()
-
-    setTimeout(() => {
-      const now = new Date().toLocaleString()
-      wx.setStorageSync('lastSyncTime', now)
-      this.setData({ lastSyncTime: now, syncStatus: 'connected' })
-      wx.showToast({ title: '同步成功', icon: 'success' })
-    }, 1500)
+  closeMyInfoModal() {
+    this.setData({ showMyInfoModal: false })
   },
 
+  onNicknameInput(e) {
+    this.setData({ tempMyNickname: e.detail.value })
+  },
+
+  onPinInput(e) {
+    this.setData({ tempMyPin: e.detail.value })
+  },
+
+  async saveMyInfo() {
+    const { tempMyNickname, tempMyPin } = this.data
+    if (!tempMyNickname || tempMyNickname.trim().length === 0) {
+      wx.showToast({ title: '请输入昵称', icon: 'none' })
+      return
+    }
+    if (!tempMyPin || tempMyPin.length !== 4) {
+      wx.showToast({ title: '请输入4位PIN码', icon: 'none' })
+      return
+    }
+
+    this.setData({ savingInfo: true })
+
+    // 本地存储
+    const nickname = tempMyNickname.trim()
+    const pin = tempMyPin
+    wx.setStorageSync('myNickname', nickname)
+    wx.setStorageSync('myPin', pin)
+
+    // 云端注册
+    try {
+      await wx.cloud.callFunction({
+        name: 'pairPartner',
+        data: { action: 'register', nickname, pin }
+      })
+    } catch (err) {
+      console.error('注册云端失败', err)
+    }
+
+    this.setData({
+      savingInfo: false,
+      myNickname: nickname,
+      myPin: pin,
+      showMyInfoModal: false
+    })
+    wx.showToast({ title: '已保存', icon: 'success' })
+  },
+
+  // ========== 配对弹窗 ==========
+  openPairModal() {
+    if (!this.data.myNickname || !this.data.myPin) {
+      wx.showToast({ title: '请先设置我的信息', icon: 'none' })
+      this.openMyInfoModal()
+      return
+    }
+    this.setData({
+      showPairModal: true,
+      tempPartnerNickname: '',
+      tempPartnerPin: ''
+    })
+  },
+
+  closePairModal() {
+    this.setData({ showPairModal: false, pairing: false })
+  },
+
+  onPartnerNicknameInput(e) {
+    this.setData({ tempPartnerNickname: e.detail.value })
+  },
+
+  onPartnerPinInput(e) {
+    this.setData({ tempPartnerPin: e.detail.value })
+  },
+
+  async doPair() {
+    const { myNickname, myPin, tempPartnerNickname, tempPartnerPin } = this.data
+
+    if (!tempPartnerNickname || tempPartnerNickname.trim().length === 0) {
+      wx.showToast({ title: '请输入伴侣昵称', icon: 'none' })
+      return
+    }
+    if (!tempPartnerPin || tempPartnerPin.length !== 4) {
+      wx.showToast({ title: '请输入4位PIN码', icon: 'none' })
+      return
+    }
+
+    this.setData({ pairing: true })
+
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'pairPartner',
+        data: {
+          action: 'pair',
+          myNickname,
+          myPin,
+          partnerNickname: tempPartnerNickname.trim(),
+          partnerPin: tempPartnerPin
+        }
+      })
+
+      if (res.result && res.result.success) {
+        wx.setStorageSync('partnerNickname', tempPartnerNickname.trim())
+        this.setData({
+          partnerConnected: true,
+          partnerNickname: tempPartnerNickname.trim(),
+          pairing: false,
+          showPairModal: false
+        })
+        wx.showToast({ title: '配对成功', icon: 'success' })
+      } else {
+        wx.showToast({ title: res.result?.error || '配对失败', icon: 'none' })
+        this.setData({ pairing: false })
+      }
+    } catch (err) {
+      wx.showToast({ title: '配对失败，请稍后重试', icon: 'none' })
+      this.setData({ pairing: false })
+    }
+  },
+
+  // ========== 解除配对 ==========
+  async unpairPartner() {
+    const { myNickname, myPin } = this.data
+    if (!myNickname || !myPin) return
+
+    const confirm = await wx.showModal({
+      title: '确认解除',
+      content: '确定要解除与' + this.data.partnerNickname + '的绑定吗？',
+      confirmText: '解除'
+    })
+
+    if (!confirm.confirm) return
+
+    try {
+      await wx.cloud.callFunction({
+        name: 'pairPartner',
+        data: { action: 'unpair', nickname: myNickname, pin: myPin }
+      })
+      wx.removeStorageSync('partnerNickname')
+      this.setData({
+        partnerConnected: false,
+        partnerNickname: ''
+      })
+      wx.showToast({ title: '已解除绑定', icon: 'success' })
+    } catch (err) {
+      wx.showToast({ title: '解除失败', icon: 'none' })
+    }
+  },
+
+  // ========== 导出数据 ==========
   exportData() {
     const data = {
       fridgeItems: wx.getStorageSync('fridgeItems') || [],
@@ -229,7 +286,6 @@ Page({
         })
       },
       fail: () => {
-        // 降级：显示JSON内容
         wx.setClipboardData({
           data: content,
           success: () => {
@@ -240,6 +296,22 @@ Page({
     })
   },
 
+  // ========== 重置数据 ==========
+  showResetConfirm() {
+    wx.showModal({
+      title: '确认重置',
+      content: '此操作将清除所有本地数据，确定要继续吗？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.clearStorageSync()
+          this.loadSettings()
+          wx.showToast({ title: '数据已重置', icon: 'success' })
+        }
+      }
+    })
+  },
+
+  // ========== 隐私声明 ==========
   showPrivacy() {
     this.setData({ showPrivacyModal: true })
   },
@@ -248,34 +320,7 @@ Page({
     this.setData({ showPrivacyModal: false })
   },
 
-  showResetConfirm() {
-    wx.showModal({
-      title: '确认重置',
-      content: '此操作将清除所有本地数据，包括冰箱库存、健康记录等，确定要继续吗？',
-      success: (res) => {
-        if (res.confirm) {
-          this.resetAllData()
-        }
-      }
-    })
-  },
-
-  resetAllData() {
-    // 清除所有本地存储
-    wx.clearStorageSync()
-    this.loadSettings()
-    wx.showToast({ title: '数据已重置', icon: 'success' })
-  },
-
-  getSyncStatusText(status) {
-    const texts = {
-      'connected': '已连接',
-      'syncing': '同步中',
-      'disconnected': '未连接'
-    }
-    return texts[status] || '未知'
-  },
-
+  // ========== 工具函数 ==========
   getPhaseText(phase) {
     const phases = {
       'menstruation': '经期',
@@ -284,81 +329,5 @@ Page({
       'luteal': '黄体期'
     }
     return phases[phase] || '未设置'
-  },
-
-  showBindPartner() {
-    this.setData({ showBindPartnerModal: true })
-  },
-
-  closeBindPartnerModal() {
-    this.setData({
-      showBindPartnerModal: false,
-      inviteCode: '',
-      isGeneratingCode: false,
-      isBinding: false
-    })
-  },
-
-  preventBubble() {
-    // 阻止冒泡
-  },
-
-  async generateInviteCode() {
-    this.setData({ isGeneratingCode: true })
-    try {
-      const result = await storageAdapter.createInviteCode()
-      this.setData({ inviteCode: result.code })
-    } catch (err) {
-      wx.showToast({ title: err.message || '生成失败', icon: 'none' })
-    } finally {
-      this.setData({ isGeneratingCode: false })
-    }
-  },
-
-  async bindWithCode(e) {
-    const code = e.detail.value.code
-    if (!code || code.length !== 6) {
-      wx.showToast({ title: '请输入6位邀请码', icon: 'none' })
-      return
-    }
-
-    this.setData({ isBinding: true })
-    try {
-      await storageAdapter.bindPartner(code)
-      wx.showToast({ title: '绑定成功', icon: 'success' })
-      this.closeBindPartnerModal()
-      this.loadSettings()
-    } catch (err) {
-      wx.showToast({ title: err.message || '绑定失败', icon: 'none' })
-    } finally {
-      this.setData({ isBinding: false })
-    }
-  },
-
-  async unbindPartner() {
-    wx.showModal({
-      title: '确认解除',
-      content: '确定要解除与TA的绑定吗？',
-      success: async (res) => {
-        if (res.confirm) {
-          try {
-            await storageAdapter.unbindPartner()
-            wx.showToast({ title: '已解除绑定', icon: 'success' })
-            this.loadSettings()
-          } catch (err) {
-            wx.showToast({ title: '解除失败', icon: 'none' })
-          }
-        }
-      }
-    })
-  },
-
-  copyInviteCode() {
-    wx.setClipboardData({
-      data: this.data.inviteCode,
-      success: () => {
-        wx.showToast({ title: '已复制', icon: 'success' })
-      }
-    })
   }
 })

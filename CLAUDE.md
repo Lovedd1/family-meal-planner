@@ -41,7 +41,7 @@
 - [x] 云函数 generateDietPlan（调用DeepSeek API，已部署至云端）
 - [x] 云函数 login（自动登录，已部署至云端）
 - [x] 云开发数据库集成（离线优先存储适配层 + 7个Collection）
-- [x] 双人实时同步（邀请码配对、冰箱菜单双向共享）
+- [x] 双人实时同步（昵称+PIN码配对、冰箱菜单双向共享，通过 `pairPartner` 云函数）
 - [x] 修复 Modal 输入框关闭问题（catchtap preventBubble）
 - [x] 修复邀请码生成等待登录完成问题
 - [x] 微信登录功能（头像下载本地、昵称+头像存储、云端同步）⚠️ **仅实现，需真机调试**
@@ -123,6 +123,9 @@
 ## 本地存储 Key
 | Key | 内容 |
 |-----|------|
+| `myNickname` | 我的昵称 |
+| `myPin` | 我的4位PIN码 |
+| `partnerNickname` | 伴侣昵称 |
 | `fridgeItems` | 冰箱食材列表 |
 | `customFoods` | 自定义菜品 |
 | `todayMenu` | 今日菜单 |
@@ -130,17 +133,16 @@
 | `weightRecords` | 体重记录 |
 | `menstrualSettings` | 生理期设置 |
 | `userProfile` | 用户信息 |
-| `partnerId` | 伴侣ID |
-| `partnerNickname` | 伴侣昵称 |
 | `dietPlan` | 当前AI饮食计划 |
 | `dietPlanHistory` | AI饮食计划历史（最多3条） |
 | `userId` | 用户ID（openid） |
 
 ## 双人同步机制
-- 邀请码：6位字母数字，24小时有效
+- 配对方式：昵称 + 4位PIN码（双方需各自设置昵称和PIN）
 - 共享数据：`fridgeItems`、`customFoods`、`todayMenu`
-- 同步方式：30秒轮询检查伴侣数据变更
+- 同步方式：30秒轮询检查伴侣数据变更，通过 `pairPartner` 云函数读写 `shared_users` 和 `shared_data` 集合
 - 冲突处理：最后写入获胜
+- 云函数 `pairPartner` 已部署至 `cloud1` 环境，支持 `register`、`pair`、`getSharedData`、`updateSharedData`、`unpair`、`checkStatus` 操作
 
 ## 输出格式
 - 除代码之外，一切回答用中文形式

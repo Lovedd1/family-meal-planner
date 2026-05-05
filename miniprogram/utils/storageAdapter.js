@@ -463,36 +463,27 @@ class StorageAdapter {
   }
 
   /**
-   * 获取Storage Key对应的Collection名称
-   */
-  getCollectionName(key) {
-    const map = {
-      fridgeItems: 'fridge_items',
-      customFoods: 'menu_items',
-      todayMenu: null
-    }
-    return map[key]
-  }
-
-  /**
    * 拉取伴侣数据
    */
   async pullPartnerData(key) {
-    if (!this.db) this.initCloudDB()
-
-    const partnerId = wx.getStorageSync('partnerId')
-    if (!partnerId) return null
-
-    const collectionName = this.getCollectionName(key)
-    if (!collectionName) return null
+    const nickname = wx.getStorageSync('myNickname')
+    const pin = wx.getStorageSync('myPin')
+    if (!nickname || !pin) return null
 
     try {
-      const collection = this.db.collection(collectionName)
-      const result = await collection.doc(partnerId).get()
+      const res = await wx.cloud.callFunction({
+        name: 'pairPartner',
+        data: {
+          action: 'getSharedData',
+          nickname,
+          pin
+        }
+      })
 
-      if (result.data) {
-        const { _id, _openid, userId, updatedAt, ...data } = result.data
-        return data.items || data
+      if (res.result && res.result.success && res.result.data) {
+        // shared_data 中存储的结构是 { fridgeItems, customFoods, todayMenu }
+        const content = res.result.data
+        return content[key] || null
       }
     } catch (err) {
       console.error('拉取伴侣数据失败:', key, err)
@@ -504,35 +495,41 @@ class StorageAdapter {
    * 同步数据到伴侣
    */
   async syncToPartner(key, data) {
-    if (!this.db) this.initCloudDB()
+    const nickname = wx.getStorageSync('myNickname')
+    const pin = wx.getStorageSync('myPin')
+    if (!nickname || !pin) return
 
-    const partnerId = wx.getStorageSync('partnerId')
-    if (!partnerId) return
-
-    const collectionName = this.getCollectionName(key)
-    if (!collectionName) return
+    const partnerNickname = wx.getStorageSync('partnerNickname')
+    if (!partnerNickname) return
 
     try {
-      const collection = this.db.collection(collectionName)
+      // 获取现有的共享数据
+      const res = await wx.cloud.callFunction({
+        name: 'pairPartner',
+        data: {
+          action: 'getSharedData',
+          nickname,
+          pin
+        }
+      })
 
-      const partnerData = await collection.doc(partnerId).get()
-
-      if (partnerData.data) {
-        await collection.doc(partnerId).update({
-          data: {
-            ...this.prepareForCloud(data),
-            updatedAt: Date.now()
-          }
-        })
-      } else {
-        await collection.doc(partnerId).set({
-          data: {
-            ...this.prepareForCloud(data),
-            userId: partnerId,
-            updatedAt: Date.now()
-          }
-        })
+      // 合并数据
+      const existingContent = (res.result && res.result.data) || {}
+      const content = {
+        ...existingContent,
+        [key]: data
       }
+
+      // 写入共享数据
+      await wx.cloud.callFunction({
+        name: 'pairPartner',
+        data: {
+          action: 'updateSharedData',
+          nickname,
+          pin,
+          content
+        }
+      })
     } catch (err) {
       console.error('同步到伴侣失败:', key, err)
     }
@@ -577,24 +574,39 @@ class StorageAdapter {
    * 检查伴侣数据更新
    */
   async checkPartnerUpdates() {
-    const partnerId = wx.getStorageSync('partnerId')
-    if (!partnerId) return
+    const nickname = wx.getStorageSync('myNickname')
+    const pin = wx.getStorageSync('myPin')
+    const partnerNickname = wx.getStorageSync('partnerNickname')
+    if (!nickname || !pin || !partnerNickname) return
 
     const sharedKeys = ['fridgeItems', 'customFoods', 'todayMenu']
 
-    for (const key of sharedKeys) {
-      try {
-        const partnerData = await this.pullPartnerData(key)
-        if (partnerData) {
-          const localData = wx.getStorageSync(key)
-          if (JSON.stringify(partnerData) !== JSON.stringify(localData)) {
-            wx.setStorageSync(key, partnerData)
-            this.emitPartnerUpdate(key, partnerData)
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'pairPartner',
+        data: {
+          action: 'getSharedData',
+          nickname,
+          pin
+        }
+      })
+
+      if (res.result && res.result.success && res.result.data) {
+        const content = res.result.data
+
+        for (const key of sharedKeys) {
+          const partnerData = content[key]
+          if (partnerData) {
+            const localData = wx.getStorageSync(key)
+            if (JSON.stringify(partnerData) !== JSON.stringify(localData)) {
+              wx.setStorageSync(key, partnerData)
+              this.emitPartnerUpdate(key, partnerData)
+            }
           }
         }
-      } catch (err) {
-        console.error('检查伴侣更新失败:', key, err)
       }
+    } catch (err) {
+      console.error('检查伴侣更新失败:', err)
     }
   }
 

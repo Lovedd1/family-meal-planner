@@ -8,7 +8,8 @@
       "mcp__cloudbase__queryFunctions",
       "mcp__cloudbase__readNoSqlDatabaseContent",
       "mcp__cloudbase__envQuery",
-      "mcp__cloudbase__readNoSqlDatabaseStructure"
+      "mcp__cloudbase__readNoSqlDatabaseStructure",
+      "mcp__cloudbase__callCloudApi"
     ]
   },
   "enabledPlugins": {

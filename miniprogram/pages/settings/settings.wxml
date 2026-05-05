@@ -5,41 +5,47 @@
     <view class="nav-title">设置</view>
   </view>
 
-  <!-- 用户信息 -->
+  <!-- 我的信息卡片 -->
   <view class="section">
     <view class="user-card">
-      <view class="avatar">{{userInfo.avatar}}</view>
+      <view class="avatar-sm">🤝</view>
       <view class="user-info">
-        <text class="nickname">{{userInfo.nickname}}</text>
-        <text class="login-hint" wx:if="{{!isLoggedIn}}">点击登录微信账号</text>
-        <text class="collab-status" wx:else>
-          <text class="status-dot {{partnerInfo.connected ? 'connected' : ''}}"></text>
-          与{{partnerInfo.connected ? partnerInfo.nickname : '未连接'}}协作中
+        <text class="nickname">{{myNickname || '未设置'}}</text>
+        <text class="login-hint" wx:if="{{!myNickname}}">设置昵称和PIN码开启配对</text>
+        <text class="collab-status" wx:if="{{myNickname}}">
+          <text class="status-dot {{partnerConnected ? 'connected' : ''}}"></text>
+          {{partnerConnected ? '已与' + partnerNickname + '配对' : '等待配对'}}
         </text>
       </view>
-      <view class="edit-btn" wx:if="{{isLoggedIn}}" bindtap="showEditNickname">编辑</view>
+      <view class="edit-btn" bindtap="openMyInfoModal">编辑</view>
     </view>
-
-    <!-- 微信登录按钮（未登录时显示） -->
-    <button wx:if="{{!isLoggedIn}}" class="btn-login" open-type="getUserProfile" bindgetuserinfo="onGetUserProfile">
-      微信登录
-    </button>
   </view>
 
-  <!-- 数据同步 -->
-  <view class="section">
-    <view class="section-title">数据同步</view>
-    <view class="sync-card">
-      <view class="sync-status">
-        <view class="status-indicator {{syncStatus}}">
-          <view class="status-dot"></view>
-          <text>{{getSyncStatusText(syncStatus)}}</text>
-        </view>
-        <text class="last-sync" wx:if="{{lastSyncTime}}">上次同步: {{lastSyncTime}}</text>
-      </view>
-      <button class="btn btn-outline" bindtap="syncData">手动同步</button>
+  <!-- TA的信息（已配对时显示） -->
+  <view class="section" wx:if="{{partnerConnected}}">
+    <view class="section-title">TA的信息</view>
+    <view class="partner-card">
+      <view class="partner-avatar-sm">💕</view>
+      <view class="partner-name">{{partnerNickname}}</view>
+      <button class="btn-small danger" bindtap="unpairPartner">解除绑定</button>
     </view>
+  </view>
 
+  <!-- 配对区域 -->
+  <view class="section" wx:if="{{!partnerConnected && myNickname}}">
+    <view class="section-title">绑定伴侣</view>
+    <view class="pair-hint">向伴侣询问TA的昵称和PIN码，即可完成配对</view>
+    <button class="btn-primary" bindtap="openPairModal">绑定伴侣</button>
+  </view>
+
+  <!-- 提示（未设置昵称时） -->
+  <view class="section" wx:if="{{!myNickname}}">
+    <view class="pair-hint center">设置我的信息后，即可与伴侣配对共享数据</view>
+  </view>
+
+  <!-- 数据同步状态 -->
+  <view class="section">
+    <view class="section-title">数据统计</view>
     <view class="data-stats">
       <view class="stat-item">
         <text class="stat-value">{{dataStats.fridgeItems}}</text>
@@ -54,58 +60,10 @@
         <text class="stat-label">体重记录</text>
       </view>
     </view>
-
     <view class="action-item" bindtap="exportData">
       <text class="action-icon">📥</text>
       <text class="action-text">导出JSON数据</text>
       <text class="arrow">›</text>
-    </view>
-  </view>
-
-  <!-- 伴侣信息 -->
-  <view class="section" wx:if="{{partnerInfo.connected}}">
-    <view class="section-title">TA的信息</view>
-    <view class="partner-card">
-      <view class="partner-avatar">{{partnerInfo.nickname}}</view>
-      <view class="partner-name">{{partnerInfo.nickname}}</view>
-      <button class="btn-small" bindtap="unbindPartner">解除绑定</button>
-    </view>
-  </view>
-
-  <!-- 绑定按钮（未绑定时显示） -->
-  <view class="section" wx:if="{{!partnerInfo.connected}}">
-    <button class="btn-primary" bindtap="showBindPartner">绑定伴侣</button>
-  </view>
-
-  <!-- 绑定弹窗 -->
-  <view class="modal" wx:if="{{showBindPartnerModal}}" bindtap="closeBindPartnerModal">
-    <view class="modal-content" catchtap="">
-      <view class="modal-header">
-        <text class="modal-title">绑定伴侣</text>
-        <text class="modal-close" bindtap="closeBindPartnerModal">×</text>
-      </view>
-      <view class="modal-body">
-        <view class="bind-modal-content">
-          <!-- 我的邀请码 -->
-          <view class="invite-code-section">
-            <view class="section-title">我的邀请码</view>
-            <view wx:if="{{inviteCode}}" class="invite-code">{{inviteCode}}</view>
-            <button wx:if="{{!inviteCode}}" loading="{{isGeneratingCode}}" bindtap="generateInviteCode">
-              生成邀请码
-            </button>
-            <button wx:if="{{inviteCode}}" class="btn-small" bindtap="copyInviteCode">复制</button>
-          </view>
-
-          <!-- 输入伴侣邀请码 -->
-          <view class="bind-input-section">
-            <view class="section-title">输入TA的邀请码</view>
-            <form bindsubmit="bindWithCode" catchtap="preventBubble">
-              <input name="code" maxlength="6" placeholder="请输入6位邀请码" class="code-input"/>
-              <button form-type="submit" loading="{{isBinding}}" class="btn-primary">确认绑定</button>
-            </form>
-          </view>
-        </view>
-      </view>
     </view>
   </view>
 
@@ -140,11 +98,6 @@
         <text class="arrow">›</text>
       </view>
       <view class="about-item">
-        <text class="about-icon">📖</text>
-        <text class="about-text">使用说明</text>
-        <text class="arrow">›</text>
-      </view>
-      <view class="about-item">
         <text class="about-icon">ℹ️</text>
         <text class="about-text">版本信息</text>
         <text class="version">{{version}}</text>
@@ -163,8 +116,89 @@
     </view>
   </view>
 
+  <!-- 我的信息弹窗 -->
+  <view class="modal" wx:if="{{showMyInfoModal}}">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">设置我的信息</text>
+        <text class="modal-close" bindtap="closeMyInfoModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="form-item">
+          <label>我的昵称</label>
+          <input
+            class="pin-input"
+            type="text"
+            maxlength="10"
+            value="{{tempMyNickname}}"
+            bindinput="onNicknameInput"
+            placeholder="给自己起个昵称（最多10字）"
+          />
+        </view>
+        <view class="form-item">
+          <label>我的PIN码（4位数字）</label>
+          <input
+            class="pin-input pin-code"
+            type="number"
+            maxlength="4"
+            value="{{tempMyPin}}"
+            bindinput="onPinInput"
+            placeholder="设置4位数字PIN码"
+          />
+          <text class="form-hint">PIN码将用于与伴侣配对，请牢记</text>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button type="default" catchtap="closeMyInfoModal">取消</button>
+        <button type="primary" bindtap="saveMyInfo" loading="{{savingInfo}}">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 配对弹窗 -->
+  <view class="modal" wx:if="{{showPairModal}}">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">绑定伴侣</text>
+        <text class="modal-close" bindtap="closePairModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="pair-step">
+          <view class="pair-step-num">1</view>
+          <view class="pair-step-text">请输入TA的昵称和PIN码</view>
+        </view>
+        <view class="form-item">
+          <label>伴侣昵称</label>
+          <input
+            class="pin-input"
+            type="text"
+            maxlength="10"
+            value="{{tempPartnerNickname}}"
+            bindinput="onPartnerNicknameInput"
+            placeholder="TA给自己起的昵称"
+          />
+        </view>
+        <view class="form-item">
+          <label>伴侣PIN码</label>
+          <input
+            class="pin-input pin-code"
+            type="number"
+            maxlength="4"
+            value="{{tempPartnerPin}}"
+            bindinput="onPartnerPinInput"
+            placeholder="TA设置的4位PIN码"
+          />
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button type="default" catchtap="closePairModal">取消</button>
+        <button type="primary" bindtap="doPair" loading="{{pairing}}">确认配对</button>
+      </view>
+    </view>
+  </view>
+
   <!-- 隐私声明弹窗 -->
-  <view class="modal" wx:if="{{showPrivacyModal}}" bindtap="closePrivacyModal">
+  <view class="modal" wx:if="{{showPrivacyModal}}">
     <view class="modal-content" catchtap="">
       <view class="modal-header">
         <text class="modal-title">隐私声明</text>
@@ -179,10 +213,17 @@
           </view>
         </view>
         <view class="privacy-item">
+          <text class="privacy-icon">🤝</text>
+          <view class="privacy-text">
+            <text class="privacy-title">伴侣配对</text>
+            <text class="privacy-desc">配对使用昵称+PIN码，数据通过云端加密同步。请勿泄露PIN码给他人</text>
+          </view>
+        </view>
+        <view class="privacy-item">
           <text class="privacy-icon">☁️</text>
           <view class="privacy-text">
-            <text class="privacy-title">云开发同步</text>
-            <text class="privacy-desc">如启用云开发，数据将在加密后同步至腾讯云</text>
+            <text class="privacy-title">云端同步</text>
+            <text class="privacy-desc">配对数据存储在腾讯云开发数据库中，仅配对双方可访问</text>
           </view>
         </view>
         <view class="privacy-item">
@@ -190,13 +231,6 @@
           <view class="privacy-text">
             <text class="privacy-title">AI饮食建议</text>
             <text class="privacy-desc">仅在生成建议时向DeepSeek发送必要健康参数</text>
-          </view>
-        </view>
-        <view class="privacy-item">
-          <text class="privacy-icon">🚫</text>
-          <view class="privacy-text">
-            <text class="privacy-title">不收集无关信息</text>
-            <text class="privacy-desc">我们不会收集您的位置、通讯录等无关信息</text>
           </view>
         </view>
       </scroll-view>
