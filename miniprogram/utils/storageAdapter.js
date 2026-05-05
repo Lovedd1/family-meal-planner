@@ -7,10 +7,10 @@ const STORAGE_KEY_MAP = {
   fridgeItems: 'fridge_items',
   customFoods: 'menu_items',
   healthProfile: 'health_records',
-  weightRecords: 'weight_records',
+  weightRecords: null, // 仅本地存储，不同步到云端（个人隐私数据）
   menstrualSettings: null, // 仅本地存储，不同步到云端
   userProfile: 'user_profiles',
-  dietPlan: 'diet_plans',
+  dietPlan: null, // 仅本地存储，不同步到云端
   todayMenu: null, // 今日菜单不同步到云端
 }
 
