@@ -1,46 +1,93 @@
-/* ==================== 健康计划页面 ==================== */
-
-/* 内容区 */
-.content {
-  height: calc(100vh - 180rpx);
+/* 健康计划 — Pop Style */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FDF8F8 0%, #F5EEF0 100%);
+  padding-bottom: 30rpx;
 }
 
-/* 卡片 */
+/* ========== 导航栏 ========== */
+.nav-bar {
+  background: linear-gradient(135deg, #E8D5D8 0%, #C48B8B 100%);
+  padding: 60rpx 30rpx 30rpx;
+  position: relative;
+}
+
+.nav-bar::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 0;
+  right: 0;
+  height: 40rpx;
+  background: #F5EEF0;
+  border-radius: 20rpx 20rpx 0 0;
+}
+
+.nav-title {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+  letter-spacing: 2rpx;
+}
+
+.content {
+  height: calc(100vh - 90rpx);
+}
+
+/* ========== 通用卡片 ========== */
 .card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: var(--space-lg);
-  margin: var(--space-md) 20rpx;
-  box-shadow: var(--shadow-sm);
-  border: 1rpx solid var(--border-lighter);
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  margin: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(93, 74, 74, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5rpx;
+  background: repeating-linear-gradient(
+    90deg,
+    #C48B8B 0rpx,
+    #C48B8B 6rpx,
+    #E8D5D8 6rpx,
+    #E8D5D8 12rpx
+  );
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-lg);
+  margin-bottom: 24rpx;
 }
 
 .card-title {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #5D4A4A;
 }
 
 .edit-btn {
   font-size: 26rpx;
-  color: var(--primary);
+  color: #C48B8B;
+  font-weight: 600;
 }
 
-/* 伴侣卡片 */
+/* ========== 伴侣卡片 ========== */
 .partner-card {
-  border-left: 8rpx solid var(--primary);
+  border-left: 6rpx solid #C48B8B;
 }
 
 .partner-info {
   display: flex;
-  gap: var(--space-lg);
+  gap: 20rpx;
 }
 
 .info-item {
@@ -50,47 +97,51 @@
 
 .info-item text:first-child {
   display: block;
-  font-size: 22rpx;
-  color: var(--text-secondary);
+  font-size: 24rpx;
+  color: #8A6A6A;
 }
 
 .info-item text:last-child {
-  font-size: 28rpx;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #5D4A4A;
 }
 
-/* 目标选择 */
+/* ========== 目标选择 ========== */
 .goal-selector {
   display: flex;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  gap: 16rpx;
+  margin-bottom: 30rpx;
 }
 
 .goal-btn {
   flex: 1;
-  padding: 24rpx;
+  padding: 22rpx;
   text-align: center;
-  border-radius: var(--radius-md);
-  background: var(--bg-start);
+  border-radius: 20rpx;
+  background: #FDF8F8;
   font-size: 28rpx;
-  color: var(--text-secondary);
+  color: #8A6A6A;
+  font-weight: 600;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
 }
 
 .goal-btn.active {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: #C48B8B;
   color: #fff;
-  font-weight: 600;
+  border-color: #C48B8B;
+  box-shadow: 0 4rpx 16rpx rgba(196, 139, 139, 0.3);
 }
 
-/* 数据概览 */
+/* ========== 数据概览 ========== */
 .data-overview {
   display: flex;
   justify-content: space-around;
-  padding: var(--space-lg) 0;
-  border-top: 1rpx solid var(--border-lighter);
-  border-bottom: 1rpx solid var(--border-lighter);
-  margin: var(--space-md) 0;
+  padding: 24rpx 0;
+  border-top: 2rpx dashed #E8D5D8;
+  border-bottom: 2rpx dashed #E8D5D8;
+  margin: 20rpx 0;
 }
 
 .data-item {
@@ -99,115 +150,123 @@
 
 .data-label {
   display: block;
-  font-size: 22rpx;
-  color: var(--text-secondary);
+  font-size: 24rpx;
+  color: #8A6A6A;
   margin-bottom: 8rpx;
 }
 
 .data-value {
-  font-size: 40rpx;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #5D4A4A;
 }
 
 .data-unit {
-  font-size: 22rpx;
-  color: var(--text-secondary);
+  font-size: 24rpx;
+  color: #8A6A6A;
 }
 
-/* 活动量 */
+/* ========== 活动量 ========== */
 .activity-selector {
-  margin-bottom: var(--space-md);
+  margin-bottom: 20rpx;
 }
 
 .section-label {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  margin-bottom: 12rpx;
+  font-size: 26rpx;
+  color: #8A6A6A;
+  margin-bottom: 14rpx;
   display: block;
+  font-weight: 600;
 }
 
 .activity-btns {
   display: flex;
-  gap: var(--space-xs);
+  gap: 12rpx;
 }
 
 .activity-btn {
   flex: 1;
-  padding: 16rpx;
+  padding: 14rpx;
   text-align: center;
-  border-radius: var(--radius-sm);
-  background: var(--bg-start);
+  border-radius: 16rpx;
+  background: #FDF8F8;
   font-size: 24rpx;
-  color: var(--text-secondary);
+  color: #8A6A6A;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
 }
 
 .activity-btn.active {
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  font-weight: 600;
+  background: #C48B8B;
+  color: #fff;
+  border-color: #C48B8B;
 }
 
-/* 过敏源标签 */
+/* ========== 过敏源 ========== */
 .allergy-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
+  gap: 12rpx;
+  margin-bottom: 20rpx;
 }
 
 .allergy-tag {
-  padding: 8rpx 16rpx;
-  background: #FFF0F0;
-  color: var(--danger);
-  border-radius: 20rpx;
-  font-size: 22rpx;
+  padding: 8rpx 20rpx;
+  background: rgba(196, 92, 92, 0.1);
+  color: #C45C5C;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  font-weight: 600;
 }
 
-/* 体重图表 */
+.btn-record {
+  margin-top: 24rpx;
+}
+
+/* ========== 体重趋势图 ========== */
 .weight-chart {
-  padding: var(--space-md) 0;
+  padding: 20rpx 0;
 }
 
 .chart-bars {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  height: 160rpx;
-  padding-bottom: 50rpx;
+  height: 140rpx;
+  padding-bottom: 40rpx;
 }
 
 .chart-bar {
   flex: 1;
-  background: linear-gradient(to top, var(--primary-light) 0%, var(--primary) 100%);
+  background: linear-gradient(to top, #C48B8B, #E8D5D8);
   border-radius: 6rpx 6rpx 0 0;
-  margin: 0 4rpx;
+  margin: 0 3rpx;
   min-height: 20rpx;
   position: relative;
 }
 
 .bar-value {
   position: absolute;
-  bottom: -40rpx;
+  bottom: -36rpx;
   left: 50%;
   transform: translateX(-50%);
   font-size: 18rpx;
-  color: var(--text-secondary);
+  color: #8A6A6A;
   white-space: nowrap;
 }
 
-/* 进度条 */
 .progress-bar {
-  height: 16rpx;
-  background: var(--bg-start);
-  border-radius: 8rpx;
-  margin-top: 80rpx;
+  height: 12rpx;
+  background: #E8D5D8;
+  border-radius: 6rpx;
+  margin-top: 60rpx;
   overflow: hidden;
 }
 
 .progress-inner {
   height: 100%;
-  background: linear-gradient(to right, var(--primary-light) 0%, var(--primary) 100%);
-  border-radius: 8rpx;
+  background: linear-gradient(to right, #C48B8B, #A67070);
+  border-radius: 6rpx;
   transition: width 0.3s;
 }
 
@@ -215,67 +274,66 @@
   display: flex;
   justify-content: space-between;
   margin-top: 16rpx;
-  font-size: 22rpx;
-  color: var(--text-secondary);
+  font-size: 24rpx;
+  color: #8A6A6A;
 }
 
-/* 生理期 */
+/* ========== 生理期 ========== */
 .phase-status {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-md);
+  gap: 16rpx;
+  margin-bottom: 20rpx;
 }
 
 .phase-badge {
-  padding: 16rpx 32rpx;
-  border-radius: var(--radius-lg);
-  font-size: 28rpx;
-  font-weight: 500;
+  padding: 12rpx 28rpx;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+  font-weight: 600;
 }
 
 .phase-menstruation {
-  background: #FFF0F0;
-  color: var(--danger);
+  background: rgba(196, 92, 92, 0.12);
+  color: #C45C5C;
 }
 
 .phase-follicular {
-  background: #F0FFF0;
-  color: var(--success);
+  background: rgba(90, 138, 106, 0.12);
+  color: #5A8A6A;
 }
 
 .phase-ovulation {
-  background: #FFF8E6;
-  color: var(--warning);
+  background: rgba(212, 168, 40, 0.12);
+  color: #D4A828;
 }
 
 .phase-luteal {
-  background: #F0F8FF;
-  color: var(--info);
+  background: rgba(122, 138, 160, 0.12);
+  color: #7A8AA0;
 }
 
 .phase-day {
   font-size: 28rpx;
-  color: var(--text-secondary);
+  color: #8A6A6A;
 }
 
-/* 日历 */
 .calendar-view {
-  margin: var(--space-md) 0;
+  margin: 20rpx 0;
 }
 
 .calendar-legend {
   display: flex;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-md);
+  gap: 20rpx;
+  margin-bottom: 16rpx;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 8rpx;
-  font-size: 22rpx;
-  color: var(--text-secondary);
+  font-size: 24rpx;
+  color: #8A6A6A;
 }
 
 .legend-dot {
@@ -285,15 +343,15 @@
 }
 
 .legend-dot.period {
-  background: var(--danger);
+  background: #C45C5C;
 }
 
 .legend-dot.fertile {
-  background: var(--warning);
+  background: #D4A828;
 }
 
 .legend-dot.today {
-  background: var(--success);
+  background: #5A8A6A;
 }
 
 .calendar-grid {
@@ -307,70 +365,157 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-start);
-  border-radius: var(--radius-sm);
+  background: #FDF8F8;
+  border-radius: 8rpx;
   font-size: 24rpx;
-  color: var(--text-secondary);
+  color: #8A6A6A;
 }
 
-.day-cell.today {
-  background: var(--primary-light);
-  color: var(--primary-dark);
-  font-weight: 600;
-}
-
-.day-cell.period {
-  background: #FFF0F0;
-  color: var(--danger);
-}
-
-/* 阶段提示 */
 .phase-tips {
-  background: var(--bg-start);
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
+  background: #FDF8F8;
+  padding: 24rpx;
+  border-radius: 16rpx;
 }
 
 .phase-tip-title {
   display: block;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 8rpx;
-  color: var(--text-primary);
+  color: #5D4A4A;
+  font-size: 26rpx;
 }
 
 .phase-tip-text {
-  font-size: 24rpx;
-  color: var(--text-secondary);
+  font-size: 26rpx;
+  color: #8A6A6A;
   line-height: 1.6;
 }
 
-/* AI饮食计划 */
+.empty-phase {
+  text-align: center;
+  padding: 40rpx;
+  color: #8A6A6A;
+}
+
+/* ========== AI饮食计划 ========== */
 .ai-hint {
-  font-size: 24rpx;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-md);
+  font-size: 26rpx;
+  color: #8A6A6A;
+  margin-bottom: 24rpx;
   line-height: 1.6;
 }
 
-/* 计划弹窗 */
+/* ========== 弹窗 ========== */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(93, 74, 74, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 32rpx;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 2rpx dashed #E8D5D8;
+}
+
+.modal-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+}
+
+.modal-close {
+  font-size: 48rpx;
+  color: #BDBDBD;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 30rpx;
+  max-height: 60vh;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 2rpx dashed #E8D5D8;
+}
+
+.modal-footer button {
+  flex: 1;
+}
+
+.form-body {
+  padding: 30rpx;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-item label {
+  display: block;
+  font-size: 26rpx;
+  color: #8A6A6A;
+  margin-bottom: 14rpx;
+  font-weight: 600;
+}
+
+.form-item input {
+  width: 100%;
+  height: 80rpx;
+  border: 2rpx solid #E8D5D8;
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  background: #FDF8F8;
+  color: #5D4A4A;
+}
+
+/* 饮食计划弹窗 */
+.diet-plan-modal {
+  width: 95%;
+  max-height: 85vh;
+}
+
 .plan-tabs {
   display: flex;
-  padding: 0 var(--space-lg);
-  border-bottom: 1rpx solid var(--border-lighter);
+  padding: 0 30rpx;
+  border-bottom: 2rpx dashed #E8D5D8;
 }
 
 .plan-tab {
   flex: 1;
-  padding: var(--space-md);
+  padding: 22rpx;
   text-align: center;
-  font-size: 28rpx;
-  color: var(--text-secondary);
+  font-size: 26rpx;
+  color: #8A6A6A;
   position: relative;
+  font-weight: 600;
 }
 
 .plan-tab.active {
-  color: var(--primary);
-  font-weight: 600;
+  color: #C48B8B;
 }
 
 .plan-tab.active::after {
@@ -380,42 +525,75 @@
   left: 50%;
   transform: translateX(-50%);
   width: 60rpx;
-  height: 6rpx;
-  background: var(--primary);
-  border-radius: 3rpx;
+  height: 4rpx;
+  background: #C48B8B;
+  border-radius: 2rpx;
+}
+
+.phase-info {
+  display: flex;
+  gap: 30rpx;
+  margin-bottom: 16rpx;
+}
+
+.phase-info-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.phase-info-item .info-label {
+  font-size: 24rpx;
+  color: #8A6A6A;
+}
+
+.phase-info-item .info-value {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #C48B8B;
+}
+
+.phase-focus-text {
+  font-size: 26rpx;
+  color: #8A6A6A;
+  background: #FDF8F8;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+  line-height: 1.5;
 }
 
 /* 周计划 */
 .weekly-plans {
-  margin-bottom: var(--space-lg);
+  margin-bottom: 30rpx;
 }
 
 .week-title {
   font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: var(--space-md);
-  padding-left: 16rpx;
-  border-left: 6rpx solid var(--primary);
+  font-weight: 700;
+  color: #5D4A4A;
+  margin-bottom: 16rpx;
+  padding-left: 12rpx;
+  border-left: 6rpx solid #C48B8B;
 }
 
 .day-plans {
-  background: var(--bg-start);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-  margin-bottom: var(--space-sm);
+  background: #FDF8F8;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
 }
 
 .day-plan-header {
   font-size: 24rpx;
-  color: var(--text-secondary);
-  margin-bottom: var(--space-sm);
+  color: #8A6A6A;
+  margin-bottom: 16rpx;
 }
 
 .meal-item {
   display: flex;
-  padding: 12rpx 0;
-  border-bottom: 1rpx solid var(--border-lighter);
+  padding: 18rpx 0;
+  border-bottom: 1rpx solid #E8D5D8;
 }
 
 .meal-item:last-child {
@@ -423,9 +601,9 @@
 }
 
 .meal-label {
-  width: 100rpx;
-  font-size: 24rpx;
-  color: var(--text-secondary);
+  width: 120rpx;
+  font-size: 26rpx;
+  color: #8A6A6A;
   flex-shrink: 0;
 }
 
@@ -434,48 +612,76 @@
 }
 
 .meal-name {
-  font-size: 26rpx;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5D4A4A;
   display: block;
   margin-bottom: 4rpx;
 }
 
 .meal-effect {
-  font-size: 22rpx;
-  color: var(--success);
+  font-size: 24rpx;
+  color: #5A8A6A;
   display: block;
   margin-bottom: 4rpx;
 }
 
 .meal-ingredients {
-  font-size: 22rpx;
-  color: var(--text-placeholder);
+  font-size: 24rpx;
+  color: #8A6A6A;
 }
 
 .ing-label {
-  color: var(--text-secondary);
+  color: #5D4A4A;
 }
 
-/* 购物清单 */
+.meal-item.snacks {
+  border-top: 2rpx dashed #E8D5D8;
+  margin-top: 8rpx;
+  padding-top: 18rpx;
+}
+
+.snack-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.snack-list text {
+  font-size: 24rpx;
+  color: #8A6A6A;
+  background: #fff;
+  padding: 6rpx 14rpx;
+  border-radius: 10rpx;
+}
+
+/* 采购清单 */
 .shopping-section {
-  margin-top: var(--space-lg);
-  border-top: 1rpx solid var(--border-lighter);
-  padding-top: var(--space-md);
+  margin-top: 30rpx;
+  border-top: 2rpx dashed #E8D5D8;
+  padding-top: 24rpx;
 }
 
 .shopping-title {
   font-size: 28rpx;
-  font-weight: 600;
-  margin-bottom: var(--space-md);
+  font-weight: 700;
+  margin-bottom: 16rpx;
+  color: #5D4A4A;
+}
+
+.shopping-list {
+  background: #FDF8F8;
+  border-radius: 16rpx;
+  padding: 20rpx;
 }
 
 .shopping-item {
   display: flex;
   align-items: center;
-  padding: 12rpx 0;
-  border-bottom: 1rpx solid var(--border-lighter);
+  padding: 14rpx 0;
+  border-bottom: 1rpx solid #E8D5D8;
   font-size: 26rpx;
+  color: #5D4A4A;
 }
 
 .shopping-item:last-child {
@@ -483,30 +689,35 @@
 }
 
 .shopping-icon {
-  margin-right: var(--space-sm);
+  margin-right: 12rpx;
   font-size: 28rpx;
 }
 
 .shopping-name {
   flex: 1;
   font-weight: 500;
-  color: var(--text-primary);
 }
 
 .shopping-amount {
-  color: var(--primary);
-  margin-right: var(--space-md);
+  color: #C48B8B;
+  margin-right: 16rpx;
 }
 
 .shopping-period {
-  font-size: 22rpx;
-  color: var(--text-secondary);
+  font-size: 24rpx;
+  color: #8A6A6A;
 }
 
 .shopping-item.need-buy .shopping-name {
-  color: var(--danger);
+  color: #C45C5C;
 }
 
 .shopping-item.sufficient .shopping-icon {
-  color: var(--success);
+  color: #5A8A6A;
+}
+
+.plateau-tip {
+  display: block;
+  margin-top: 12rpx;
+  color: #8A6A6A;
 }
