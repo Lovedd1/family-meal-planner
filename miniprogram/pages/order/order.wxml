@@ -76,7 +76,6 @@
                 <view
                   class="remove-btn"
                   data-dish="{{item}}"
-                  data-tab="{{currentTab}}"
                   catchtap="removeFromMenu"
                 >移除</view>
               </block>
