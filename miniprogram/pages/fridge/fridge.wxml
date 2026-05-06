@@ -18,7 +18,7 @@
       data-category="{{item.value}}"
       bindtap="switchFilter"
     >
-      <text class="category-emoji">{{item.value === 'all' ? '📦' : item.value === 'meat' ? '🥩' : item.value === 'vegetable' ? '🥬' : '🧂'}}</text>
+      <text class="category-emoji">{{item.value === 'all' ? '📦' : item.value === 'meat' ? '🥩' : item.value === 'vegetable' ? '🥬' : item.value === 'fruit' ? '🍎' : '🧂'}}</text>
       <text class="category-name">{{item.label}}</text>
       <text class="category-count">{{item.count}}种</text>
     </view>
@@ -55,7 +55,7 @@
           wx:if="{{filterCategory === 'all' || subItem.category === filterCategory}}"
         >
           <view class="item-left">
-            <text class="item-category-tag">{{subItem.category === 'meat' ? '🥩' : subItem.category === 'vegetable' ? '🥬' : '🧂'}}</text>
+            <text class="item-category-tag">{{subItem.category === 'meat' ? '🥩' : subItem.category === 'vegetable' ? '🥬' : subItem.category === 'fruit' ? '🍎' : '🧂'}}</text>
             <view class="item-info">
               <text class="item-name">{{subItem.name}}</text>
               <view class="item-meta">
@@ -99,6 +99,7 @@
             <radio-group name="category">
               <label><radio value="meat" /> 🥩 肉类</label>
               <label><radio value="vegetable" /> 🥬 蔬菜类</label>
+              <label><radio value="fruit" /> 🍎 水果类</label>
               <label><radio value="seasoning" /> 🧂 调料类</label>
             </radio-group>
           </view>

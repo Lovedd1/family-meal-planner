@@ -9,6 +9,7 @@ Page({
       { value: 'all', label: '全部', count: 0 },
       { value: 'meat', label: '肉类', count: 0 },
       { value: 'vegetable', label: '蔬菜类', count: 0 },
+      { value: 'fruit', label: '水果类', count: 0 },
       { value: 'seasoning', label: '调料类', count: 0 }
     ],
     filterCategory: 'all',
