@@ -5,6 +5,51 @@
   padding-bottom: 160rpx;
 }
 
+/* ========== 主体布局：侧边栏 + 列表 ========== */
+.content-wrapper {
+  display: flex;
+  height: calc(100vh - 280rpx);
+}
+
+/* ========== 分类侧边栏 ========== */
+.category-sidebar {
+  width: 160rpx;
+  background: #F5F0F0;
+  flex-shrink: 0;
+}
+
+.sidebar-item {
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #5D4A4A;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.sidebar-item.active {
+  background: #fff;
+  color: #C48B8B;
+}
+
+.sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6rpx;
+  background: #C48B8B;
+}
+
+/* ========== 菜品列表区域 ========== */
+.food-list-area {
+  flex: 1;
+  padding: 0 24rpx;
+}
+
 /* ========== 导航栏 ========== */
 .nav-bar {
   background: linear-gradient(135deg, #E8D5D8 0%, #C48B8B 100%);
@@ -98,42 +143,8 @@
   border-color: #C48B8B;
 }
 
-/* ========== 添加到餐次 ========== */
-.add-to-bar {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-  padding: 16rpx 24rpx;
-  background: #fff;
-  margin: 0 24rpx 16rpx;
-  border-radius: 24rpx;
-  box-shadow: 0 4rpx 16rpx rgba(93, 74, 74, 0.08);
-}
-
-.add-label {
-  font-size: 24rpx;
-  color: #8A6A6A;
-  font-family: monospace;
-  font-weight: 700;
-}
-
-.tab-btn {
-  padding: 10rpx 24rpx;
-  border-radius: 24rpx;
-  font-size: 24rpx;
-  background: #FDF8F8;
-  color: #8A6A6A;
-  transition: all 0.2s;
-}
-
-.tab-btn.active {
-  background: #C48B8B;
-  color: #fff;
-}
-
 /* ========== 菜品列表 ========== */
 .food-list {
-  padding: 0 24rpx;
 }
 
 .food-card {
@@ -573,4 +584,65 @@
   font-size: 28rpx;
   color: #8A6A6A;
   margin-top: 20rpx;
+}
+
+/* ========== 底部餐次选择弹窗 ========== */
+.meal-picker-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(93, 74, 74, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.meal-picker-content {
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  width: 100%;
+  padding: 40rpx 30rpx;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.meal-picker-title {
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+  margin-bottom: 30rpx;
+}
+
+.meal-picker-btns {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.meal-picker-btn {
+  flex: 1;
+  height: 88rpx;
+  background: #FDF8F8;
+  border: 2rpx solid #E8D5D8;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #5D4A4A;
+  font-weight: 600;
+}
+
+.meal-picker-btn:active {
+  background: #E8D5D8;
+}
+
+.meal-picker-cancel {
+  text-align: center;
+  font-size: 28rpx;
+  color: #8A6A6A;
+  padding: 20rpx;
 }
