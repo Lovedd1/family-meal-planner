@@ -242,6 +242,9 @@ Page({
     const radius = 70
     const innerRadius = 40
 
+    // 清除旧内容
+    ctx.clearRect(0, 0, 160, 160)
+
     // 如果总数为0，绘制灰色背景圆环
     if (total === 0) {
       ctx.beginPath()
@@ -256,25 +259,40 @@ Page({
       return
     }
 
-    // 计算各段角度
+    // 计算各段角度（确保每个分类都能显示，即使为0）
     const segments = []
-    if (stats.carbsCount > 0) segments.push({ count: stats.carbsCount, color: '#D4A828' })
-    if (stats.proteinCount > 0) segments.push({ count: stats.proteinCount, color: '#C45C5C' })
-    if (stats.fatCount > 0) segments.push({ count: stats.fatCount, color: '#7A8AA0' })
-    if (stats.fiberCount > 0) segments.push({ count: stats.fiberCount, color: '#5A8A6A' })
+    // 碳水 - 金黄色
+    const carbsAngle = (stats.carbsCount / total) * 2 * Math.PI
+    if (carbsAngle > 0) {
+      segments.push({ startAngle: 0, angle: carbsAngle, color: '#D4A828' })
+    }
+    // 蛋白质 - 红色
+    const proteinAngle = (stats.proteinCount / total) * 2 * Math.PI
+    if (proteinAngle > 0) {
+      segments.push({ startAngle: carbsAngle, angle: proteinAngle, color: '#C45C5C' })
+    }
+    // 脂肪 - 灰色
+    const fatAngle = (stats.fatCount / total) * 2 * Math.PI
+    if (fatAngle > 0) {
+      segments.push({ startAngle: carbsAngle + proteinAngle, angle: fatAngle, color: '#7A8AA0' })
+    }
+    // 纤维 - 绿色
+    const fiberAngle = (stats.fiberCount / total) * 2 * Math.PI
+    if (fiberAngle > 0) {
+      segments.push({ startAngle: carbsAngle + proteinAngle + fatAngle, angle: fiberAngle, color: '#5A8A6A' })
+    }
 
     // 绘制各段
-    let startAngle = -Math.PI / 2 // 从顶部开始
+    let currentAngle = -Math.PI / 2 // 从顶部开始
 
     segments.forEach(segment => {
-      const angle = (segment.count / total) * 2 * Math.PI
       ctx.beginPath()
       ctx.moveTo(centerX, centerY)
-      ctx.arc(centerX, centerY, radius, startAngle, startAngle + angle)
+      ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + segment.angle)
       ctx.closePath()
       ctx.setFillStyle(segment.color)
       ctx.fill()
-      startAngle += angle
+      currentAngle += segment.angle
     })
 
     // 中心白色圆（形成环形）
