@@ -147,7 +147,8 @@ const categories = [
   { value: '荤菜', label: '荤菜' },
   { value: '素菜', label: '素菜' },
   { value: '主食', label: '主食' },
-  { value: '汤品', label: '汤品' }
+  { value: '汤品', label: '汤品' },
+  { value: 'fruit', label: '水果' }
 ]
 
 // 营养素分类定义
@@ -171,9 +172,9 @@ const nutritionMap = {
   // 脂肪
   '油脂': 'fat', '五花肉': 'fat', '培根': 'fat', '肥肉': 'fat', '香油': 'fat',
   '花生': 'fat', '核桃': 'fat', '杏仁': 'fat', '芝麻': 'fat',
-  // 水果类
-  '苹果': 'fat', '香蕉': 'fat', '橙子': 'fat', '葡萄': 'fat', '西瓜': 'fat',
-  '草莓': 'fat', '蓝莓': 'fat', '芒果': 'fat', '菠萝': 'fat', '梨': 'fat',
+  // 水果类（果糖→碳水）
+  '苹果': 'carbs', '香蕉': 'carbs', '橙子': 'carbs', '葡萄': 'carbs', '西瓜': 'carbs',
+  '草莓': 'carbs', '蓝莓': 'carbs', '芒果': 'carbs', '菠萝': 'carbs', '梨': 'carbs',
   // 膳食纤维
   '西兰花': 'fiber', '黄瓜': 'fiber', '番茄': 'fiber', '胡萝卜': 'fiber',
   '洋葱': 'fiber', '菠菜': 'fiber', '生菜': 'fiber', '白菜': 'fiber',
