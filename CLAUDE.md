@@ -58,15 +58,13 @@
 - [x] Bug修复 - today.js performDeduction 函数 amount 计算错误
 - [x] Bug修复 - fridge.js generateRecommendations 大小写匹配问题
 - [x] Bug修复 - order.js saveCustomFood 缺少验证
+- [x] 点餐页 - 分类侧边栏（美团式左侧160rpx侧边栏）
+- [x] 点餐页 - 添加菜品时底部弹出餐次选择
 
 ### 待开发 📋
 - [ ] 在 CloudBase 控制台为各集合配置安全规则（设置 read、create、update 权限），恢复云端同步
 
 ## 已知问题 ⚠️
-- **微信登录无法实现**: 微信小程序 button 的 `open-type="getUserProfile"` 在开发阶段和真机调试时存在权限限制，开发者工具可能无法完整测试授权流程。建议在真机上进行完整测试。如遇到问题，可考虑：
-  1. 使用微信开发者工具的真机调试功能
-  2. 检查 app.json 中是否正确配置了 permission
-  3. 确认小程序已发布或在调试模式
 - **云端同步权限不足**: 所有云数据库写入操作报 `-502003 database permission denied`，已暂时禁用所有云端同步，需在 CloudBase 控制台配置安全规则后恢复
 
 ## 技术决策
