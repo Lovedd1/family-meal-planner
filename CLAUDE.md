@@ -34,6 +34,7 @@
 - [x] 我的冰箱页面 (分类统计、添加食材、剩余天数预警、删除)
 - [x] 健康计划页面 (体重记录、趋势进度条、生理期追踪、AI饮食计划)
 - [x] 设置页面 (用户信息、数据同步、导出、重置)
+- [x] 设置页面 - 手动同步功能（配对后显示同步状态和立即同步按钮）
 - [x] 12道内置菜品数据 + 食材相克规则
 - [x] TabBar图标（简约线性风格，SVG + PNG格式）
 - [x] 食材扣减逻辑（部分扣减，库存不足提示补充数量）
@@ -75,6 +76,7 @@
 - [x] style - 今天日期高亮改为红色（#C45C5C）
 - [x] Bug修复 - 生理期阶段计算（动态边界：卵泡期=periodDays+9，排卵期=periodDays+14，黄体期=剩余）
 - [x] Bug修复 - 今日菜单饼状图中心文字添加z-index防止被canvas遮挡
+- [x] 双人同步实时更新（今日菜单3秒、冰箱和自定义菜品5秒轮询 + 页面自动刷新）
 
 ### 待开发 📋
 - [ ] 在 CloudBase 控制台为各集合配置安全规则（设置 read、create、update 权限），恢复云端同步
@@ -160,7 +162,7 @@
 ## 双人同步机制
 - 配对方式：昵称 + 4位PIN码（双方需各自设置昵称和PIN）
 - 共享数据：`fridgeItems`、`customFoods`、`todayMenu`
-- 同步方式：30秒轮询检查伴侣数据变更，通过 `pairPartner` 云函数读写 `shared_users` 和 `shared_data` 集合
+- 同步方式：混合轮询（今日菜单3秒、冰箱和自定义菜品5秒）+ 页面自动刷新（通过 `onPartnerUpdate` 监听）
 - 冲突处理：最后写入获胜
 - 云函数 `pairPartner` 已部署至 `cloud1` 环境，支持 `register`、`pair`、`getSharedData`、`updateSharedData`、`unpair`、`checkStatus` 操作
 

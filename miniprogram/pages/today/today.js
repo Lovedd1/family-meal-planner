@@ -151,6 +151,20 @@ Page({
   onLoad() {
     this.setDate()
     this.loadMenu()
+    // 监听伴侣数据更新（今日菜单3秒轮询）
+    this._partnerUpdateListener = (key, data) => {
+      if (key === 'todayMenu') {
+        this.loadMenu()
+      }
+    }
+    storageAdapter.onPartnerUpdate(this._partnerUpdateListener)
+  },
+
+  onUnload() {
+    if (this._partnerUpdateListener) {
+      const idx = storageAdapter.partnerUpdateListeners.indexOf(this._partnerUpdateListener)
+      if (idx > -1) storageAdapter.partnerUpdateListeners.splice(idx, 1)
+    }
   },
 
   onShow() {

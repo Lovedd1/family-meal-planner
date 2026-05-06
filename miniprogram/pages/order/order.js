@@ -28,6 +28,20 @@ Page({
 
   onLoad() {
     this.loadFoods()
+    // 监听伴侣数据更新（自定义菜品5秒轮询）
+    this._partnerUpdateListener = (key, data) => {
+      if (key === 'customFoods') {
+        this.loadFoods()
+      }
+    }
+    storageAdapter.onPartnerUpdate(this._partnerUpdateListener)
+  },
+
+  onUnload() {
+    if (this._partnerUpdateListener) {
+      const idx = storageAdapter.partnerUpdateListeners.indexOf(this._partnerUpdateListener)
+      if (idx > -1) storageAdapter.partnerUpdateListeners.splice(idx, 1)
+    }
   },
 
   onShow() {

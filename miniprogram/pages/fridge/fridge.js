@@ -23,6 +23,20 @@ Page({
 
   onLoad() {
     this.loadItems()
+    // 监听伴侣数据更新（冰箱5秒轮询）
+    this._partnerUpdateListener = (key, data) => {
+      if (key === 'fridgeItems') {
+        this.loadItems()
+      }
+    }
+    storageAdapter.onPartnerUpdate(this._partnerUpdateListener)
+  },
+
+  onUnload() {
+    if (this._partnerUpdateListener) {
+      const idx = storageAdapter.partnerUpdateListeners.indexOf(this._partnerUpdateListener)
+      if (idx > -1) storageAdapter.partnerUpdateListeners.splice(idx, 1)
+    }
   },
 
   onShow() {

@@ -17,6 +17,7 @@ class StorageAdapter {
     this.db = null
     this._networkListenerRegistered = false
     this.partnerPollingTimer = null
+    this.partnerPollingTimer2 = null // 冰箱和自定义菜品轮询
     this.partnerUpdateListeners = []
   }
 
@@ -27,7 +28,7 @@ class StorageAdapter {
     if (!this.db) {
       this.db = wx.cloud.database()
     }
-    // 启动伴侣轮询
+    // 启动伴侣轮询（今日菜单3秒，冰箱和自定义菜品5秒）
     this.startPartnerPolling()
     return this.db
   }
@@ -551,13 +552,21 @@ class StorageAdapter {
 
   /**
    * 启动伴侣数据轮询
+   * - todayMenu: 3秒（今日菜单需要更快响应）
+   * - fridgeItems/customFoods: 5秒
    */
   startPartnerPolling() {
     if (this.partnerPollingTimer) return
 
+    // 今日菜单轮询 - 3秒
     this.partnerPollingTimer = setInterval(() => {
-      this.checkPartnerUpdates()
-    }, 30000) // 30秒轮询
+      this.checkPartnerUpdates(['todayMenu'])
+    }, 3000)
+
+    // 冰箱和自定义菜品轮询 - 5秒
+    this.partnerPollingTimer2 = setInterval(() => {
+      this.checkPartnerUpdates(['fridgeItems', 'customFoods'])
+    }, 5000)
   }
 
   /**
@@ -567,6 +576,10 @@ class StorageAdapter {
     if (this.partnerPollingTimer) {
       clearInterval(this.partnerPollingTimer)
       this.partnerPollingTimer = null
+    }
+    if (this.partnerPollingTimer2) {
+      clearInterval(this.partnerPollingTimer2)
+      this.partnerPollingTimer2 = null
     }
   }
 
@@ -607,14 +620,13 @@ class StorageAdapter {
 
   /**
    * 检查伴侣数据更新
+   * @param {string[]} keys - 要检查的key列表，默认检查所有共享数据
    */
-  async checkPartnerUpdates() {
+  async checkPartnerUpdates(keys = ['fridgeItems', 'customFoods', 'todayMenu']) {
     const nickname = wx.getStorageSync('myNickname')
     const pin = wx.getStorageSync('myPin')
     const partnerNickname = wx.getStorageSync('partnerNickname')
     if (!nickname || !pin || !partnerNickname) return
-
-    const sharedKeys = ['fridgeItems', 'customFoods', 'todayMenu']
 
     try {
       const res = await wx.cloud.callFunction({
@@ -629,7 +641,7 @@ class StorageAdapter {
       if (res.result && res.result.success && res.result.data) {
         const content = res.result.data
 
-        for (const key of sharedKeys) {
+        for (const key of keys) {
           const partnerData = content[key]
           if (partnerData) {
             const localData = wx.getStorageSync(key)
