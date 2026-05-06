@@ -416,7 +416,12 @@ Page({
   },
 
   closeConfirmModal() {
-    this.setData({ showConfirmModal: false, riskResult: null })
+    this.setData({
+      showConfirmModal: false,
+      isEvaluating: false,
+      riskResult: null,
+      deductionList: []
+    })
   },
 
   // 评估菜单食材风险

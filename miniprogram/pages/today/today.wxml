@@ -136,8 +136,8 @@
 
   <!-- 确认按钮 -->
   <view class="bottom-bar" wx:if="{{menu.breakfast.length > 0 || menu.lunch.length > 0 || menu.dinner.length > 0}}">
-    <button class="btn btn-primary" bindtap="showConfirm">
-      确认菜单并扣减食材
+    <button class="btn btn-primary" bindtap="showConfirm" disabled="{{isEvaluating}}">
+      {{isEvaluating ? '评估中...' : '确认菜单并扣减食材'}}
     </button>
   </view>
 
