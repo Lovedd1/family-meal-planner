@@ -496,3 +496,143 @@
 .deduction-item.insufficient .deduction-need {
   color: #C45C5C;
 }
+
+/* ========== 营养Tab ========== */
+.nutrition-tab {
+  padding: 24rpx;
+}
+
+.nutrition-summary {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(93, 74, 74, 0.08);
+}
+
+.nutrition-legend {
+  display: flex;
+  justify-content: space-around;
+}
+
+.legend-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.legend-item .dot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+}
+
+.legend-item .dot.carbs { background: #D4A828; }
+.legend-item .dot.protein { background: #C45C5C; }
+.legend-item .dot.fat { background: #7A8AA0; }
+.legend-item .dot.fiber { background: #5A8A6A; }
+
+.legend-label {
+  font-size: 24rpx;
+  color: #8A6A6A;
+}
+
+.legend-count {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+}
+
+.nutrition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.nutrition-group {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(93, 74, 74, 0.08);
+}
+
+.nutrition-group .group-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 2rpx dashed #E8D5D8;
+}
+
+.nutrition-group .group-emoji {
+  font-size: 36rpx;
+}
+
+.nutrition-group .group-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+  flex: 1;
+}
+
+.nutrition-group .group-count {
+  font-size: 24rpx;
+  color: #8A6A6A;
+}
+
+.group-dishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.mini-dish {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: #FDF8F8;
+  padding: 12rpx 20rpx;
+  border-radius: 16rpx;
+}
+
+.mini-dish .mini-name {
+  font-size: 26rpx;
+  color: #5D4A4A;
+}
+
+.group-empty {
+  font-size: 24rpx;
+  color: #BDBDBD;
+  text-align: center;
+  padding: 20rpx;
+}
+
+/* ========== 菜品营养标签 ========== */
+.nutrition-tag {
+  font-size: 20rpx !important;
+  padding: 4rpx 12rpx !important;
+  border-radius: 8rpx !important;
+  margin-left: 8rpx;
+}
+
+.nutrition-tag.carbs {
+  background: rgba(212, 168, 40, 0.12);
+  color: #D4A828;
+}
+
+.nutrition-tag.protein {
+  background: rgba(196, 92, 92, 0.12);
+  color: #C45C5C;
+}
+
+.nutrition-tag.fat {
+  background: rgba(122, 138, 160, 0.12);
+  color: #7A8AA0;
+}
+
+.nutrition-tag.fiber {
+  background: rgba(90, 138, 106, 0.12);
+  color: #5A8A6A;
+}
