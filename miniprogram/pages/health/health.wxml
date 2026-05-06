@@ -277,37 +277,17 @@
       </view>
     </view>
 
-    <!-- 健康报告列表 -->
-    <view class="card" wx:if="{{healthReports.length > 0}}">
+    <!-- 一日分析卡片 -->
+    <view class="card">
       <view class="card-header">
-        <text class="card-title">📋 健康报告</text>
+        <text class="card-title">📊 一日分析</text>
       </view>
-      <view class="report-list">
-        <view
-          class="report-card"
-          wx:for="{{healthReports}}"
-          wx:key="id"
-          data-report="{{item}}"
-          bindtap="showReport"
-        >
-          <view class="report-header">
-            <view class="report-title">{{item.title}}</view>
-            <view class="report-date">{{item.date}}</view>
-          </view>
-          <view class="report-summary">{{item.summary}}</view>
-          <view class="report-tags">
-            <text
-              class="report-tag {{getReportTagClass(tag)}}"
-              wx:for="{{item.tags}}"
-              wx:key="*this"
-            >{{tag}}</text>
-          </view>
-          <view class="report-meta">
-            <view class="report-score">综合评分 {{item.score}}</view>
-            <view class="report-view">查看详情 ›</view>
-          </view>
-        </view>
+      <view class="ai-hint">
+        基于今日体重和饮食的分析建议
       </view>
+      <button class="btn btn-primary" bindtap="generateDietPlan">
+        生成一日分析
+      </button>
     </view>
   </scroll-view>
 
@@ -345,107 +325,69 @@
     </view>
   </view>
 
-  <!-- 饮食计划弹窗 -->
+  <!-- 一日分析弹窗 -->
   <view class="modal" wx:if="{{showDietPlan}}">
-    <view class="modal-content diet-plan-modal" catchtap="">
+    <view class="modal-content" catchtap="">
       <view class="modal-header">
-        <text class="modal-title">AI 饮食计划</text>
+        <text class="modal-title">📊 一日分析</text>
         <text class="modal-close" bindtap="closeDietPlan">×</text>
       </view>
-
-      <!-- 阶段Tab -->
-      <view class="plan-tabs">
-        <view
-          class="plan-tab {{currentPlanPhase === index ? 'active' : ''}}"
-          wx:for="{{dietPlan.phases}}"
-          wx:key="name"
-          data-index="{{index}}"
-          bindtap="switchPlanPhase"
-        >
-          {{item.name}}
-        </view>
-      </view>
-
       <scroll-view class="modal-body" scroll-y>
-        <block wx:if="{{dietPlan.phases[currentPlanPhase]}}">
-          <view class="phase-info">
-            <view class="phase-info-item">
-              <text class="info-label">周期</text>
-              <text class="info-value">{{dietPlan.phases[currentPlanPhase].duration}}</text>
-            </view>
-            <view class="phase-info-item">
-              <text class="info-label">热量</text>
-              <text class="info-value">{{dietPlan.phases[currentPlanPhase].calories}}</text>
-            </view>
+        <block wx:if="{{aiAnalysis}}">
+          <!-- 分析摘要 -->
+          <view class="analysis-summary" wx:if="{{aiAnalysis.analysis}}">
+            <view class="section-title">饮食分析</view>
+            <text>{{aiAnalysis.analysis.summary}}</text>
           </view>
-          <view class="phase-focus-text">{{dietPlan.phases[currentPlanPhase].focus}}</view>
 
-          <!-- 周计划 -->
-          <view class="weekly-plans" wx:for="{{dietPlan.phases[currentPlanPhase].weeklyMenus}}" wx:key="week">
-            <view class="week-title">第{{item.week}}周</view>
-            <view class="day-plans" wx:for="{{item.days}}" wx:key="index">
-              <view class="day-plan-header">周{{index + 1}}</view>
-
-              <view class="meal-item">
-                <text class="meal-label">🌅 早餐</text>
-                <view class="meal-content">
-                  <text class="meal-name">{{item.breakfast.name}}</text>
-                  <text class="meal-effect">{{item.breakfast.effect}}</text>
-                  <view class="meal-ingredients">
-                    <text class="ing-label">食材：</text>
-                    <text class="ing-list">{{item.breakfast._ingredientsStr}}</text>
-                  </view>
-                </view>
-              </view>
-
-              <view class="meal-item">
-                <text class="meal-label">☀️ 午餐</text>
-                <view class="meal-content">
-                  <text class="meal-name">{{item.lunch.name}}</text>
-                  <text class="meal-effect">{{item.lunch.effect}}</text>
-                  <view class="meal-ingredients">
-                    <text class="ing-label">食材：</text>
-                    <text class="ing-list">{{item.lunch._ingredientsStr}}</text>
-                  </view>
-                </view>
-              </view>
-
-              <view class="meal-item">
-                <text class="meal-label">🌙 晚餐</text>
-                <view class="meal-content">
-                  <text class="meal-name">{{item.dinner.name}}</text>
-                  <text class="meal-effect">{{item.dinner.effect}}</text>
-                  <view class="meal-ingredients">
-                    <text class="ing-label">食材：</text>
-                    <text class="ing-list">{{item.dinner._ingredientsStr}}</text>
-                  </view>
-                </view>
-              </view>
-
-              <view class="meal-item snacks" wx:if="{{item.snacks.length > 0}}">
-                <text class="meal-label">🍪 加餐</text>
-                <view class="meal-content">
-                  <view class="snack-list">
-                    <text wx:for="{{item.snacks}}" wx:key="name">{{item.time}}: {{item.name}}</text>
-                  </view>
+          <!-- 需要补充 -->
+          <view class="needs-section" wx:if="{{aiAnalysis.analysis && aiAnalysis.analysis.needsMore.length > 0}}">
+            <view class="section-title">需要补充</view>
+            <view class="need-item" wx:for="{{aiAnalysis.analysis.needsMore}}" wx:key="type">
+              <view class="need-type">{{item.type === 'protein' ? '🥩 蛋白质' : item.type === 'fiber' ? '🥬 膳食纤维' : item.type === 'carbs' ? '🥖 碳水' : '🥑 脂肪'}}</view>
+              <view class="need-reason">{{item.reason}}</view>
+              <view class="need-suggestions">
+                <view class="suggestion-tag" wx:for="{{item.suggestions}}" wx:key="id" data-dish="{{item}}" data-meal="breakfast" bindtap="addRecommendedDish">
+                  {{item.emoji}} {{item.name}}
                 </view>
               </view>
             </view>
           </view>
 
-          <!-- 采购清单 -->
-          <view class="shopping-section">
-            <view class="shopping-title">📋 采购清单（2天量）</view>
-            <view class="shopping-list">
-              <view
-                class="shopping-item {{item.inStock ? 'sufficient' : 'need-buy'}}"
-                wx:for="{{dietPlan.phases[currentPlanPhase].shoppingList}}"
-                wx:key="name"
-              >
-                <text class="shopping-icon">{{item.inStock ? '✅' : '⚠️'}}</text>
-                <text class="shopping-name">{{item.name}}</text>
-                <text class="shopping-amount">{{item.amount}}</text>
-                <text class="shopping-period">{{item.period}}</text>
+          <!-- 需要减少 -->
+          <view class="needs-section" wx:if="{{aiAnalysis.analysis && aiAnalysis.analysis.needsLess.length > 0}}">
+            <view class="section-title needs-less">需要减少</view>
+            <view class="need-item" wx:for="{{aiAnalysis.analysis.needsLess}}" wx:key="type">
+              <view class="need-type">{{item.type === 'carbs' ? '🥖 碳水' : item.type === 'fat' ? '🥑 脂肪' : item.type}}</view>
+              <view class="need-reason">{{item.reason}}（当前{{item.currentAvg}}，建议{{item.suggested}}）</view>
+            </view>
+          </view>
+
+          <!-- 明日推荐 -->
+          <view class="tomorrow-menu" wx:if="{{aiAnalysis.tomorrowMenu}}">
+            <view class="section-title">明日推荐</view>
+            <view class="meal-section">
+              <view class="meal-label">🌅 早餐</view>
+              <view class="meal-dishes">
+                <view class="dish-chip" wx:for="{{aiAnalysis.tomorrowMenu.breakfast}}" wx:key="id" data-dish="{{item}}" data-meal="breakfast" bindtap="addRecommendedDish">
+                  {{item.emoji}} {{item.name}}
+                </view>
+              </view>
+            </view>
+            <view class="meal-section">
+              <view class="meal-label">☀️ 午餐</view>
+              <view class="meal-dishes">
+                <view class="dish-chip" wx:for="{{aiAnalysis.tomorrowMenu.lunch}}" wx:key="id" data-dish="{{item}}" data-meal="lunch" bindtap="addRecommendedDish">
+                  {{item.emoji}} {{item.name}}
+                </view>
+              </view>
+            </view>
+            <view class="meal-section">
+              <view class="meal-label">🌙 晚餐</view>
+              <view class="meal-dishes">
+                <view class="dish-chip" wx:for="{{aiAnalysis.tomorrowMenu.dinner}}" wx:key="id" data-dish="{{item}}" data-meal="dinner" bindtap="addRecommendedDish">
+                  {{item.emoji}} {{item.name}}
+                </view>
               </view>
             </view>
           </view>

@@ -421,82 +421,55 @@ Page({
   },
 
   generateDietPlan() {
-    // 检查健康档案是否完整
-    if (!this.data.currentWeight || !this.data.targetWeight) {
-      wx.showModal({
-        title: '提示',
-        content: '请先完善健康档案（当前体重和目标体重），然后再生成饮食计划',
-        showCancel: true,
-        confirmText: '去完善',
-        success: (res) => {
-          if (res.confirm) {
-            this.showEditProfile()
-          }
-        }
-      })
-      return
-    }
+    wx.showLoading({ title: '正在分析...' })
 
-    wx.showLoading({ title: '正在生成饮食计划...' })
+    const customFoods = storageAdapter.get('customFoods') || []
+    const allFoods = [...foods.foods, ...customFoods]
+    const availableFoods = allFoods.map(f => ({
+      id: f.id,
+      name: f.name,
+      emoji: f.emoji,
+      nutritionTypes: f.nutritionTypes || ['protein'],
+      category: f.category,
+      heatMethod: f.heatMethod
+    }))
 
-    // 调用云函数生成饮食计划
+    // 调用云函数生成一日分析
     wx.cloud.callFunction({
       name: 'generateDietPlan',
       data: {
+        action: 'dailyAdvice',
         dietGoal: this.data.dietGoal,
         activityLevel: this.data.activityLevel,
-        allergies: this.data.allergies,
+        allergies: this.data.allergies || '',
         currentPhase: this.data.currentPhase,
-        targetWeight: this.data.targetWeight
+        targetWeight: this.data.targetWeight,
+        currentWeight: this.data.currentWeight,
+        dietHistory: this.data.dietHistory,
+        availableFoods: availableFoods
       },
       success: (res) => {
         wx.hideLoading()
         if (res.result && res.result.success) {
-          const plan = res.result.data
-          // 为每个阶段的购物清单检查库存
-        if (plan.phases) {
-          plan.phases.forEach(phase => {
-            if (phase.shoppingList) {
-              phase.shoppingList = this.checkFridgeStock(phase.shoppingList)
-            }
-            // Pre-compute joined ingredient strings
-            if (phase.weeklyMenus) {
-              phase.weeklyMenus.forEach(week => {
-                week.days.forEach(day => {
-                  if (day.breakfast && day.breakfast.ingredients) {
-                    day.breakfast._ingredientsStr = day.breakfast.ingredients.map(i => i.name).join('、')
-                  }
-                  if (day.lunch && day.lunch.ingredients) {
-                    day.lunch._ingredientsStr = day.lunch.ingredients.map(i => i.name).join('、')
-                  }
-                  if (day.dinner && day.dinner.ingredients) {
-                    day.dinner._ingredientsStr = day.dinner.ingredients.map(i => i.name).join('、')
-                  }
-                })
-              })
-            }
-          })
-        }
+          const analysis = res.result.data
+          this.setData({ aiAnalysis: analysis, showDietPlan: true })
 
-        this.setData({ dietPlan: plan, showDietPlan: true, currentPlanPhase: 0 })
-          // 保存到本地
-          storageAdapter.set('dietPlan', plan)
           // 保存到历史记录
           const history = storageAdapter.get('dietPlanHistory') || []
           const historyItem = {
             id: 'plan_' + Date.now(),
-            name: plan.phases && plan.phases[0] ? plan.phases[0].name : '饮食计划',
-            date: new Date().toLocaleDateString('zh-CN', { month: 'long', day: 'numeric' }),
-            plan: plan
+            name: '一日分析',
+            date: new Date().toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+            plan: analysis
           }
           history.unshift(historyItem)
-          const trimmedHistory = history.slice(0, 3)
+          const trimmedHistory = history.slice(0, 5)
           storageAdapter.set('dietPlanHistory', trimmedHistory)
           this.setData({ dietPlanHistory: trimmedHistory })
-          wx.showToast({ title: '生成成功', icon: 'success' })
+          wx.showToast({ title: '分析完成', icon: 'success' })
         } else {
           wx.showModal({
-            title: '生成失败',
+            title: '分析失败',
             content: res.result?.error || '请稍后重试',
             showCancel: false
           })
@@ -505,7 +478,7 @@ Page({
       fail: (err) => {
         wx.hideLoading()
         wx.showModal({
-          title: '生成失败',
+          title: '分析失败',
           content: '网络错误，请检查网络连接后重试',
           showCancel: false
         })
