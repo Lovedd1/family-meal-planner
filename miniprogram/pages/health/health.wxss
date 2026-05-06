@@ -372,24 +372,29 @@
 }
 
 .day-cell.period {
-  background: rgba(196, 92, 92, 0.15);
+  background: rgba(196, 92, 92, 0.25);
   color: #C45C5C;
   font-weight: 700;
 }
 
 .day-cell.fertile {
-  background: rgba(212, 168, 40, 0.15);
+  background: rgba(212, 168, 40, 0.25);
   color: #D4A828;
 }
 
 .day-cell.today {
-  background: #C48B8B;
+  background: #5A8A6A;
   color: #fff;
   font-weight: 700;
 }
 
 .day-cell.today.period {
-  background: linear-gradient(135deg, #C45C5C 50%, #C48B8B 50%);
+  background: linear-gradient(135deg, #C45C5C 50%, #5A8A6A 50%);
+  color: #fff;
+}
+
+.day-cell.today.fertile {
+  background: linear-gradient(135deg, #D4A828 50%, #5A8A6A 50%);
   color: #fff;
 }
 

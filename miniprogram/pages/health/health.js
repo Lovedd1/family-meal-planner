@@ -330,21 +330,38 @@ Page({
 
   calculateMenstrualPhase(settings) {
     const menstrualSettings = settings || this.data.menstrualSettings
-    const { lastPeriodDate, cycleDays } = menstrualSettings
+    const { lastPeriodDate, cycleDays = 28, periodDays = 5 } = menstrualSettings
+
     if (!lastPeriodDate) return
 
-    const today = new Date()
+    // 确保lastPeriodDate是有效日期
     const lastPeriod = new Date(lastPeriodDate)
+    if (isNaN(lastPeriod.getTime())) return
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    lastPeriod.setHours(0, 0, 0, 0)
+
     const daysSince = Math.floor((today - lastPeriod) / (1000 * 60 * 60 * 24))
+
+    // 如果daysSince为负数，说明设置日期在今天之后，不计算
+    if (daysSince < 0) {
+      this.setData({
+        currentPhase: 'follicular',
+        phaseDay: 1
+      })
+      return
+    }
+
     const cyclePosition = daysSince % cycleDays
 
     let phase, phaseDay
-    if (cyclePosition < 5) {
+    if (cyclePosition < periodDays) {
       phase = 'menstruation'
       phaseDay = cyclePosition + 1
     } else if (cyclePosition < 14) {
       phase = 'follicular'
-      phaseDay = cyclePosition - 4
+      phaseDay = cyclePosition - periodDays + 1
     } else if (cyclePosition < 19) {
       phase = 'ovulation'
       phaseDay = cyclePosition - 13
@@ -522,16 +539,16 @@ Page({
 
   getDayClass(day, phaseDay, periodDays) {
     const classes = []
-    // 经期：第1天到periodDays天
-    if (day <= periodDays) {
+    // 经期：第1天到periodDays天（periodDays默认为5）
+    if (periodDays && day <= periodDays) {
       classes.push('period')
     }
     // 易孕期：第11-16天（假设周期第14天排卵，前后5天为易孕期）
     if (day >= 10 && day <= 16) {
       classes.push('fertile')
     }
-    // 今天是第phaseDay天
-    if (day === phaseDay) {
+    // 今天是第phaseDay天（phaseDay从1开始）
+    if (phaseDay && day === phaseDay) {
       classes.push('today')
     }
     return classes.join(' ')
