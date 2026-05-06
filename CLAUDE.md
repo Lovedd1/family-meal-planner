@@ -24,7 +24,7 @@
 └── doc/                  # 文档
 ```
 
-## 开发进度 (2026-05-05)
+## 开发进度 (2026-05-06)
 
 ### 已完成 ✅
 - [x] 方案设计 (方案.md)
@@ -37,7 +37,6 @@
 - [x] 12道内置菜品数据 + 食材相克规则
 - [x] TabBar图标（简约线性风格，SVG + PNG格式）
 - [x] 食材扣减逻辑（部分扣减，库存不足提示补充数量）
-- [x] AI智能饮食计划（3阶段计划，每周菜单，2天采购清单）
 - [x] 云函数 generateDietPlan（调用DeepSeek API，已部署至云端）
 - [x] 云函数 login（自动登录，已部署至云端）
 - [x] 云开发数据库集成（离线优先存储适配层 + 7个Collection）
@@ -64,6 +63,11 @@
 - [x] 今日菜单页 - 菜品卡片显示营养标签
 - [x] 自定义菜品 - 保存时自动调用云函数分析营养素分类
 - [x] Bug修复 - 饼状图只有四分之一圆的问题
+- [x] 健康页 - 一日分析（基于今日体重和7天饮食历史分析）
+- [x] 健康页 - 饮食分析卡片（needsMore/needsLess/明日菜单推荐）
+- [x] 健康页 - 饮食历史记录（最近7天，可折叠查看）
+- [x] 健康页 - 推荐菜品一键添加到今日菜单
+- [x] 今日菜单页 - 确认菜单时自动存档到饮食历史
 
 ### 待开发 📋
 - [ ] 在 CloudBase 控制台为各集合配置安全规则（设置 read、create、update 权限），恢复云端同步
@@ -98,7 +102,7 @@
 
 ## 云函数
 - `login` - 用户登录，获取openid（已部署至 `cloud1` 环境）
-- `generateDietPlan` - AI饮食计划生成（DeepSeek API，已部署至 `cloud1` 环境）
+- `generateDietPlan` - AI饮食计划生成（支持 phasedPlan 和 dailyAdvice 两种action，已部署至 `cloud1` 环境）
 - `pairPartner` - 双人配对同步（已部署至 `cloud1` 环境）
 
 ## 云环境
@@ -143,6 +147,7 @@
 | `userProfile` | 用户信息 |
 | `dietPlan` | 当前AI饮食计划 |
 | `dietPlanHistory` | AI饮食计划历史（最多3条） |
+| `dietHistory` | 饮食历史记录（最近7天，自动归档） |
 | `userId` | 用户ID（openid） |
 
 ## 双人同步机制
