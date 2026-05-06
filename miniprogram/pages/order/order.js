@@ -10,10 +10,11 @@ Page({
     categories: foods.categories,
     foodList: [],
     filteredList: [],
-    currentTab: 'dinner',
     showRecipeModal: false,
     currentRecipe: null,
     showAddCustomModal: false,
+    showMealPicker: false,
+    pendingDish: null,
     customForm: {
       name: '',
       emoji: '🍲',
@@ -58,10 +59,6 @@ Page({
     const category = e.currentTarget.dataset.category
     this.setData({ currentCategory: category })
     this.filterFoods()
-  },
-
-  switchTab(e) {
-    this.setData({ currentTab: e.currentTarget.dataset.tab })
   },
 
   filterFoods() {
@@ -121,23 +118,44 @@ Page({
 
   addToMenu(e) {
     const dish = e.currentTarget.dataset.dish
-    const tab = this.data.currentTab
+    this.setData({
+      pendingDish: dish,
+      showMealPicker: true
+    })
+  },
+
+  closeMealPicker() {
+    this.setData({
+      showMealPicker: false,
+      pendingDish: null
+    })
+  },
+
+  selectMealType(e) {
+    const tab = e.currentTarget.dataset.tab
+    const dish = this.data.pendingDish
+    if (!dish) return
+
     const menu = app.getTodayMenu()
     menu[tab].push(dish)
     app.updateTodayMenu(menu)
+
+    this.closeMealPicker()
     wx.showToast({ title: '已加入' + this.getTabName(tab), icon: 'success' })
-    this.loadFoods() // 刷新相克状态
+    this.loadFoods()
   },
 
   removeFromMenu(e) {
     const dish = e.currentTarget.dataset.dish
-    const tab = e.currentTarget.dataset.tab
     const menu = app.getTodayMenu()
-    const index = menu[tab].findIndex(d => d.id === dish.id)
-    if (index > -1) {
-      menu[tab].splice(index, 1)
-      app.updateTodayMenu(menu)
+    for (const tab of ['breakfast', 'lunch', 'dinner']) {
+      const index = menu[tab].findIndex(d => d.id === dish.id)
+      if (index > -1) {
+        menu[tab].splice(index, 1)
+        break
+      }
     }
+    app.updateTodayMenu(menu)
     this.loadFoods()
   },
 
