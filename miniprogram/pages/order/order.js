@@ -217,30 +217,81 @@ Page({
         const amount = parts.slice(1).join(' ') || '适量'
         return { name, amount }
       })
-      .filter(ing => ing.name) // Filter out empty ingredient names
+      .filter(ing => ing.name)
 
     if (ingredients.length === 0) {
       wx.showToast({ title: '请至少添加一种食材', icon: 'none' })
       return
     }
 
-    const customFood = {
-      id: 'custom_' + Date.now(),
-      name: form.name.trim(),
-      emoji: this.data.customForm.emoji,
-      category: form.category || '荤菜',
-      heatMethod: form.heatMethod || 'microwave_safe',
-      ingredients: ingredients,
-      steps: form.steps.split('\n').filter(l => l.trim()),
-      isCustom: true
-    }
+    // 获取营养素分类
+    let nutritionType = 'protein'
+    let nutritionTypes = ['protein']
+    let nutritionLabel = '蛋白质'
 
-    const customFoods = storageAdapter.get('customFoods') || []
-    customFoods.push(customFood)
-    storageAdapter.set('customFoods', customFoods)
+    wx.showLoading({ title: '分析中...' })
 
-    this.loadFoods()
-    this.closeAddCustomModal()
-    wx.showToast({ title: '自定义菜品已保存', icon: 'success' })
+    // 调用云函数获取营养素分类
+    wx.cloud.callFunction({
+      name: 'pairPartner',
+      data: {
+        action: 'classifyDishNutrition',
+        dish: { name: form.name, ingredients }
+      }
+    }).then(res => {
+      wx.hideLoading()
+      if (res.result && res.result.success) {
+        nutritionType = res.result.nutritionType
+        nutritionTypes = res.result.nutritionTypes
+        nutritionLabel = res.result.nutritionLabel
+      }
+
+      const customFood = {
+        id: 'custom_' + Date.now(),
+        name: form.name.trim(),
+        emoji: this.data.customForm.emoji,
+        category: form.category || '荤菜',
+        heatMethod: form.heatMethod || 'microwave_safe',
+        ingredients: ingredients,
+        nutritionType: nutritionType,
+        nutritionTypes: nutritionTypes,
+        nutritionLabel: nutritionLabel,
+        steps: form.steps.split('\n').filter(l => l.trim()),
+        isCustom: true
+      }
+
+      const customFoods = storageAdapter.get('customFoods') || []
+      customFoods.push(customFood)
+      storageAdapter.set('customFoods', customFoods)
+
+      this.loadFoods()
+      this.closeAddCustomModal()
+      wx.showToast({ title: '自定义菜品已保存', icon: 'success' })
+    }).catch(err => {
+      wx.hideLoading()
+      console.error('分类失败，使用默认分类:', err)
+      // 失败时使用默认分类
+      const customFood = {
+        id: 'custom_' + Date.now(),
+        name: form.name.trim(),
+        emoji: this.data.customForm.emoji,
+        category: form.category || '荤菜',
+        heatMethod: form.heatMethod || 'microwave_safe',
+        ingredients: ingredients,
+        nutritionType: 'protein',
+        nutritionTypes: ['protein'],
+        nutritionLabel: '蛋白质',
+        steps: form.steps.split('\n').filter(l => l.trim()),
+        isCustom: true
+      }
+
+      const customFoods = storageAdapter.get('customFoods') || []
+      customFoods.push(customFood)
+      storageAdapter.set('customFoods', customFoods)
+
+      this.loadFoods()
+      this.closeAddCustomModal()
+      wx.showToast({ title: '自定义菜品已保存', icon: 'success' })
+    })
   }
 })
