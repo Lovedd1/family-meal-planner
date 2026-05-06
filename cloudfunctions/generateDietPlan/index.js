@@ -252,6 +252,11 @@ ${JSON.stringify(availableFoods.map(f => ({ id: f.id, name: f.name, emoji: f.emo
 
 // 评估食材搭配风险
 async function evaluateFoodRisks({ menu, menuItems }) {
+  // 参数校验
+  if (!menu || typeof menu !== 'object') {
+    return { success: false, error: '缺少有效的菜单数据' }
+  }
+
   // 收集所有菜品的食材
   const allIngredients = []
   const mealNames = []
@@ -342,23 +347,27 @@ ${mealNames.join('\n')}
     const isSafe = content.includes('安全，无已知风险搭配')
 
     if (!isSafe) {
-      // 解析风险行
-      const lines = content.split('\n').filter(line => line.startsWith('风险'))
-      for (const line of lines) {
-        // 提取涉及食材
-        const ingredientsMatch = line.match(/涉及食材\[(.+?)\]/)
-        // 提取等级
-        const levelMatch = line.match(/等级\[(危险|警告)\]/)
-        // 提取说明
-        const descMatch = line.match(/说明\[(.+?)\]/)
+      // 使用正则匹配多种格式：风险1：涉及食材xxx，等级危险，说明xxx
+      // 或者：涉及食材xxx，等级危险，说明xxx（可能在多行中）
+      const riskPattern = /涉及食材(.+?)，等级(危险|警告)，说明(.+?)(?=风险|$)/gi
+      let match
+      while ((match = riskPattern.exec(content)) !== null) {
+        risks.push({
+          ingredients: match[1].split('、'),
+          level: match[2] === '危险' ? 'danger' : 'warning',
+          description: match[3].trim()
+        })
+      }
+    }
 
-        if (ingredientsMatch && levelMatch && descMatch) {
-          risks.push({
-            ingredients: ingredientsMatch[1].split('、'),
-            level: levelMatch[1] === '危险' ? 'danger' : 'warning',
-            description: descMatch[1]
-          })
-        }
+    // 如果解析失败但AI没有说安全，应该标记为需要人工确认
+    if (!isSafe && risks.length === 0) {
+      return {
+        success: true,
+        isSafe: false,
+        risks: [],
+        needsReview: true,
+        rawResponse: content
       }
     }
 
