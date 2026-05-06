@@ -30,7 +30,7 @@
   </view>
 
   <!-- 菜品列表 -->
-  <view class="dish-list">
+  <view class="dish-list" wx:if="{{currentTab !== 'nutrition'}}">
     <block wx:if="{{menu[currentTab].length > 0}}">
       <view
         class="dish-card"
