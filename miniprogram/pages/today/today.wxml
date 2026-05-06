@@ -80,6 +80,15 @@
   <view class="nutrition-tab" wx:if="{{currentTab === 'nutrition'}}">
     <!-- 营养分布概览 -->
     <view class="nutrition-summary">
+      <!-- 饼状图 -->
+      <view class="pie-chart-container">
+        <canvas class="pie-chart" canvas-id="nutritionPieChart"></canvas>
+        <view class="pie-center">
+          <text class="pie-total">{{nutritionStats.totalCount}}</text>
+          <text class="pie-label">道菜</text>
+        </view>
+      </view>
+      <!-- 图例 -->
       <view class="nutrition-legend">
         <view class="legend-item">
           <text class="dot carbs"></text>

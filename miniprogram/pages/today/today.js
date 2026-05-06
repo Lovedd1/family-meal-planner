@@ -190,7 +190,7 @@ Page({
       ...this.data.menu.dinner
     ]
 
-    const stats = { carbsCount: 0, proteinCount: 0, fatCount: 0, fiberCount: 0 }
+    const stats = { carbsCount: 0, proteinCount: 0, fatCount: 0, fiberCount: 0, totalCount: 0 }
     const groups = [
       { type: 'carbs', label: '碳水化合物', emoji: '🥖', dishes: [] },
       { type: 'protein', label: '蛋白质', emoji: '🥩', dishes: [] },
@@ -216,10 +216,91 @@ Page({
       }
     })
 
+    // 计算总数
+    stats.totalCount = stats.carbsCount + stats.proteinCount + stats.fatCount + stats.fiberCount
+
     this.setData({
       nutritionStats: stats,
       nutritionGroups: groups
     })
+
+    // 绘制饼图
+    this.drawPieChart(stats)
+  },
+
+  drawPieChart(stats) {
+    const total = stats.totalCount
+    if (total === 0) return
+
+    const carbAngle = (stats.carbsCount / total) * 360
+    const proteinAngle = (stats.proteinCount / total) * 360
+    const fatAngle = (stats.fatCount / total) * 360
+    const fiberAngle = (stats.fiberCount / total) * 360
+
+    const ctx = wx.createCanvasContext('nutritionPieChart')
+    const centerX = 160
+    const centerY = 160
+    const radius = 140
+
+    // 背景圆
+    ctx.beginPath()
+    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+    ctx.setFillStyle('#F5EEF0')
+    ctx.fill()
+
+    // 绘制各段
+    let startAngle = -90 * Math.PI / 180 // 从顶部开始
+
+    // 碳水 - 黄色
+    if (stats.carbsCount > 0) {
+      ctx.beginPath()
+      ctx.moveTo(centerX, centerY)
+      ctx.arc(centerX, centerY, radius, startAngle, startAngle + carbAngle * Math.PI / 180)
+      ctx.closePath()
+      ctx.setFillStyle('#D4A828')
+      ctx.fill()
+      startAngle += carbAngle * Math.PI / 180
+    }
+
+    // 蛋白质 - 红色
+    if (stats.proteinCount > 0) {
+      ctx.beginPath()
+      ctx.moveTo(centerX, centerY)
+      ctx.arc(centerX, centerY, radius, startAngle, startAngle + proteinAngle * Math.PI / 180)
+      ctx.closePath()
+      ctx.setFillStyle('#C45C5C')
+      ctx.fill()
+      startAngle += proteinAngle * Math.PI / 180
+    }
+
+    // 脂肪 - 灰色
+    if (stats.fatCount > 0) {
+      ctx.beginPath()
+      ctx.moveTo(centerX, centerY)
+      ctx.arc(centerX, centerY, radius, startAngle, startAngle + fatAngle * Math.PI / 180)
+      ctx.closePath()
+      ctx.setFillStyle('#7A8AA0')
+      ctx.fill()
+      startAngle += fatAngle * Math.PI / 180
+    }
+
+    // 膳食纤维 - 绿色
+    if (stats.fiberCount > 0) {
+      ctx.beginPath()
+      ctx.moveTo(centerX, centerY)
+      ctx.arc(centerX, centerY, radius, startAngle, startAngle + fiberAngle * Math.PI / 180)
+      ctx.closePath()
+      ctx.setFillStyle('#5A8A6A')
+      ctx.fill()
+    }
+
+    // 中心白色圆（形成环形）
+    ctx.beginPath()
+    ctx.arc(centerX, centerY, 80, 0, 2 * Math.PI)
+    ctx.setFillStyle('#FFFFFF')
+    ctx.fill()
+
+    ctx.draw()
   },
 
   showRecipe(e) {
