@@ -269,6 +269,51 @@ async function checkStatus(data) {
   }
 }
 
+// 分析食材并返回营养素分类
+async function classifyDishNutrition(data) {
+  const { dish } = data
+
+  if (!dish || !dish.ingredients || dish.ingredients.length === 0) {
+    return { success: false, error: '缺少食材信息' }
+  }
+
+  const nutritionMap = {
+    carbs: ['大米', '米饭', '土豆', '红薯', '面条', '面粉', '饺子', '蒸饺', '馒头', '包子', '面条', '冰糖'],
+    protein: ['牛肉', '鸡胸肉', '鸡蛋', '虾', '排骨', '鱼肉', '鲈鱼', '螃蟹', '猪肉', '虾仁', '豆腐', '牛奶', '豆浆'],
+    fat: ['油脂', '五花肉', '培根', '肥肉', '香油', '蚝油'],
+    fiber: ['西兰花', '黄瓜', '番茄', '胡萝卜', '洋葱', '菠菜', '生菜', '白菜', '芹菜', '青椒', '茄子', '藕', '姜', '蒜', '葱']
+  }
+
+  const ingredientNames = dish.ingredients.map(i => i.name)
+  const nutritionCounts = { carbs: 0, protein: 0, fat: 0, fiber: 0 }
+
+  ingredientNames.forEach(name => {
+    for (const [type, ingredients] of Object.entries(nutritionMap)) {
+      if (ingredients.some(ing => name.includes(ing) || ing.includes(name))) {
+        nutritionCounts[type]++
+      }
+    }
+  })
+
+  const maxCount = Math.max(...Object.values(nutritionCounts))
+  const nutritionType = Object.keys(nutritionCounts).find(k => nutritionCounts[k] === maxCount) || 'protein'
+
+  const nutritionTypesList = []
+  if (nutritionCounts.carbs > 0) nutritionTypesList.push('carbs')
+  if (nutritionCounts.protein > 0) nutritionTypesList.push('protein')
+  if (nutritionCounts.fat > 0) nutritionTypesList.push('fat')
+  if (nutritionCounts.fiber > 0) nutritionTypesList.push('fiber')
+
+  const nutritionLabels = { carbs: '碳水', protein: '蛋白质', fat: '脂肪', fiber: '膳食纤维' }
+
+  return {
+    success: true,
+    nutritionType,
+    nutritionTypes: nutritionTypesList.length > 0 ? nutritionTypesList : ['protein'],
+    nutritionLabel: nutritionLabels[nutritionType]
+  }
+}
+
 exports.main = async (event) => {
   const { action, ...data } = event
 
@@ -288,6 +333,8 @@ exports.main = async (event) => {
         return await unpair(data)
       case 'checkStatus':
         return await checkStatus(data)
+      case 'classifyDishNutrition':
+        return await classifyDishNutrition(data)
       default:
         return { success: false, error: '未知操作' }
     }
