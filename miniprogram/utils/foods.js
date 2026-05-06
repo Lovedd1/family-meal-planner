@@ -1,5 +1,26 @@
-// 内置菜品数据
+// 内置菜品数据（精简为4道，按营养类型：碳水/蛋白质/脂肪/膳食纤维）
 const foods = [
+  {
+    id: 'f009',
+    name: '米饭',
+    emoji: '🍚',
+    category: '主食',
+    heatMethod: 'microwave_safe',
+    ingredients: [
+      { name: '大米', amount: '150g' }
+    ],
+    steps: [
+      '大米淘洗干净',
+      '加水1:1.2比例',
+      '电饭煲煮饭模式',
+      '跳闸后焖5分钟',
+      '盛出食用'
+    ],
+    isCustom: false,
+    nutritionType: 'carbs',
+    nutritionTypes: ['carbs'],
+    nutritionLabel: '碳水'
+  },
   {
     id: 'f001',
     name: '土豆炖牛肉',
@@ -25,27 +46,28 @@ const foods = [
     nutritionLabel: '蛋白质'
   },
   {
-    id: 'f002',
-    name: '番茄炒蛋',
-    emoji: '🍳',
+    id: 'f007',
+    name: '凉拌黄瓜',
+    emoji: '🥒',
     category: '素菜',
     heatMethod: 'microwave_safe',
     ingredients: [
-      { name: '番茄', amount: '200g' },
-      { name: '鸡蛋', amount: '2个' },
-      { name: '葱', amount: '10g' }
+      { name: '黄瓜', amount: '300g' },
+      { name: '蒜', amount: '10g' },
+      { name: '醋', amount: '15ml' },
+      { name: '香油', amount: '5ml' }
     ],
     steps: [
-      '番茄切块，鸡蛋打散',
-      '热油炒鸡蛋至凝固盛出',
-      '另起油锅炒番茄出汁',
-      '加入鸡蛋翻炒均匀',
-      '调味出锅'
+      '黄瓜拍碎切块',
+      '蒜切末',
+      '加入调料拌匀',
+      '放入冰箱冷藏',
+      '取出食用'
     ],
     isCustom: false,
-    nutritionType: 'protein',
-    nutritionTypes: ['protein', 'fiber'],
-    nutritionLabel: '蛋白质'
+    nutritionType: 'fat',
+    nutritionTypes: ['fiber', 'fat'],
+    nutritionLabel: '脂肪'
   },
   {
     id: 'f003',
@@ -69,213 +91,6 @@ const foods = [
     nutritionType: 'fiber',
     nutritionTypes: ['fiber', 'protein'],
     nutritionLabel: '膳食纤维'
-  },
-  {
-    id: 'f004',
-    name: '清蒸鲈鱼',
-    emoji: '🐟',
-    category: '荤菜',
-    heatMethod: 'steam_only',
-    ingredients: [
-      { name: '鲈鱼', amount: '1条' },
-      { name: '葱', amount: '20g' },
-      { name: '姜', amount: '15g' },
-      { name: '蒸鱼豉油', amount: '20ml' }
-    ],
-    steps: [
-      '鲈鱼处理干净，两面划刀',
-      '鱼身铺上葱姜',
-      '水开后蒸8-10分钟',
-      '取出倒掉汤汁',
-      '淋上蒸鱼豉油即可'
-    ],
-    isCustom: false,
-    nutritionType: 'protein',
-    nutritionTypes: ['protein', 'fiber'],
-    nutritionLabel: '蛋白质'
-  },
-  {
-    id: 'f005',
-    name: '水煮蛋',
-    emoji: '🥚',
-    category: '荤菜',
-    heatMethod: 'fire_only',
-    ingredients: [
-      { name: '鸡蛋', amount: '2个' }
-    ],
-    steps: [
-      '鸡蛋洗净',
-      '冷水下锅',
-      '水开后煮8分钟',
-      '捞出过凉水',
-      '剥壳食用'
-    ],
-    isCustom: false,
-    nutritionType: 'protein',
-    nutritionTypes: ['protein'],
-    nutritionLabel: '蛋白质'
-  },
-  {
-    id: 'f006',
-    name: '白灼虾',
-    emoji: '🦐',
-    category: '荤菜',
-    heatMethod: 'fire_only',
-    ingredients: [
-      { name: '虾', amount: '300g' },
-      { name: '姜', amount: '15g' },
-      { name: '葱', amount: '10g' },
-      { name: '料酒', amount: '10ml' }
-    ],
-    steps: [
-      '虾洗净去虾线',
-      '锅中加水、姜、葱、料酒',
-      '水开后放入虾',
-      '变色弯曲后捞出',
-      '蘸料食用'
-    ],
-    isCustom: false,
-    nutritionType: 'protein',
-    nutritionTypes: ['protein', 'fiber'],
-    nutritionLabel: '蛋白质'
-  },
-  {
-    id: 'f007',
-    name: '凉拌黄瓜',
-    emoji: '🥒',
-    category: '素菜',
-    heatMethod: 'microwave_safe',
-    ingredients: [
-      { name: '黄瓜', amount: '300g' },
-      { name: '蒜', amount: '10g' },
-      { name: '醋', amount: '15ml' },
-      { name: '香油', amount: '5ml' }
-    ],
-    steps: [
-      '黄瓜拍碎切块',
-      '蒜切末',
-      '加入调料拌匀',
-      '放入冰箱冷藏',
-      '取出食用'
-    ],
-    isCustom: false,
-    nutritionType: 'fiber',
-    nutritionTypes: ['fiber', 'fat'],
-    nutritionLabel: '膳食纤维'
-  },
-  {
-    id: 'f008',
-    name: '番茄牛肉汤',
-    emoji: '🍲',
-    category: '汤品',
-    heatMethod: 'microwave_safe',
-    ingredients: [
-      { name: '番茄', amount: '200g' },
-      { name: '牛肉', amount: '100g' },
-      { name: '土豆', amount: '100g' },
-      { name: '洋葱', amount: '30g' }
-    ],
-    steps: [
-      '牛肉切块焯水',
-      '番茄、土豆切块',
-      '锅中加水炖牛肉1小时',
-      '加入番茄、土豆继续炖30分钟',
-      '调味出锅'
-    ],
-    isCustom: false,
-    nutritionType: 'protein',
-    nutritionTypes: ['carbs', 'protein', 'fiber'],
-    nutritionLabel: '蛋白质'
-  },
-  {
-    id: 'f009',
-    name: '米饭',
-    emoji: '🍚',
-    category: '主食',
-    heatMethod: 'microwave_safe',
-    ingredients: [
-      { name: '大米', amount: '150g' }
-    ],
-    steps: [
-      '大米淘洗干净',
-      '加水1:1.2比例',
-      '电饭煲煮饭模式',
-      '跳闸后焖5分钟',
-      '盛出食用'
-    ],
-    isCustom: false,
-    nutritionType: 'carbs',
-    nutritionTypes: ['carbs'],
-    nutritionLabel: '碳水'
-  },
-  {
-    id: 'f010',
-    name: '红烧排骨',
-    emoji: '🍖',
-    category: '荤菜',
-    heatMethod: 'microwave_safe',
-    ingredients: [
-      { name: '排骨', amount: '300g' },
-      { name: '冰糖', amount: '20g' },
-      { name: '生抽', amount: '20ml' },
-      { name: '老抽', amount: '10ml' }
-    ],
-    steps: [
-      '排骨切段焯水',
-      '冰糖炒糖色',
-      '加入排骨翻炒上色',
-      '加水没过排骨',
-      '大火烧开转小火炖40分钟收汁'
-    ],
-    isCustom: false,
-    nutritionType: 'protein',
-    nutritionTypes: ['carbs', 'protein'],
-    nutritionLabel: '蛋白质'
-  },
-  {
-    id: 'f011',
-    name: '蒜蓉西兰花',
-    emoji: '🧄',
-    category: '素菜',
-    heatMethod: 'microwave_safe',
-    ingredients: [
-      { name: '西兰花', amount: '300g' },
-      { name: '蒜', amount: '15g' },
-      { name: '蚝油', amount: '15ml' }
-    ],
-    steps: [
-      '西兰花切小朵焯水',
-      '蒜切末',
-      '热油爆香蒜末',
-      '加入西兰花翻炒',
-      '加蚝油调味出锅'
-    ],
-    isCustom: false,
-    nutritionType: 'fiber',
-    nutritionTypes: ['fiber'],
-    nutritionLabel: '膳食纤维'
-  },
-  {
-    id: 'f012',
-    name: '蒸饺',
-    emoji: '🥟',
-    category: '主食',
-    heatMethod: 'steam_only',
-    ingredients: [
-      { name: '饺子', amount: '8个' },
-      { name: '水', amount: '适量' }
-    ],
-    steps: [
-      '饺子摆入蒸笼',
-      '水开后放入蒸笼',
-      '中火蒸10分钟',
-      '关火焖2分钟',
-      '取出食用'
-    ],
-    isCustom: false,
-    nutritionType: 'carbs',
-    nutritionTypes: ['carbs'],
-    nutritionLabel: '碳水'
   }
 ]
 
@@ -355,6 +170,10 @@ const nutritionMap = {
   '猪肉': 'protein', '虾仁': 'protein', '豆腐': 'protein', '牛奶': 'protein',
   // 脂肪
   '油脂': 'fat', '五花肉': 'fat', '培根': 'fat', '肥肉': 'fat', '香油': 'fat',
+  '花生': 'fat', '核桃': 'fat', '杏仁': 'fat', '芝麻': 'fat',
+  // 水果类
+  '苹果': 'fat', '香蕉': 'fat', '橙子': 'fat', '葡萄': 'fat', '西瓜': 'fat',
+  '草莓': 'fat', '蓝莓': 'fat', '芒果': 'fat', '菠萝': 'fat', '梨': 'fat',
   // 膳食纤维
   '西兰花': 'fiber', '黄瓜': 'fiber', '番茄': 'fiber', '胡萝卜': 'fiber',
   '洋葱': 'fiber', '菠菜': 'fiber', '生菜': 'fiber', '白菜': 'fiber',
@@ -410,6 +229,7 @@ function getDishNutrition(dish) {
 const ingredientCategories = [
   { value: 'meat', label: '肉类' },
   { value: 'vegetable', label: '蔬菜类' },
+  { value: 'fruit', label: '水果类' },
   { value: 'seasoning', label: '调料类' }
 ]
 
