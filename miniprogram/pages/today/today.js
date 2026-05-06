@@ -17,6 +17,23 @@ function parseAmount(amountStr) {
   return { value: 1, unit: '个' }
 }
 
+// 计算单日营养统计
+function calculateDayNutrition(dishes) {
+  const stats = { carbsCount: 0, proteinCount: 0, fatCount: 0, fiberCount: 0, totalCount: 0 }
+  dishes.forEach(dish => {
+    if (dish.nutritionTypes && Array.isArray(dish.nutritionTypes)) {
+      dish.nutritionTypes.forEach(nType => {
+        if (nType === 'carbs') stats.carbsCount++
+        else if (nType === 'protein') stats.proteinCount++
+        else if (nType === 'fat') stats.fatCount++
+        else if (nType === 'fiber') stats.fiberCount++
+      })
+    }
+  })
+  stats.totalCount = stats.carbsCount + stats.proteinCount + stats.fatCount + stats.fiberCount
+  return stats
+}
+
 // 计算食材扣减清单
 function calculateDeductions(dishes, fridgeItems) {
   // 1. 累加所有菜品需要的食材
@@ -157,6 +174,31 @@ Page({
     this.updateTabCounts()
     this.checkConflicts()
     this.calculateNutritionStats()
+  },
+
+  saveToDietHistory() {
+    const history = storageAdapter.get('dietHistory') || []
+    const todayMenu = this.data.menu
+
+    const allDishes = [
+      ...todayMenu.breakfast,
+      ...todayMenu.lunch,
+      ...todayMenu.dinner
+    ]
+
+    if (allDishes.length === 0) return
+
+    const nutritionStats = calculateDayNutrition(allDishes)
+
+    history.unshift({
+      date: new Date().toISOString().split('T')[0],
+      menu: todayMenu,
+      nutritionStats
+    })
+
+    // 只保留7天
+    const trimmed = history.slice(0, 7)
+    storageAdapter.set('dietHistory', trimmed)
   },
 
   updateTabCounts() {
@@ -357,6 +399,9 @@ Page({
     let fridgeItems = storageAdapter.get('fridgeItems') || []
     fridgeItems = performDeduction(deductionList, fridgeItems)
     storageAdapter.set('fridgeItems', fridgeItems)
+
+    // 存档到历史
+    this.saveToDietHistory()
 
     // 清空菜单
     const emptyMenu = {
