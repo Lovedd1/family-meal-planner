@@ -225,7 +225,7 @@ Page({
       ...this.data.menu.breakfast,
       ...this.data.menu.lunch,
       ...this.data.menu.dinner
-    ]
+    ].filter(dish => dish && dish.ingredients)
     const allIngredients = allDishes.flatMap(dish => dish.ingredients)
     const conflicts = foods.checkFoodConflict(allIngredients)
     this.setData({ conflicts })

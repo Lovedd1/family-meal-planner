@@ -416,7 +416,9 @@ const ingredientCategories = [
 // 检测食材相克
 function checkFoodConflict(ingredients) {
   const warnings = []
-  const ingredientNames = ingredients.map(i => i.name)
+  // 过滤无效食材
+  const validIngredients = ingredients.filter(i => i && i.name)
+  const ingredientNames = validIngredients.map(i => i.name)
 
   for (const conflict of foodConflicts) {
     const matched = conflict.ingredients.filter(ing => ingredientNames.includes(ing))
