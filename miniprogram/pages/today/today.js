@@ -145,7 +145,9 @@ Page({
       fatCount: 0,
       fiberCount: 0
     },
-    nutritionGroups: []
+    nutritionGroups: [],
+    isEvaluating: false,
+    riskResult: null
   },
 
   onLoad() {
@@ -396,14 +398,61 @@ Page({
     // 计算扣减清单
     const deductionList = calculateDeductions(allDishes, fridgeItems)
 
+    // 先显示弹窗，评估中状态
     this.setData({
       showConfirmModal: true,
-      deductionList: deductionList
+      deductionList: deductionList,
+      isEvaluating: true,
+      riskResult: null
+    })
+
+    // 调用云函数评估风险
+    this.evaluateMenuRisks(allDishes).then(result => {
+      this.setData({
+        isEvaluating: false,
+        riskResult: result
+      })
     })
   },
 
   closeConfirmModal() {
-    this.setData({ showConfirmModal: false })
+    this.setData({ showConfirmModal: false, riskResult: null })
+  },
+
+  // 评估菜单食材风险
+  evaluateMenuRisks(allDishes) {
+    return new Promise((resolve) => {
+      // 提取所有食材
+      const allIngredients = allDishes
+        .filter(dish => dish && dish.ingredients)
+        .flatMap(dish => dish.ingredients)
+        .map(ing => ing.name)
+
+      if (allIngredients.length === 0) {
+        resolve({ hasRisk: false, risks: [] })
+        return
+      }
+
+      wx.cloud.callFunction({
+        name: 'generateDietPlan',
+        data: {
+          action: 'evaluateFoodRisks',
+          ingredients: allIngredients
+        },
+        success: (res) => {
+          console.log('风险评估结果:', res)
+          if (res.result && res.result.risks) {
+            resolve({ hasRisk: true, risks: res.result.risks })
+          } else {
+            resolve({ hasRisk: false, risks: [] })
+          }
+        },
+        fail: (err) => {
+          console.error('风险评估失败:', err)
+          resolve({ hasRisk: false, risks: [] })
+        }
+      })
+    })
   },
 
   confirmMenu() {

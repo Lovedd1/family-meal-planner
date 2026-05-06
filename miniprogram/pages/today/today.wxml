@@ -185,6 +185,33 @@
         <text class="modal-close" bindtap="closeConfirmModal">×</text>
       </view>
       <view class="modal-body">
+        <!-- 风险评估显示 -->
+        <view class="risk-section" wx:if="{{isEvaluating || riskResult}}">
+          <block wx:if="{{isEvaluating}}">
+            <view class="risk-evaluating">
+              <text>🤖 AI正在分析食材搭配风险...</text>
+            </view>
+          </block>
+          <block wx:elif="{{riskResult && riskResult.hasRisk}}">
+            <view class="risk-alert">
+              <view class="risk-header">
+                <text class="risk-icon">⚠️</text>
+                <text class="risk-title">食材搭配风险提示</text>
+              </view>
+              <view class="risk-items">
+                <view class="risk-item" wx:for="{{riskResult.risks}}" wx:key="*this">
+                  <text class="risk-level danger">危险</text>
+                  <text class="risk-text">{{item}}</text>
+                </view>
+              </view>
+            </view>
+          </block>
+          <block wx:elif="{{riskResult && !riskResult.hasRisk}}">
+            <view class="risk-safe">
+              <text>✅ 食材搭配安全</text>
+            </view>
+          </block>
+        </view>
         <view class="confirm-summary">
           <view class="summary-item">
             <text>🌅 早餐</text>
