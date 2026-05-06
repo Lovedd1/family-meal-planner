@@ -72,10 +72,6 @@ Page({
 
   onShow() {
     this.loadHealthData()
-    // 如果数据足够，自动触发AI分析
-    if (this.data.dietHistory.length >= 3) {
-      this.generateDailyAdvice()
-    }
   },
 
   loadHealthData() {
@@ -115,6 +111,11 @@ Page({
     // 加载饮食历史
     const dietHistory = storageAdapter.get('dietHistory') || []
     this.setData({ dietHistory })
+
+    // 如果数据足够，自动触发AI分析
+    if (this.data.dietHistory.length >= 3) {
+      this.generateDailyAdvice()
+    }
 
     // 生成健康报告
     this.generateHealthReports()
@@ -610,6 +611,7 @@ Page({
         this.setData({ aiAnalysis: res.result.data })
       } else {
         console.error('AI分析返回失败:', res.result)
+        wx.showToast({ title: '分析失败，请重试', icon: 'none' })
       }
     }).catch(err => {
       wx.hideLoading()
