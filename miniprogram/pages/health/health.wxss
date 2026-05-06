@@ -1130,7 +1130,6 @@
   flex-shrink: 0;
   box-sizing: border-box;
 }
-}
 
 .tomorrow-menu {
   border-top: 2rpx dashed #E8D5D8;
