@@ -40,8 +40,9 @@ Page({
     const allFoods = [...foods.foods, ...customFoods]
     // 添加食材摘要
     allFoods.forEach(food => {
-      const names = food.ingredients.slice(0, 3).map(i => i.name)
-      food.ingredientsSummary = names.join('、') + (food.ingredients.length > 3 ? '...' : '')
+      const ingredients = food.ingredients || []
+      const names = ingredients.slice(0, 3).map(i => (i.name || ''))
+      food.ingredientsSummary = names.join('、') + (ingredients.length > 3 ? '...' : '')
     })
     this.setData({
       foodList: allFoods,
@@ -87,12 +88,12 @@ Page({
   checkDishConflict(ingredients) {
     const menu = app.getTodayMenu()
     const allDishes = [
-      ...menu.breakfast,
-      ...menu.lunch,
-      ...menu.dinner
+      ...(menu.breakfast || []),
+      ...(menu.lunch || []),
+      ...(menu.dinner || [])
     ]
-    const existingIngredients = allDishes.flatMap(d => d.ingredients).map(i => i.name)
-    const newIngredients = ingredients.map(i => i.name)
+    const existingIngredients = allDishes.flatMap(d => (d.ingredients || [])).map(i => (i.name || ''))
+    const newIngredients = (ingredients || []).map(i => (i.name || ''))
 
     for (const conflict of foods.foodConflicts) {
       const matchedExisting = conflict.ingredients.filter(i => existingIngredients.includes(i))

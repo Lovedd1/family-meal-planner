@@ -100,7 +100,7 @@ App({
   // 获取今日菜单
   getTodayMenu() {
     const menu = storageAdapter.get('todayMenu')
-    if (menu) {
+    if (menu && Array.isArray(menu.breakfast) && Array.isArray(menu.lunch) && Array.isArray(menu.dinner)) {
       return menu
     }
     return {
