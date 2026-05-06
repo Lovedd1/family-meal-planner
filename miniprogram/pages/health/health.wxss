@@ -1212,6 +1212,32 @@
   font-size: 28rpx;
 }
 
+.history-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.history-summary {
+  font-size: 24rpx;
+  color: #8A6A6A;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 500rpx;
+}
+
+.history-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.delete-btn {
+  font-size: 28rpx;
+  padding: 8rpx;
+}
+
 /* ========== 锁定状态 ========== */
 .diet-analysis-locked {
   background: #fff;

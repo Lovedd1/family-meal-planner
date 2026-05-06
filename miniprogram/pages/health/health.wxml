@@ -259,10 +259,31 @@
       </view>
     </view>
 
-    <!-- 历史饮食列表 -->
+    <!-- 历史饮食分析列表 -->
+    <view class="diet-history-section" wx:if="{{dietPlanHistory.length > 0}}">
+      <view class="section-header" bindtap="toggleDietHistory">
+        <text>📋 分析历史 ({{dietPlanHistory.length}}条)</text>
+        <text class="toggle-icon">{{showDietHistory ? '▼' : '▶'}}</text>
+      </view>
+      <view class="history-list" wx:if="{{showDietHistory}}">
+        <view class="history-item" wx:for="{{dietPlanHistory}}" wx:key="id">
+          <view class="history-info" data-id="{{item.id}}" bindtap="viewDietPlan">
+            <view class="history-date">{{item.date}}</view>
+            <view class="history-summary" wx:if="{{item.plan && item.plan.analysis}}">
+              {{item.plan.analysis.summary || '一日分析'}}
+            </view>
+          </view>
+          <view class="history-actions">
+            <text class="delete-btn" data-id="{{item.id}}" bindtap="deleteDietPlan">🗑️</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 饮食历史记录 -->
     <view class="diet-history-section" wx:if="{{dietHistory.length > 0}}">
       <view class="section-header" bindtap="toggleDietHistory">
-        <text>近7天饮食记录</text>
+        <text>🍽️ 近7天饮食记录</text>
         <text class="toggle-icon">{{showDietHistory ? '▼' : '▶'}}</text>
       </view>
       <view class="history-list" wx:if="{{showDietHistory}}">

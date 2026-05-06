@@ -542,8 +542,24 @@ Page({
     const history = this.data.dietPlanHistory
     const item = history.find(h => h.id === id)
     if (item && item.plan) {
-      this.setData({ dietPlan: item.plan, showDietPlan: true, currentPlanPhase: 0 })
+      this.setData({ aiAnalysis: item.plan, showDietPlan: true, currentPlanPhase: 0 })
     }
+  },
+
+  deleteDietPlan(e) {
+    const id = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '删除确认',
+      content: '确定要删除这条分析记录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          const history = this.data.dietPlanHistory.filter(h => h.id !== id)
+          storageAdapter.set('dietPlanHistory', history)
+          this.setData({ dietPlanHistory: history })
+          wx.showToast({ title: '已删除', icon: 'success' })
+        }
+      }
+    })
   },
 
   generateDailyAdvice() {
