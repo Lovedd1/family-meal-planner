@@ -13,6 +13,14 @@ if (!API_KEY) {
 }
 
 exports.main = async (event, context) => {
+  const { action, ...rest } = event
+
+  // 如果是每日建议请求
+  if (action === 'dailyAdvice') {
+    return await generateDailyAdvice(rest)
+  }
+
+  // 原有阶段性计划逻辑（保持不变）
   const { dietGoal, activityLevel, allergies, currentPhase, targetWeight } = event
 
   // 构建Prompt
@@ -146,6 +154,93 @@ exports.main = async (event, context) => {
 
   } catch (error) {
     console.error('生成饮食计划失败:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+// 生成每日饮食建议
+async function generateDailyAdvice({ dietGoal, activityLevel, allergies, currentPhase, targetWeight, currentWeight, dietHistory, availableFoods }) {
+  // 构建Prompt
+  const prompt = `你是专业营养师，请根据用户近7天饮食历史，分析营养摄入情况，给出明日饮食建议。
+
+用户信息：
+- 目标：${dietGoal === 'lose' ? '减脂' : dietGoal === 'maintain' ? '维持体重' : '增肌'}
+- 当前体重：${currentWeight || '未记录'}kg
+- 目标体重：${targetWeight || '未设定'}kg
+- 活动水平：${activityLevel === 'sedentary' ? '久坐少动' : activityLevel === 'moderate' ? '适度活动' : '运动较多'}
+- 过敏食物：${allergies || '无'}
+- 生理期阶段：${currentPhase === 'menstruation' ? '经期' : currentPhase === 'follicular' ? '卵泡期' : currentPhase === 'ovulation' ? '排卵期' : currentPhase === 'luteal' ? '黄体期' : '未知'}
+
+近7天饮食历史：
+${JSON.stringify(dietHistory, null, 2)}
+
+现有菜品库：
+${JSON.stringify(availableFoods.map(f => ({ id: f.id, name: f.name, emoji: f.emoji, nutritionTypes: f.nutritionTypes })), null, 2)}
+
+请按以下JSON格式返回（必须严格遵守格式，不要添加任何额外文字）：
+{
+  "tomorrowMenu": {
+    "breakfast": [{"id": "菜品id", "name": "菜品名", "emoji": "emoji", "nutritionTypes": ["protein"], "reason": "推荐理由"}],
+    "lunch": [...],
+    "dinner": [...]
+  },
+  "analysis": {
+    "summary": "近7天饮食分析：...",
+    "needsMore": [
+      {"type": "protein", "reason": "原因", "suggestions": [{"id": "f003", "name": "西兰花炒鸡胸肉", "emoji": "🥦"}]}
+    ],
+    "needsLess": [
+      {"type": "carbs", "reason": "原因", "currentAvg": "45%", "suggested": "35%"}
+    ]
+  },
+  "nutritionPrediction": {
+    "carbsCount": 2,
+    "proteinCount": 3,
+    "fatCount": 1,
+    "fiberCount": 2
+  }
+}`
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: '你是一位专业营养师，擅长分析饮食历史并给出针对性建议，只从提供的菜品库中选择菜品。' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 3000
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`API调用失败: ${response.status}`)
+    }
+
+    const result = await response.json()
+    const content = result.choices?.[0]?.message?.content
+
+    if (!content) {
+      throw new Error('API返回内容为空')
+    }
+
+    let jsonStr = content
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      jsonStr = jsonMatch[0]
+    }
+
+    const data = JSON.parse(jsonStr)
+    return { success: true, data }
+
+  } catch (error) {
+    console.error('生成每日建议失败:', error)
     return { success: false, error: error.message }
   }
 }
