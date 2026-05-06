@@ -516,14 +516,14 @@
 /* 饼状图 */
 .pie-chart-container {
   position: relative;
-  width: 320rpx;
-  height: 320rpx;
+  width: 160px;
+  height: 160px;
   margin-bottom: 30rpx;
 }
 
 .pie-chart {
-  width: 320rpx;
-  height: 320rpx;
+  width: 160px;
+  height: 160px;
 }
 
 .pie-center {

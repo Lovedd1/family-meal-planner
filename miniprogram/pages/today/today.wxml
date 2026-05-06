@@ -45,8 +45,8 @@
             <view class="dish-name">
               <text>{{item.name}}</text>
               <view class="tag tag-info" wx:if="{{item.isCustom}}">自定义</view>
-              <view class="tag nutrition-tag {{item.nutritionType}}" wx:if="{{item.nutritionLabel}}">
-                {{item.nutritionLabel}}
+              <view class="tag nutrition-tag {{nType}}" wx:for="{{item.nutritionTypes}}" wx:key="*this" wx:for-item="nType">
+                {{nType === 'carbs' ? '碳水' : nType === 'protein' ? '蛋白质' : nType === 'fat' ? '脂肪' : '纤维'}}
               </view>
             </view>
             <view class="dish-tags">
@@ -82,7 +82,7 @@
     <view class="nutrition-summary">
       <!-- 饼状图 -->
       <view class="pie-chart-container">
-        <canvas class="pie-chart" canvas-id="nutritionPieChart"></canvas>
+        <canvas class="pie-chart" canvas-id="nutritionPieChart" style="width:160px;height:160px;"></canvas>
         <view class="pie-center">
           <text class="pie-total">{{nutritionStats.totalCount}}</text>
           <text class="pie-label">道菜</text>

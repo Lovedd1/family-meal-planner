@@ -237,9 +237,10 @@ Page({
   drawPieChart(stats) {
     const total = stats.totalCount
     const ctx = wx.createCanvasContext('nutritionPieChart')
-    const centerX = 160
-    const centerY = 160
-    const radius = 140
+    const centerX = 80
+    const centerY = 80
+    const radius = 70
+    const innerRadius = 40
 
     // 如果总数为0，绘制灰色背景圆环
     if (total === 0) {
@@ -248,7 +249,7 @@ Page({
       ctx.setFillStyle('#E8E8E8')
       ctx.fill()
       ctx.beginPath()
-      ctx.arc(centerX, centerY, 80, 0, 2 * Math.PI)
+      ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI)
       ctx.setFillStyle('#FFFFFF')
       ctx.fill()
       ctx.draw()
@@ -278,7 +279,7 @@ Page({
 
     // 中心白色圆（形成环形）
     ctx.beginPath()
-    ctx.arc(centerX, centerY, 80, 0, 2 * Math.PI)
+    ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI)
     ctx.setFillStyle('#FFFFFF')
     ctx.fill()
 
