@@ -1115,17 +1115,21 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12rpx;
+  overflow: hidden;
 }
 
 .suggestion-tag {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6rpx;
-  padding: 8rpx 16rpx;
+  padding: 8rpx 14rpx;
   background: rgba(90, 138, 106, 0.12);
   color: #5A8A6A;
   border-radius: 16rpx;
-  font-size: 24rpx;
+  font-size: 22rpx;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
 }
 
 .tomorrow-menu {
@@ -1151,17 +1155,21 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12rpx;
+  overflow: hidden;
 }
 
 .dish-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6rpx;
-  padding: 10rpx 20rpx;
+  padding: 10rpx 16rpx;
   background: #C48B8B;
   color: #fff;
   border-radius: 20rpx;
-  font-size: 26rpx;
+  font-size: 24rpx;
+  flex-shrink: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ========== 历史饮食列表 ========== */
