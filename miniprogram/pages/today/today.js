@@ -121,7 +121,14 @@ Page({
     showConfirmModal: false,
     showRecipeModal: false,
     currentRecipe: null,
-    deductionList: []
+    deductionList: [],
+    nutritionStats: {
+      carbsCount: 0,
+      proteinCount: 0,
+      fatCount: 0,
+      fiberCount: 0
+    },
+    nutritionGroups: []
   },
 
   onLoad() {
@@ -149,6 +156,7 @@ Page({
     this.setData({ menu })
     this.updateTabCounts()
     this.checkConflicts()
+    this.calculateNutritionStats()
   },
 
   updateTabCounts() {
@@ -173,6 +181,45 @@ Page({
     const allIngredients = allDishes.flatMap(dish => dish.ingredients)
     const conflicts = foods.checkFoodConflict(allIngredients)
     this.setData({ conflicts })
+  },
+
+  calculateNutritionStats() {
+    const allDishes = [
+      ...this.data.menu.breakfast,
+      ...this.data.menu.lunch,
+      ...this.data.menu.dinner
+    ]
+
+    const stats = { carbsCount: 0, proteinCount: 0, fatCount: 0, fiberCount: 0 }
+    const groups = [
+      { type: 'carbs', label: '碳水化合物', emoji: '🥖', dishes: [] },
+      { type: 'protein', label: '蛋白质', emoji: '🥩', dishes: [] },
+      { type: 'fat', label: '脂肪', emoji: '🥑', dishes: [] },
+      { type: 'fiber', label: '膳食纤维', emoji: '🥬', dishes: [] }
+    ]
+
+    allDishes.forEach(dish => {
+      if (dish.nutritionTypes && Array.isArray(dish.nutritionTypes)) {
+        dish.nutritionTypes.forEach(nType => {
+          if (nType === 'carbs') stats.carbsCount++
+          else if (nType === 'protein') stats.proteinCount++
+          else if (nType === 'fat') stats.fatCount++
+          else if (nType === 'fiber') stats.fiberCount++
+        })
+
+        // 按主要营养素分组
+        const mainType = dish.nutritionType || 'protein'
+        const group = groups.find(g => g.type === mainType)
+        if (group && !group.dishes.find(d => d.id === dish.id)) {
+          group.dishes.push(dish)
+        }
+      }
+    })
+
+    this.setData({
+      nutritionStats: stats,
+      nutritionGroups: groups
+    })
   },
 
   showRecipe(e) {
