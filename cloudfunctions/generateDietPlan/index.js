@@ -20,6 +20,11 @@ exports.main = async (event, context) => {
     return await generateDailyAdvice(rest)
   }
 
+  // 如果是风险评估请求
+  if (action === 'evaluateRisks') {
+    return await evaluateFoodRisks(rest)
+  }
+
   // 原有阶段性计划逻辑（保持不变）
   const { dietGoal, activityLevel, allergies, currentPhase, targetWeight } = event
 
@@ -241,6 +246,126 @@ ${JSON.stringify(availableFoods.map(f => ({ id: f.id, name: f.name, emoji: f.emo
 
   } catch (error) {
     console.error('生成每日建议失败:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+// 评估食材搭配风险
+async function evaluateFoodRisks({ menu, menuItems }) {
+  // 收集所有菜品的食材
+  const allIngredients = []
+  const mealNames = []
+
+  // 处理菜单结构：{ '早餐': [...], '午餐': [...], '晚餐': [...] }
+  const meals = ['早餐', '午餐', '晚餐']
+  for (const meal of meals) {
+    const dishes = menu[meal] || []
+    for (const dish of dishes) {
+      if (!dish || !dish.name) continue
+      mealNames.push(`${meal}：${dish.name}`)
+
+      // 如果有完整菜品信息，使用其食材
+      if (dish.ingredients && dish.ingredients.length > 0) {
+        for (const ing of dish.ingredients) {
+          if (ing.name && !allIngredients.includes(ing.name)) {
+            allIngredients.push(ing.name)
+          }
+        }
+      } else if (menuItems && menuItems.length > 0) {
+        // 通过菜品库查找食材
+        const found = menuItems.find(m => m.name === dish.name)
+        if (found && found.ingredients) {
+          for (const ing of found.ingredients) {
+            if (ing.name && !allIngredients.includes(ing.name)) {
+              allIngredients.push(ing.name)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (allIngredients.length === 0) {
+    return { success: true, isSafe: true, risks: [] }
+  }
+
+  const prompt = `你是一个食材安全专家。请分析以下食材搭配是否存在风险：
+
+食材列表：${allIngredients.join('、')}
+
+已选菜品：
+${mealNames.join('\n')}
+
+请检查以下方面：
+1. 食材相克（化学反应）- 如虾+维生素C水果会产生砒霜
+2. 营养冲突（搭配禁忌）- 如菠菜+豆腐影响钙吸收
+3. 特殊人群注意事项
+
+如果存在风险，请按以下格式回复：
+风险1：涉及食材[具体食材]，等级[危险/警告]，说明[具体说明]
+
+如果多个风险，换行分隔。
+
+如果没有风险，回复：安全，无已知风险搭配`
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: '你是一位专业食材安全专家，擅长分析食材搭配的风险。' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 1500
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`API调用失败: ${response.status}`)
+    }
+
+    const result = await response.json()
+    const content = result.choices?.[0]?.message?.content
+
+    if (!content) {
+      throw new Error('API返回内容为空')
+    }
+
+    // 解析风险评估结果
+    const risks = []
+    const isSafe = content.includes('安全，无已知风险搭配')
+
+    if (!isSafe) {
+      // 解析风险行
+      const lines = content.split('\n').filter(line => line.startsWith('风险'))
+      for (const line of lines) {
+        // 提取涉及食材
+        const ingredientsMatch = line.match(/涉及食材\[(.+?)\]/)
+        // 提取等级
+        const levelMatch = line.match(/等级\[(危险|警告)\]/)
+        // 提取说明
+        const descMatch = line.match(/说明\[(.+?)\]/)
+
+        if (ingredientsMatch && levelMatch && descMatch) {
+          risks.push({
+            ingredients: ingredientsMatch[1].split('、'),
+            level: levelMatch[1] === '危险' ? 'danger' : 'warning',
+            description: descMatch[1]
+          })
+        }
+      }
+    }
+
+    return { success: true, isSafe, risks }
+
+  } catch (error) {
+    console.error('评估食材风险失败:', error)
     return { success: false, error: error.message }
   }
 }
