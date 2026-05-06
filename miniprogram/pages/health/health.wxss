@@ -1036,3 +1036,190 @@
   font-weight: 700;
   color: #C48B8B;
 }
+
+/* ========== 饮食分析卡片 ========== */
+.diet-analysis-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  margin: 0 24rpx 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(93, 74, 74, 0.08);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+}
+
+.analyzing-tip {
+  font-size: 24rpx;
+  color: #C48B8B;
+}
+
+.analysis-summary {
+  font-size: 28rpx;
+  color: #5D4A4A;
+  line-height: 1.6;
+  margin-bottom: 24rpx;
+  padding: 20rpx;
+  background: #FDF8F8;
+  border-radius: 16rpx;
+}
+
+.needs-section {
+  margin-bottom: 24rpx;
+}
+
+.section-title {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #C48B8B;
+  margin-bottom: 16rpx;
+  font-family: monospace;
+  letter-spacing: 2rpx;
+}
+
+.section-title.needs-less {
+  color: #D4A828;
+}
+
+.need-item {
+  margin-bottom: 16rpx;
+  padding: 16rpx;
+  background: #FDF8F8;
+  border-radius: 12rpx;
+}
+
+.need-type {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+  margin-bottom: 8rpx;
+}
+
+.need-reason {
+  font-size: 24rpx;
+  color: #8A6A6A;
+  margin-bottom: 12rpx;
+}
+
+.need-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.suggestion-tag {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 16rpx;
+  background: rgba(90, 138, 106, 0.12);
+  color: #5A8A6A;
+  border-radius: 16rpx;
+  font-size: 24rpx;
+}
+
+.tomorrow-menu {
+  border-top: 2rpx dashed #E8D5D8;
+  padding-top: 24rpx;
+}
+
+.meal-section {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+}
+
+.meal-label {
+  width: 100rpx;
+  font-size: 24rpx;
+  color: #8A6A6A;
+  flex-shrink: 0;
+}
+
+.meal-dishes {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.dish-chip {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 10rpx 20rpx;
+  background: #C48B8B;
+  color: #fff;
+  border-radius: 20rpx;
+  font-size: 26rpx;
+}
+
+/* ========== 历史饮食列表 ========== */
+.diet-history-section {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  margin: 0 24rpx 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(93, 74, 74, 0.08);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #5D4A4A;
+}
+
+.toggle-icon {
+  color: #C48B8B;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx dashed #E8D5D8;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-date {
+  font-size: 26rpx;
+  color: #8A6A6A;
+}
+
+.history-dishes {
+  display: flex;
+  gap: 8rpx;
+}
+
+.history-dishes text {
+  font-size: 28rpx;
+}
+
+/* ========== 锁定状态 ========== */
+.diet-analysis-locked {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 40rpx;
+  margin: 0 24rpx 24rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #8A6A6A;
+  box-shadow: 0 4rpx 16rpx rgba(93, 74, 74, 0.08);
+}
