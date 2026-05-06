@@ -1,6 +1,8 @@
 // pages/settings/settings.js
 const storageAdapter = require('../../utils/storageAdapter.js')
 
+const LAST_SYNC_KEY = 'lastSyncTime'
+
 Page({
   data: {
     myNickname: '',
@@ -8,6 +10,11 @@ Page({
     partnerConnected: false,
     partnerNickname: '',
     version: 'V2.2.0',
+
+    // 同步状态
+    syncStatus: 'disconnected', // disconnected | connected | syncing
+    lastSyncTime: null,
+    syncing: false,
 
     // 弹窗
     showMyInfoModal: false,
@@ -51,6 +58,7 @@ Page({
     const myPin = wx.getStorageSync('myPin') || ''
     const partnerNickname = wx.getStorageSync('partnerNickname') || ''
     const partnerConnected = !!(myNickname && partnerNickname)
+    const lastSyncTime = wx.getStorageSync(LAST_SYNC_KEY) || null
 
     // 数据统计
     const fridgeItems = (wx.getStorageSync('fridgeItems') || []).length
@@ -66,13 +74,54 @@ Page({
       partnerNickname,
       partnerConnected,
       dataStats: { fridgeItems, customFoods, weightRecords },
-      menstrualSettings
+      menstrualSettings,
+      syncStatus: partnerConnected ? 'connected' : 'disconnected',
+      lastSyncTime
     })
 
     // 如果有昵称和PIN，检查云端配对状态
     if (myNickname && myPin) {
       this.checkPairStatus()
     }
+  },
+
+  // ========== 手动同步 ==========
+  async manualSync() {
+    if (this.data.syncing) return
+    if (!this.data.partnerConnected) {
+      wx.showToast({ title: '请先配对伴侣', icon: 'none' })
+      return
+    }
+
+    this.setData({ syncing: true, syncStatus: 'syncing' })
+
+    try {
+      const result = await storageAdapter.manualSync()
+      if (result.success) {
+        this.setData({
+          lastSyncTime: result.syncTime,
+          syncStatus: 'connected',
+          syncing: false
+        })
+        wx.showToast({ title: '同步成功', icon: 'success' })
+      } else {
+        this.setData({ syncStatus: 'connected', syncing: false })
+        wx.showToast({ title: result.error || '同步失败', icon: 'none' })
+      }
+    } catch (err) {
+      this.setData({ syncStatus: 'connected', syncing: false })
+      wx.showToast({ title: '同步失败', icon: 'none' })
+    }
+  },
+
+  // 获取同步时间文本
+  getSyncTimeText(timestamp) {
+    if (!timestamp) return '从未同步'
+    const diff = Date.now() - timestamp
+    if (diff < 60000) return '刚刚'
+    if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前'
+    if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前'
+    return new Date(timestamp).toLocaleDateString()
   },
 
   // 检查云端配对状态

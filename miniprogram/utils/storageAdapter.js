@@ -571,6 +571,41 @@ class StorageAdapter {
   }
 
   /**
+   * 手动同步 - 立即执行同步，跳过轮询等待
+   */
+  async manualSync() {
+    const nickname = wx.getStorageSync('myNickname')
+    const pin = wx.getStorageSync('myPin')
+    const partnerNickname = wx.getStorageSync('partnerNickname')
+    if (!nickname || !pin || !partnerNickname) {
+      return { success: false, error: '未配对' }
+    }
+
+    try {
+      // 1. 先推送本地共享数据到云端
+      const sharedKeys = ['fridgeItems', 'customFoods', 'todayMenu']
+      for (const key of sharedKeys) {
+        const data = wx.getStorageSync(key)
+        if (data) {
+          await this.syncToPartner(key, data)
+        }
+      }
+
+      // 2. 再拉取伴侣最新数据
+      await this.checkPartnerUpdates()
+
+      // 3. 更新最后同步时间
+      const now = Date.now()
+      wx.setStorageSync(LAST_SYNC_KEY, now)
+
+      return { success: true, syncTime: now }
+    } catch (err) {
+      console.error('手动同步失败:', err)
+      return { success: false, error: err.message || '同步失败' }
+    }
+  }
+
+  /**
    * 检查伴侣数据更新
    */
   async checkPartnerUpdates() {

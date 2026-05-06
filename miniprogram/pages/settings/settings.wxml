@@ -1,4 +1,17 @@
 <!-- 设置页面 -->
+<wxs module="utils">
+module.exports = {
+  formatSyncTime: function(timestamp) {
+    if (!timestamp) return '从未同步'
+    var diff = Date.now() - timestamp
+    if (diff < 60000) return '刚刚'
+    if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前'
+    if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前'
+    var date = new Date(timestamp)
+    return (date.getMonth() + 1) + '月' + date.getDate() + '日'
+  }
+}
+</wxs>
 <view class="page">
   <!-- 顶部导航 -->
   <view class="nav-bar">
@@ -43,7 +56,24 @@
     <view class="pair-hint center">设置我的信息后，即可与伴侣配对共享数据</view>
   </view>
 
-  <!-- 数据同步状态 -->
+  <!-- 数据同步（已配对时显示） -->
+  <view class="section" wx:if="{{partnerConnected}}">
+    <view class="section-title">数据同步</view>
+    <view class="sync-card">
+      <view class="sync-status">
+        <view class="status-indicator {{syncStatus}}">
+          <text class="status-dot"></text>
+          <text>{{syncStatus === 'syncing' ? '同步中...' : (syncStatus === 'connected' ? '已连接' : '未连接')}}</text>
+        </view>
+        <text class="last-sync">{{utils.formatSyncTime(lastSyncTime)}}</text>
+      </view>
+      <button class="btn-outline" bindtap="manualSync" loading="{{syncing}}" disabled="{{syncing}}">
+        {{syncing ? '同步中...' : '立即同步'}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 数据统计 -->
   <view class="section">
     <view class="section-title">数据统计</view>
     <view class="data-stats">
