@@ -259,53 +259,23 @@
       </view>
     </view>
 
-    <!-- 饮食计划 -->
-    <view class="card">
-      <view class="card-header">
-        <text class="card-title">🤖 AI 饮食计划</text>
+    <!-- 历史饮食列表 -->
+    <view class="diet-history-section" wx:if="{{dietHistory.length > 0}}">
+      <view class="section-header" bindtap="toggleDietHistory">
+        <text>近7天饮食记录</text>
+        <text class="toggle-icon">{{showDietHistory ? '▼' : '▶'}}</text>
       </view>
-      <view class="ai-hint">
-        基于你的体重、目标、生理阶段生成的个性化饮食建议
-      </view>
-      <button class="btn btn-primary" bindtap="generateDietPlan">
-        生成饮食计划
-      </button>
-      <!-- 最新计划列表 -->
-      <view class="plan-history" wx:if="{{dietPlanHistory.length > 0}}">
-        <view class="plan-history-title">历史计划</view>
-        <view
-          class="plan-history-item"
-          wx:for="{{dietPlanHistory}}"
-          wx:key="id"
-          data-id="{{item.id}}"
-          bindtap="viewDietPlan"
-        >
-          <view class="plan-history-info">
-            <text class="plan-history-name">{{item.name}}</text>
-            <text class="plan-history-date">{{item.date}}</text>
+      <view class="history-list" wx:if="{{showDietHistory}}">
+        <view class="history-item" wx:for="{{dietHistory}}" wx:key="date">
+          <view class="history-date">{{item.date}}</view>
+          <view class="history-dishes">
+            <text wx:for="{{item.menu.breakfast}}" wx:key="id">{{item.emoji}}</text>
+            <text wx:for="{{item.menu.lunch}}" wx:key="id">{{item.emoji}}</text>
+            <text wx:for="{{item.menu.dinner}}" wx:key="id">{{item.emoji}}</text>
           </view>
-          <text class="plan-history-arrow">›</text>
         </view>
       </view>
     </view>
-
-    <!-- 历史饮食列表 -->
-<view class="diet-history-section" wx:if="{{dietHistory.length > 0}}">
-  <view class="section-header" bindtap="toggleDietHistory">
-    <text>近7天饮食记录</text>
-    <text class="toggle-icon">{{showDietHistory ? '▼' : '▶'}}</text>
-  </view>
-  <view class="history-list" wx:if="{{showDietHistory}}">
-    <view class="history-item" wx:for="{{dietHistory}}" wx:key="date">
-      <view class="history-date">{{item.date}}</view>
-      <view class="history-dishes">
-        <text wx:for="{{item.menu.breakfast}}" wx:key="id">{{item.emoji}}</text>
-        <text wx:for="{{item.menu.lunch}}" wx:key="id">{{item.emoji}}</text>
-        <text wx:for="{{item.menu.dinner}}" wx:key="id">{{item.emoji}}</text>
-      </view>
-    </view>
-  </view>
-</view>
 
     <!-- 健康报告列表 -->
     <view class="card" wx:if="{{healthReports.length > 0}}">
