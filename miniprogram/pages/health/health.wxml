@@ -133,6 +133,76 @@
       </view>
     </view>
 
+    <!-- 饮食分析卡片 -->
+    <view class="diet-analysis-card" wx:if="{{dietHistory.length >= 3}}">
+      <view class="card-header">
+        <text class="card-title">📊 饮食分析</text>
+        <text class="analyzing-tip" wx:if="{{isAnalyzing}}">分析中...</text>
+      </view>
+
+      <!-- 分析摘要 -->
+      <view class="analysis-summary" wx:if="{{aiAnalysis}}">
+        {{aiAnalysis.analysis.summary}}
+      </view>
+
+      <!-- 需要补充 -->
+      <view class="needs-section" wx:if="{{aiAnalysis && aiAnalysis.analysis.needsMore.length > 0}}">
+        <view class="section-title">需要补充</view>
+        <view class="need-item" wx:for="{{aiAnalysis.analysis.needsMore}}" wx:key="type">
+          <view class="need-type">{{item.type === 'protein' ? '🥩 蛋白质' : item.type === 'fiber' ? '🥬 膳食纤维' : item.type === 'carbs' ? '🥖 碳水' : '🥑 脂肪'}}</view>
+          <view class="need-reason">{{item.reason}}</view>
+          <view class="need-suggestions">
+            <view class="suggestion-tag" wx:for="{{item.suggestions}}" wx:key="id" data-dish="{{item}}" data-meal="breakfast" bindtap="addRecommendedDish">
+              {{item.emoji}} {{item.name}}
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 需要减少 -->
+      <view class="needs-section" wx:if="{{aiAnalysis && aiAnalysis.analysis.needsLess.length > 0}}">
+        <view class="section-title needs-less">需要减少</view>
+        <view class="need-item" wx:for="{{aiAnalysis.analysis.needsLess}}" wx:key="type">
+          <view class="need-type">{{item.type === 'carbs' ? '🥖 碳水' : item.type === 'fat' ? '🥑 脂肪' : item.type}}</view>
+          <view class="need-reason">{{item.reason}}（当前{{item.currentAvg}}，建议{{item.suggested}}）</view>
+        </view>
+      </view>
+
+      <!-- 明日推荐 -->
+      <view class="tomorrow-menu" wx:if="{{aiAnalysis && aiAnalysis.tomorrowMenu}}">
+        <view class="section-title">明日推荐</view>
+        <view class="meal-section">
+          <view class="meal-label">🌅 早餐</view>
+          <view class="meal-dishes">
+            <view class="dish-chip" wx:for="{{aiAnalysis.tomorrowMenu.breakfast}}" wx:key="id" data-dish="{{item}}" data-meal="breakfast" bindtap="addRecommendedDish">
+              {{item.emoji}} {{item.name}}
+            </view>
+          </view>
+        </view>
+        <view class="meal-section">
+          <view class="meal-label">☀️ 午餐</view>
+          <view class="meal-dishes">
+            <view class="dish-chip" wx:for="{{aiAnalysis.tomorrowMenu.lunch}}" wx:key="id" data-dish="{{item}}" data-meal="lunch" bindtap="addRecommendedDish">
+              {{item.emoji}} {{item.name}}
+            </view>
+          </view>
+        </view>
+        <view class="meal-section">
+          <view class="meal-label">🌙 晚餐</view>
+          <view class="meal-dishes">
+            <view class="dish-chip" wx:for="{{aiAnalysis.tomorrowMenu.dinner}}" wx:key="id" data-dish="{{item}}" data-meal="dinner" bindtap="addRecommendedDish">
+              {{item.emoji}} {{item.name}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 数据不足提示 -->
+    <view class="diet-analysis-locked" wx:elif="{{dietHistory.length > 0 && dietHistory.length < 3}}">
+      <text>📝 再记录{{3 - dietHistory.length}}天即可解锁AI饮食分析</text>
+    </view>
+
     <!-- 生理期追踪 -->
     <view class="card">
       <view class="card-header">
@@ -218,6 +288,24 @@
         </view>
       </view>
     </view>
+
+    <!-- 历史饮食列表 -->
+<view class="diet-history-section" wx:if="{{dietHistory.length > 0}}">
+  <view class="section-header" bindtap="toggleDietHistory">
+    <text>近7天饮食记录</text>
+    <text class="toggle-icon">{{showDietHistory ? '▼' : '▶'}}</text>
+  </view>
+  <view class="history-list" wx:if="{{showDietHistory}}">
+    <view class="history-item" wx:for="{{dietHistory}}" wx:key="date">
+      <view class="history-date">{{item.date}}</view>
+      <view class="history-dishes">
+        <text wx:for="{{item.menu.breakfast}}" wx:key="id">{{item.emoji}}</text>
+        <text wx:for="{{item.menu.lunch}}" wx:key="id">{{item.emoji}}</text>
+        <text wx:for="{{item.menu.dinner}}" wx:key="id">{{item.emoji}}</text>
+      </view>
+    </view>
+  </view>
+</view>
 
     <!-- 健康报告列表 -->
     <view class="card" wx:if="{{healthReports.length > 0}}">
