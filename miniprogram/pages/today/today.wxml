@@ -18,6 +18,9 @@
       <text>{{item.label}}</text>
       <view class="tab-badge" wx:if="{{item.count > 0}}">{{item.count}}</view>
     </view>
+    <view class="tab-item {{currentTab === 'nutrition' ? 'active' : ''}}" data-tab="nutrition" bindtap="switchTab">
+      <text>📊 营养</text>
+    </view>
   </view>
 
   <!-- 相克警告 -->
@@ -42,6 +45,9 @@
             <view class="dish-name">
               <text>{{item.name}}</text>
               <view class="tag tag-info" wx:if="{{item.isCustom}}">自定义</view>
+              <view class="tag nutrition-tag {{item.nutritionType}}" wx:if="{{item.nutritionLabel}}">
+                {{item.nutritionLabel}}
+              </view>
             </view>
             <view class="dish-tags">
               <view class="heat-tag {{item.heatMethod === 'microwave_safe' ? 'tag-success' : item.heatMethod === 'microwave_none' ? 'tag-danger' : item.heatMethod === 'steam_only' ? 'tag-warning' : 'tag-info'}}">
@@ -67,6 +73,55 @@
       <text class="icon">🍽️</text>
       <text class="text">暂无菜品</text>
       <text class="text-small">去点餐页面添加</text>
+    </view>
+  </view>
+
+  <!-- 营养Tab内容 -->
+  <view class="nutrition-tab" wx:if="{{currentTab === 'nutrition'}}">
+    <!-- 营养分布概览 -->
+    <view class="nutrition-summary">
+      <view class="nutrition-legend">
+        <view class="legend-item">
+          <text class="dot carbs"></text>
+          <text class="legend-label">碳水</text>
+          <text class="legend-count">{{nutritionStats.carbsCount}}道</text>
+        </view>
+        <view class="legend-item">
+          <text class="dot protein"></text>
+          <text class="legend-label">蛋白质</text>
+          <text class="legend-count">{{nutritionStats.proteinCount}}道</text>
+        </view>
+        <view class="legend-item">
+          <text class="dot fat"></text>
+          <text class="legend-label">脂肪</text>
+          <text class="legend-count">{{nutritionStats.fatCount}}道</text>
+        </view>
+        <view class="legend-item">
+          <text class="dot fiber"></text>
+          <text class="legend-label">膳食纤维</text>
+          <text class="legend-count">{{nutritionStats.fiberCount}}道</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 分类列表 -->
+    <view class="nutrition-list">
+      <view class="nutrition-group" wx:for="{{nutritionGroups}}" wx:key="type">
+        <view class="group-header">
+          <text class="group-emoji">{{item.emoji}}</text>
+          <text class="group-name">{{item.label}}</text>
+          <text class="group-count">{{item.dishes.length}}道菜</text>
+        </view>
+        <view class="group-dishes" wx:if="{{item.dishes.length > 0}}">
+          <view class="mini-dish" wx:for="{{item.dishes}}" wx:key="id">
+            <text>{{item.emoji}}</text>
+            <text class="mini-name">{{item.name}}</text>
+          </view>
+        </view>
+        <view class="group-empty" wx:else>
+          <text>暂无此类菜品</text>
+        </view>
+      </view>
     </view>
   </view>
 
