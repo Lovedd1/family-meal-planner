@@ -326,7 +326,7 @@
 .calendar-legend {
   display: flex;
   gap: 20rpx;
-  margin-bottom: 32rpx;
+  margin-bottom: 40rpx;
   flex-wrap: wrap;
 }
 
@@ -488,18 +488,18 @@
 }
 
 .date-cell.today .date-num {
-  background: #5A8A6A;
+  background: #C45C5C;
   color: #fff;
   font-weight: 700;
 }
 
 .date-cell.today.period .date-num {
-  background: linear-gradient(135deg, #C45C5C 50%, #5A8A6A 50%);
+  background: #C45C5C;
   color: #fff;
 }
 
 .date-cell.today.fertile .date-num {
-  background: linear-gradient(135deg, #D4A828 50%, #5A8A6A 50%);
+  background: linear-gradient(135deg, #D4A828 50%, #C45C5C 50%);
   color: #fff;
 }
 
@@ -514,7 +514,7 @@
 }
 
 .date-cell.today .date-actual {
-  color: #5A8A6A;
+  color: #C45C5C;
   font-weight: 600;
 }
 
