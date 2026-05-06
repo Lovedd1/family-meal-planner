@@ -19,7 +19,10 @@ const foods = [
       '加入土豆、胡萝卜继续炖30分钟',
       '调味出锅'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'protein',
+    nutritionTypes: ['carbs', 'protein', 'fiber'],
+    nutritionLabel: '蛋白质'
   },
   {
     id: 'f002',
@@ -39,7 +42,10 @@ const foods = [
       '加入鸡蛋翻炒均匀',
       '调味出锅'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'protein',
+    nutritionTypes: ['protein', 'fiber'],
+    nutritionLabel: '蛋白质'
   },
   {
     id: 'f003',
@@ -59,7 +65,10 @@ const foods = [
       '加入西兰花翻炒',
       '调味出锅'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'fiber',
+    nutritionTypes: ['fiber', 'protein'],
+    nutritionLabel: '膳食纤维'
   },
   {
     id: 'f004',
@@ -80,7 +89,10 @@ const foods = [
       '取出倒掉汤汁',
       '淋上蒸鱼豉油即可'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'protein',
+    nutritionTypes: ['protein', 'fiber'],
+    nutritionLabel: '蛋白质'
   },
   {
     id: 'f005',
@@ -98,7 +110,10 @@ const foods = [
       '捞出过凉水',
       '剥壳食用'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'protein',
+    nutritionTypes: ['protein'],
+    nutritionLabel: '蛋白质'
   },
   {
     id: 'f006',
@@ -119,7 +134,10 @@ const foods = [
       '变色弯曲后捞出',
       '蘸料食用'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'protein',
+    nutritionTypes: ['protein', 'fiber'],
+    nutritionLabel: '蛋白质'
   },
   {
     id: 'f007',
@@ -140,7 +158,10 @@ const foods = [
       '放入冰箱冷藏',
       '取出食用'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'fiber',
+    nutritionTypes: ['fiber', 'fat'],
+    nutritionLabel: '膳食纤维'
   },
   {
     id: 'f008',
@@ -161,7 +182,10 @@ const foods = [
       '加入番茄、土豆继续炖30分钟',
       '调味出锅'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'protein',
+    nutritionTypes: ['carbs', 'protein', 'fiber'],
+    nutritionLabel: '蛋白质'
   },
   {
     id: 'f009',
@@ -179,7 +203,10 @@ const foods = [
       '跳闸后焖5分钟',
       '盛出食用'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'carbs',
+    nutritionTypes: ['carbs'],
+    nutritionLabel: '碳水'
   },
   {
     id: 'f010',
@@ -200,7 +227,10 @@ const foods = [
       '加水没过排骨',
       '大火烧开转小火炖40分钟收汁'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'protein',
+    nutritionTypes: ['carbs', 'protein'],
+    nutritionLabel: '蛋白质'
   },
   {
     id: 'f011',
@@ -220,7 +250,10 @@ const foods = [
       '加入西兰花翻炒',
       '加蚝油调味出锅'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'fiber',
+    nutritionTypes: ['fiber'],
+    nutritionLabel: '膳食纤维'
   },
   {
     id: 'f012',
@@ -239,7 +272,10 @@ const foods = [
       '关火焖2分钟',
       '取出食用'
     ],
-    isCustom: false
+    isCustom: false,
+    nutritionType: 'carbs',
+    nutritionTypes: ['carbs'],
+    nutritionLabel: '碳水'
   }
 ]
 
@@ -299,6 +335,77 @@ const categories = [
   { value: '汤品', label: '汤品' }
 ]
 
+// 营养素分类定义
+const nutritionTypes = [
+  { value: 'carbs', label: '碳水', emoji: '🥖', color: '#D4A828' },
+  { value: 'protein', label: '蛋白质', emoji: '🥩', color: '#C45C5C' },
+  { value: 'fat', label: '脂肪', emoji: '🥑', color: '#7A8AA0' },
+  { value: 'fiber', label: '膳食纤维', emoji: '🥬', color: '#5A8A6A' }
+]
+
+// 食材→营养素映射表
+const nutritionMap = {
+  // 碳水化合物
+  '大米': 'carbs', '米饭': 'carbs', '土豆': 'carbs', '红薯': 'carbs',
+  '面条': 'carbs', '面粉': 'carbs', '饺子': 'carbs', '蒸饺': 'carbs',
+  '馒头': 'carbs', '包子': 'carbs', '冰糖': 'carbs',
+  // 蛋白质
+  '牛肉': 'protein', '鸡胸肉': 'protein', '鸡蛋': 'protein', '虾': 'protein',
+  '排骨': 'protein', '鱼肉': 'protein', '鲈鱼': 'protein', '螃蟹': 'protein',
+  '猪肉': 'protein', '虾仁': 'protein', '豆腐': 'protein', '牛奶': 'protein',
+  // 脂肪
+  '油脂': 'fat', '五花肉': 'fat', '培根': 'fat', '肥肉': 'fat', '香油': 'fat',
+  // 膳食纤维
+  '西兰花': 'fiber', '黄瓜': 'fiber', '番茄': 'fiber', '胡萝卜': 'fiber',
+  '洋葱': 'fiber', '菠菜': 'fiber', '生菜': 'fiber', '白菜': 'fiber',
+  '芹菜': 'fiber', '青椒': 'fiber', '茄子': 'fiber', '藕': 'fiber',
+  '姜': 'fiber', '蒜': 'fiber', '葱': 'fiber',
+  // 调料（不计入主要营养素）
+  '蚝油': 'seasoning', '酱油': 'seasoning', '盐': 'seasoning', '料酒': 'seasoning',
+  '生抽': 'seasoning', '老抽': 'seasoning', '蒸鱼豉油': 'seasoning', '醋': 'seasoning'
+}
+
+// 获取菜品营养素分类
+function getDishNutrition(dish) {
+  if (!dish || !dish.ingredients || dish.ingredients.length === 0) {
+    return { nutritionType: 'protein', nutritionTypes: ['protein'], nutritionLabel: '蛋白质' }
+  }
+
+  const ingredientNames = dish.ingredients.map(i => i.name)
+  const nutritionCounts = { carbs: 0, protein: 0, fat: 0, fiber: 0 }
+
+  ingredientNames.forEach(name => {
+    const nutrition = nutritionMap[name]
+    if (nutrition === 'carbs') nutritionCounts.carbs++
+    else if (nutrition === 'protein') nutritionCounts.protein++
+    else if (nutrition === 'fat') nutritionCounts.fat++
+    else if (nutrition === 'fiber') nutritionCounts.fiber++
+  })
+
+  // 找出最多的营养素
+  const maxCount = Math.max(...Object.values(nutritionCounts))
+  if (maxCount === 0) {
+    return { nutritionType: 'protein', nutritionTypes: ['protein'], nutritionLabel: '蛋白质' }
+  }
+
+  const nutritionType = Object.keys(nutritionCounts).find(k => nutritionCounts[k] === maxCount) || 'protein'
+  const nutritionTypeObj = nutritionTypes.find(n => n.value === nutritionType)
+  const nutritionLabel = nutritionTypeObj?.label || '蛋白质'
+
+  // 所有有分类的营养素
+  const nutritionTypesList = []
+  if (nutritionCounts.carbs > 0) nutritionTypesList.push('carbs')
+  if (nutritionCounts.protein > 0) nutritionTypesList.push('protein')
+  if (nutritionCounts.fat > 0) nutritionTypesList.push('fat')
+  if (nutritionCounts.fiber > 0) nutritionTypesList.push('fiber')
+
+  return {
+    nutritionType,
+    nutritionTypes: nutritionTypesList.length > 0 ? nutritionTypesList : ['protein'],
+    nutritionLabel
+  }
+}
+
 // 食材分类
 const ingredientCategories = [
   { value: 'meat', label: '肉类' },
@@ -351,8 +458,10 @@ module.exports = {
   heatMethods,
   categories,
   ingredientCategories,
+  nutritionTypes,
   checkFoodConflict,
   getHeatMethodLabel,
   filterByCategory,
-  searchFoods
+  searchFoods,
+  getDishNutrition
 }
