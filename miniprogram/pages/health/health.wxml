@@ -245,7 +245,7 @@
               </view>
               <view
                 class="phase-segment follicular"
-                style="width: {{(13 - menstrualSettings.periodDays) / menstrualSettings.cycleDays * 100}}%"
+                style="width: {{9 / menstrualSettings.cycleDays * 100}}%"
               >
                 <text class="phase-segment-label">卵泡期</text>
               </view>
@@ -257,7 +257,7 @@
               </view>
               <view
                 class="phase-segment luteal"
-                style="width: {{(menstrualSettings.cycleDays - 18) / menstrualSettings.cycleDays * 100}}%"
+                style="width: {{(menstrualSettings.cycleDays - menstrualSettings.periodDays - 14) / menstrualSettings.cycleDays * 100}}%"
               >
                 <text class="phase-segment-label">黄体期</text>
               </view>

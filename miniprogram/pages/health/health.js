@@ -362,15 +362,15 @@ Page({
     if (cyclePosition < periodDays) {
       phase = 'menstruation'
       phaseDay = cyclePosition + 1
-    } else if (cyclePosition < 14) {
+    } else if (cyclePosition < periodDays + 9) {
       phase = 'follicular'
       phaseDay = cyclePosition - periodDays + 1
-    } else if (cyclePosition < 19) {
+    } else if (cyclePosition < periodDays + 14) {
       phase = 'ovulation'
-      phaseDay = cyclePosition - 13
+      phaseDay = cyclePosition - (periodDays + 9) + 1
     } else {
       phase = 'luteal'
-      phaseDay = cyclePosition - 18
+      phaseDay = cyclePosition - (periodDays + 14) + 1
     }
 
     this.setData({
