@@ -55,7 +55,15 @@ Page({
     currentReport: null,
 
     // 平台期提醒
-    showPlateauAlert: false
+    showPlateauAlert: false,
+
+    // 饮食历史
+    dietHistory: [],
+    showDietHistory: false,
+
+    // AI分析结果
+    aiAnalysis: null,
+    isAnalyzing: false
   },
 
   onLoad() {
@@ -64,6 +72,10 @@ Page({
 
   onShow() {
     this.loadHealthData()
+    // 如果数据足够，自动触发AI分析
+    if (this.data.dietHistory.length >= 3) {
+      this.generateDailyAdvice()
+    }
   },
 
   loadHealthData() {
@@ -99,6 +111,10 @@ Page({
     // 加载饮食计划历史
     const dietPlanHistory = storageAdapter.get('dietPlanHistory') || []
     this.setData({ dietPlanHistory })
+
+    // 加载饮食历史
+    const dietHistory = storageAdapter.get('dietHistory') || []
+    this.setData({ dietHistory })
 
     // 生成健康报告
     this.generateHealthReports()
@@ -554,6 +570,81 @@ Page({
     if (item && item.plan) {
       this.setData({ dietPlan: item.plan, showDietPlan: true, currentPlanPhase: 0 })
     }
+  },
+
+  generateDailyAdvice() {
+    if (this.data.isAnalyzing) return
+    this.setData({ isAnalyzing: true })
+
+    wx.showLoading({ title: '分析中...' })
+
+    const profile = storageAdapter.get('healthProfile') || {}
+    const customFoods = storageAdapter.get('customFoods') || []
+    const allFoods = [...foods.foods, ...customFoods]
+
+    const availableFoods = allFoods.map(f => ({
+      id: f.id,
+      name: f.name,
+      emoji: f.emoji,
+      nutritionTypes: f.nutritionTypes || ['protein'],
+      category: f.category,
+      heatMethod: f.heatMethod
+    }))
+
+    wx.cloud.callFunction({
+      name: 'generateDietPlan',
+      data: {
+        action: 'dailyAdvice',
+        dietGoal: this.data.dietGoal,
+        activityLevel: this.data.activityLevel,
+        allergies: this.data.allergies || '',
+        currentPhase: this.data.currentPhase,
+        targetWeight: this.data.targetWeight,
+        currentWeight: this.data.currentWeight,
+        dietHistory: this.data.dietHistory,
+        availableFoods: availableFoods
+      }
+    }).then(res => {
+      wx.hideLoading()
+      if (res.result && res.result.success) {
+        this.setData({ aiAnalysis: res.result.data })
+      } else {
+        console.error('AI分析返回失败:', res.result)
+      }
+    }).catch(err => {
+      wx.hideLoading()
+      console.error('AI分析失败:', err)
+    }).finally(() => {
+      this.setData({ isAnalyzing: false })
+    })
+  },
+
+  addRecommendedDish(e) {
+    const dish = e.currentTarget.dataset.dish
+    const meal = e.currentTarget.dataset.meal || 'breakfast'
+
+    const menu = app.getTodayMenu()
+    if (!menu[meal]) menu[meal] = []
+
+    const exists = menu[meal].some(d => d.id === dish.id)
+    if (exists) {
+      wx.showToast({ title: '已在菜单中', icon: 'none' })
+      return
+    }
+
+    menu[meal].push(dish)
+    app.updateTodayMenu(menu)
+
+    wx.showToast({ title: `已添加到${this.getMealName(meal)}`, icon: 'success' })
+  },
+
+  getMealName(meal) {
+    const names = { breakfast: '早餐', lunch: '午餐', dinner: '晚餐' }
+    return names[meal] || '菜单'
+  },
+
+  toggleDietHistory() {
+    this.setData({ showDietHistory: !this.data.showDietHistory })
   },
 
   getDietGoalLabel(goal) {
