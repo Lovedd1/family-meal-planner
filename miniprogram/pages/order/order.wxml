@@ -15,99 +15,98 @@
     />
   </view>
 
-  <!-- 分类筛选 -->
-  <view class="category-bar">
-    <view
-      class="category-item {{currentCategory === item.value ? 'active' : ''}}"
-      wx:for="{{categories}}"
-      wx:key="value"
-      data-category="{{item.value}}"
-      bindtap="switchCategory"
-    >
-      {{item.label}}
-    </view>
-  </view>
-
-  <!-- 添加到餐次 -->
-  <view class="add-to-bar">
-    <text class="add-label">添加到:</text>
-    <view
-      class="tab-btn {{currentTab === 'breakfast' ? 'active' : ''}}"
-      data-tab="breakfast"
-      bindtap="switchTab"
-    >🌅早餐</view>
-    <view
-      class="tab-btn {{currentTab === 'lunch' ? 'active' : ''}}"
-      data-tab="lunch"
-      bindtap="switchTab"
-    >☀️午餐</view>
-    <view
-      class="tab-btn {{currentTab === 'dinner' ? 'active' : ''}}"
-      data-tab="dinner"
-      bindtap="switchTab"
-    >🌙晚餐</view>
-  </view>
-
-  <!-- 新增自定义菜品按钮 -->
-  <view class="custom-dish-btn-wrap">
-    <view class="custom-dish-btn" bindtap="showAddCustomModal">
-      <text class="custom-dish-btn-icon">+</text>
-      <text class="custom-dish-btn-text">添加新菜品</text>
-    </view>
-  </view>
-
-  <!-- 菜品列表 -->
-  <view class="food-list">
-    <block wx:if="{{filteredList.length > 0}}">
+  <!-- 主体：侧边栏 + 菜品列表 -->
+  <view class="content-wrapper">
+    <!-- 左侧分类侧边栏 -->
+    <scroll-view class="category-sidebar" scroll-y>
       <view
-        class="food-card {{item.hasConflict ? 'has-conflict' : ''}} {{isAdded(item) ? 'is-added' : ''}}"
-        wx:for="{{filteredList}}"
-        wx:key="id"
+        class="sidebar-item {{currentCategory === item.value ? 'active' : ''}}"
+        wx:for="{{categories}}"
+        wx:key="value"
+        data-category="{{item.value}}"
+        bindtap="switchCategory"
       >
-        <view
-          class="food-main"
-          data-dish="{{item}}"
-          bindtap="showRecipe"
-        >
-          <text class="food-emoji">{{item.emoji}}</text>
-          <view class="food-info">
-            <view class="food-name">
-              <text>{{item.name}}</text>
-              <text class="tag tag-info" wx:if="{{item.isCustom}}">自定义</text>
-            </view>
-            <view class="food-tags">
-              <text class="heat-tag {{item.heatMethod === 'microwave_safe' ? 'safe' : item.heatMethod === 'microwave_none' ? 'danger' : item.heatMethod === 'steam_only' ? 'steam' : 'fire'}}">
-                {{item.heatMethod === 'microwave_safe' ? '✅微波' : item.heatMethod === 'microwave_none' ? '🔴微波' : item.heatMethod === 'steam_only' ? '🟢蒸制' : '🟠明火'}}
-              </text>
-              <text class="conflict-tag" wx:if="{{item.hasConflict}}">⚠️相克</text>
-            </view>
-            <view class="food-ingredients">
-              {{item.ingredientsSummary}}
-            </view>
-          </view>
-        </view>
-        <view class="food-action">
-          <block wx:if="{{isAdded(item)}}">
-            <view class="added-text">已添加</view>
-            <view
-              class="remove-btn"
-              data-dish="{{item}}"
-              data-tab="{{currentTab}}"
-              catchtap="removeFromMenu"
-            >移除</view>
-          </block>
-          <view
-            wx:else
-            class="add-btn"
-            data-dish="{{item}}"
-            catchtap="addToMenu"
-          >+ 添加</view>
+        {{item.label}}
+      </view>
+    </scroll-view>
+
+    <!-- 右侧菜品列表 -->
+    <scroll-view class="food-list-area" scroll-y>
+      <!-- 新增自定义菜品按钮 -->
+      <view class="custom-dish-btn-wrap">
+        <view class="custom-dish-btn" bindtap="showAddCustomModal">
+          <text class="custom-dish-btn-icon">+</text>
+          <text class="custom-dish-btn-text">添加新菜品</text>
         </view>
       </view>
-    </block>
-    <view class="empty-state" wx:else>
-      <text class="icon">🔍</text>
-      <text class="text">没有找到相关菜品</text>
+
+      <!-- 菜品列表 -->
+      <view class="food-list">
+        <block wx:if="{{filteredList.length > 0}}">
+          <view
+            class="food-card {{item.hasConflict ? 'has-conflict' : ''}} {{isAdded(item) ? 'is-added' : ''}}"
+            wx:for="{{filteredList}}"
+            wx:key="id"
+          >
+            <view
+              class="food-main"
+              data-dish="{{item}}"
+              bindtap="showRecipe"
+            >
+              <text class="food-emoji">{{item.emoji}}</text>
+              <view class="food-info">
+                <view class="food-name">
+                  <text>{{item.name}}</text>
+                  <text class="tag tag-info" wx:if="{{item.isCustom}}">自定义</text>
+                </view>
+                <view class="food-tags">
+                  <text class="heat-tag {{item.heatMethod === 'microwave_safe' ? 'safe' : item.heatMethod === 'microwave_none' ? 'danger' : item.heatMethod === 'steam_only' ? 'steam' : 'fire'}}">
+                    {{item.heatMethod === 'microwave_safe' ? '✅微波' : item.heatMethod === 'microwave_none' ? '🔴微波' : item.heatMethod === 'steam_only' ? '🟢蒸制' : '🟠明火'}}
+                  </text>
+                  <text class="conflict-tag" wx:if="{{item.hasConflict}}">⚠️相克</text>
+                </view>
+                <view class="food-ingredients">
+                  {{item.ingredientsSummary}}
+                </view>
+              </view>
+            </view>
+            <view class="food-action">
+              <block wx:if="{{isAdded(item)}}">
+                <view class="added-text">已添加</view>
+                <view
+                  class="remove-btn"
+                  data-dish="{{item}}"
+                  data-tab="{{currentTab}}"
+                  catchtap="removeFromMenu"
+                >移除</view>
+              </block>
+              <view
+                wx:else
+                class="add-btn"
+                data-dish="{{item}}"
+                catchtap="addToMenu"
+              >+ 添加</view>
+            </view>
+          </view>
+        </block>
+        <view class="empty-state" wx:else>
+          <text class="icon">🔍</text>
+          <text class="text">没有找到相关菜品</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 底部餐次选择弹窗 -->
+  <view class="meal-picker-modal" wx:if="{{showMealPicker}}" bindtap="closeMealPicker">
+    <view class="meal-picker-content" catchtap="">
+      <view class="meal-picker-title">选择添加到</view>
+      <view class="meal-picker-btns">
+        <view class="meal-picker-btn" data-tab="breakfast" bindtap="selectMealType">🌅早餐</view>
+        <view class="meal-picker-btn" data-tab="lunch" bindtap="selectMealType">☀️午餐</view>
+        <view class="meal-picker-btn" data-tab="dinner" bindtap="selectMealType">🌙晚餐</view>
+      </view>
+      <view class="meal-picker-cancel" bindtap="closeMealPicker">取消</view>
     </view>
   </view>
 
