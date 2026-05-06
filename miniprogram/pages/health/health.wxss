@@ -318,6 +318,7 @@
   color: #8A6A6A;
 }
 
+/* ========== 新日历视图 ========== */
 .calendar-view {
   margin: 20rpx 0;
 }
@@ -326,6 +327,7 @@
   display: flex;
   gap: 20rpx;
   margin-bottom: 16rpx;
+  flex-wrap: wrap;
 }
 
 .legend-item {
@@ -354,48 +356,166 @@
   background: #5A8A6A;
 }
 
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8rpx;
+/* 阶段时间线 */
+.phase-timeline {
+  position: relative;
+  margin-bottom: 16rpx;
 }
 
-.day-cell {
-  aspect-ratio: 1;
+.phase-bar {
+  display: flex;
+  height: 48rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  background: #E8D5D8;
+}
+
+.phase-segment {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #FDF8F8;
-  border-radius: 8rpx;
-  font-size: 24rpx;
-  color: #8A6A6A;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #fff;
+  position: relative;
 }
 
-.day-cell.period {
-  background: rgba(196, 92, 92, 0.25);
+.phase-segment.menstruation {
+  background: #C45C5C;
+}
+
+.phase-segment.follicular {
+  background: #5A8A6A;
+}
+
+.phase-segment.ovulation {
+  background: #D4A828;
+}
+
+.phase-segment.luteal {
+  background: #7A8AA0;
+}
+
+.phase-segment-label {
+  font-size: 20rpx;
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 今天标记 */
+.today-marker {
+  position: absolute;
+  top: -8rpx;
+  width: 4rpx;
+  height: 64rpx;
+  background: #5A8A6A;
+  border-radius: 2rpx;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.today-marker::after {
+  content: '今天';
+  position: absolute;
+  top: -32rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18rpx;
+  color: #5A8A6A;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 星期标题行 */
+.weekday-header {
+  display: flex;
+  margin-bottom: 8rpx;
+  padding: 0 4rpx;
+}
+
+.weekday-cell {
+  flex: 1;
+  text-align: center;
+  font-size: 22rpx;
+  color: #8A6A6A;
+  font-weight: 600;
+}
+
+.weekday-cell.weekend {
+  color: #C45C5C;
+}
+
+/* 日期网格 */
+.date-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4rpx;
+}
+
+.date-cell {
+  width: calc(100% / 7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.date-num {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 24rpx;
+  color: #8A6A6A;
+  background: transparent;
+}
+
+.date-cell.period .date-num {
+  background: rgba(196, 92, 92, 0.2);
   color: #C45C5C;
   font-weight: 700;
 }
 
-.day-cell.fertile {
-  background: rgba(212, 168, 40, 0.25);
+.date-cell.fertile .date-num {
+  background: rgba(212, 168, 40, 0.2);
   color: #D4A828;
+  font-weight: 600;
 }
 
-.day-cell.today {
+.date-cell.today .date-num {
   background: #5A8A6A;
   color: #fff;
   font-weight: 700;
 }
 
-.day-cell.today.period {
+.date-cell.today.period .date-num {
   background: linear-gradient(135deg, #C45C5C 50%, #5A8A6A 50%);
   color: #fff;
 }
 
-.day-cell.today.fertile {
+.date-cell.today.fertile .date-num {
   background: linear-gradient(135deg, #D4A828 50%, #5A8A6A 50%);
   color: #fff;
+}
+
+.date-cell.outside {
+  opacity: 0.3;
+}
+
+.date-actual {
+  font-size: 18rpx;
+  color: #BDBDBD;
+  margin-top: 4rpx;
+}
+
+.date-cell.today .date-actual {
+  color: #5A8A6A;
+  font-weight: 600;
 }
 
 .phase-tips {

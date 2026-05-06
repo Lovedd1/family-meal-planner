@@ -42,6 +42,7 @@ Page({
     },
     currentPhase: 'follicular', // menstruation, follicular, ovulation, luteal
     phaseDay: 0,
+    actualDates: [], // 生理周期每天对应的实际日期
 
     // 饮食计划
     dietPlan: null,
@@ -101,7 +102,9 @@ Page({
       cycleDays: menstrual.cycleDays || 28,
       periodDays: menstrual.periodDays || 5
     }
-    this.setData({ menstrualSettings })
+    // 计算实际日期数组
+    const actualDates = this.computeActualDates(menstrualSettings)
+    this.setData({ menstrualSettings, actualDates })
     this.calculateMenstrualPhase(menstrualSettings)
 
     // 加载饮食计划历史
@@ -376,6 +379,24 @@ Page({
     })
   },
 
+  computeActualDates(menstrualSettings) {
+    const { lastPeriodDate, cycleDays = 28 } = menstrualSettings
+    if (!lastPeriodDate) return []
+
+    const dates = []
+    const lastPeriod = new Date(lastPeriodDate)
+    lastPeriod.setHours(0, 0, 0, 0)
+
+    for (let i = 0; i < cycleDays; i++) {
+      const date = new Date(lastPeriod)
+      date.setDate(lastPeriod.getDate() + i)
+      const month = date.getMonth() + 1
+      const day = date.getDate()
+      dates.push(`${month}/${day}`)
+    }
+    return dates
+  },
+
   openMenstrualSettings() {
     this.setData({
       showMenstrualSettings: true,
@@ -429,9 +450,11 @@ Page({
     }
     const settings = { lastPeriodDate, cycleDays, periodDays }
     storageAdapter.set('menstrualSettings', settings)
+    // 计算新的实际日期数组
+    const actualDates = this.computeActualDates(settings)
     // 先关闭弹窗，再更新数据并计算，避免setData异步问题
     this.closeMenstrualSettings()
-    this.setData({ menstrualSettings: settings })
+    this.setData({ menstrualSettings: settings, actualDates })
     // 传入settings确保计算使用新值
     this.calculateMenstrualPhase(settings)
     wx.showToast({ title: '已保存', icon: 'success' })
@@ -548,6 +571,23 @@ Page({
       classes.push('fertile')
     }
     // 今天是第phaseDay天（phaseDay从1开始）
+    if (phaseDay && day === phaseDay) {
+      classes.push('today')
+    }
+    return classes.join(' ')
+  },
+
+  getDateCellClass(day, phaseDay, periodDays, cycleDays, actualDate) {
+    const classes = []
+    // 经期：第1天到periodDays天
+    if (periodDays && day <= periodDays) {
+      classes.push('period')
+    }
+    // 易孕期：第10-16天（排卵日前后）
+    if (day >= 10 && day <= 16) {
+      classes.push('fertile')
+    }
+    // 今天是第phaseDay天
     if (phaseDay && day === phaseDay) {
       classes.push('today')
     }

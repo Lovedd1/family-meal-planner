@@ -233,13 +233,63 @@
               <text>今天</text>
             </view>
           </view>
-          <view class="calendar-grid">
+
+          <!-- 阶段时间线 -->
+          <view class="phase-timeline">
+            <view class="phase-bar">
+              <view
+                class="phase-segment menstruation"
+                style="width: {{menstrualSettings.periodDays / menstrualSettings.cycleDays * 100}}%"
+              >
+                <text class="phase-segment-label">经期</text>
+              </view>
+              <view
+                class="phase-segment follicular"
+                style="width: {{(13 - menstrualSettings.periodDays) / menstrualSettings.cycleDays * 100}}%"
+              >
+                <text class="phase-segment-label">卵泡期</text>
+              </view>
+              <view
+                class="phase-segment ovulation"
+                style="width: {{5 / menstrualSettings.cycleDays * 100}}%"
+              >
+                <text class="phase-segment-label">排卵</text>
+              </view>
+              <view
+                class="phase-segment luteal"
+                style="width: {{(menstrualSettings.cycleDays - 18) / menstrualSettings.cycleDays * 100}}%"
+              >
+                <text class="phase-segment-label">黄体期</text>
+              </view>
+            </view>
+            <!-- 今天标记 -->
             <view
-              class="day-cell {{getDayClass(index + 1, phaseDay, menstrualSettings.periodDays)}}"
+              class="today-marker"
+              style="left: {{phaseDay / menstrualSettings.cycleDays * 100}}%"
+              wx:if="{{phaseDay > 0}}"
+            ></view>
+          </view>
+
+          <!-- 星期标题 -->
+          <view class="weekday-header">
+            <text class="weekday-cell weekend">日</text>
+            <text class="weekday-cell">一</text>
+            <text class="weekday-cell">二</text>
+            <text class="weekday-cell">三</text>
+            <text class="weekday-cell">四</text>
+            <text class="weekday-cell">五</text>
+            <text class="weekday-cell weekend">六</text>
+          </view>
+
+          <!-- 日期网格 -->
+          <view class="date-grid">
+            <view
+              class="date-cell {{getDateCellClass(index + 1, phaseDay, menstrualSettings.periodDays, menstrualSettings.cycleDays, actualDates[index])}}"
               wx:for="{{menstrualSettings.cycleDays}}"
               wx:key="*this"
             >
-              <text>{{index + 1}}</text>
+              <view class="date-num">{{index + 1}}</view>
+              <text class="date-actual">{{actualDates[index]}}</text>
             </view>
           </view>
         </view>
