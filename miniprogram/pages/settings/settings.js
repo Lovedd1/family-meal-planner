@@ -309,6 +309,13 @@ Page({
     }
   },
 
+  // ========== 跳转做饭记录 ==========
+  goToCookingRecord() {
+    wx.navigateTo({
+      url: '/pages/cook/cook'
+    })
+  },
+
   // ========== 导出数据 ==========
   exportData() {
     const data = {

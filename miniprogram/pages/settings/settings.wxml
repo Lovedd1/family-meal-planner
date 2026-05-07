@@ -90,6 +90,11 @@ module.exports = {
         <text class="stat-label">体重记录</text>
       </view>
     </view>
+    <view class="action-item" bindtap="goToCookingRecord">
+      <text class="action-icon">🍳</text>
+      <text class="action-text">做饭记录</text>
+      <text class="arrow">›</text>
+    </view>
     <view class="action-item" bindtap="exportData">
       <text class="action-icon">📥</text>
       <text class="action-text">导出JSON数据</text>

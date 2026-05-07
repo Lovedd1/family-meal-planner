@@ -44,12 +44,6 @@
         "text": "设置",
         "iconPath": "static/tab-settings.png",
         "selectedIconPath": "static/tab-settings-active.png"
-      },
-      {
-        "pagePath": "pages/cook/cook",
-        "text": "做饭",
-        "iconPath": "static/tab-cook.png",
-        "selectedIconPath": "static/tab-cook-active.png"
       }
     ],
     "color": "#999999",
