@@ -1,0 +1,122 @@
+<!-- 做饭记录编辑页 -->
+<view class="page">
+  <!-- 顶部操作栏 -->
+  <view class="top-bar">
+    <view class="cancel-btn" bindtap="cancel">× 取消</view>
+    <view class="save-btn {{canSave ? 'active' : ''}}" bindtap="saveRecord">保存 ✓</view>
+  </view>
+
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">{{isEdit ? '编辑记录' : '新增加录'}}</text>
+  </view>
+
+  <!-- 内容区域 -->
+  <scroll-view class="content" scroll-y>
+    <!-- 图片选择 -->
+    <view class="image-section">
+      <block wx:if="{{tempRecord.imagePath}}">
+        <view class="image-preview" bindtap="chooseImage">
+          <image src="{{tempRecord.imagePath}}" mode="aspectFill"/>
+          <view class="change-image-hint">点击更换图片</view>
+        </view>
+      </block>
+      <view class="image-placeholder" wx:else bindtap="chooseImage">
+        <text class="icon">📷</text>
+        <text class="text">点击选择图片</text>
+        <text class="hint">从相册选择或拍照</text>
+      </view>
+    </view>
+
+    <!-- 关联菜品 -->
+    <view class="form-section">
+      <view class="section-title">关联菜品 <text class="required">*</text></view>
+
+      <!-- 搜索框 -->
+      <view class="search-box">
+        <text class="search-icon">🔍</text>
+        <input
+          class="search-input"
+          placeholder="搜索菜品..."
+          value="{{dishSearchKey}}"
+          bindinput="searchDish"
+        />
+      </view>
+
+      <!-- 菜品网格 -->
+      <view class="dish-grid">
+        <view
+          class="dish-item {{tempRecord.menuItemId === item.id ? 'selected' : ''}}"
+          wx:for="{{filteredDishes}}"
+          wx:key="id"
+          data-dish="{{item}}"
+          bindtap="selectDish"
+        >
+          <text class="dish-emoji">{{item.emoji}}</text>
+          <text class="dish-name">{{item.name}}</text>
+          <view class="selected-check" wx:if="{{tempRecord.menuItemId === item.id}}">✓</view>
+        </view>
+      </view>
+
+      <!-- 未选中提示 -->
+      <view class="tips" wx:if="{{!tempRecord.menuItemId}}">
+        <text>请选择关联的菜品</text>
+      </view>
+      <view class="selected-dish" wx:else>
+        <text>已选择: {{tempRecord.emoji}} {{tempRecord.menuItemName}}</text>
+      </view>
+    </view>
+
+    <!-- 餐次选择 -->
+    <view class="form-section">
+      <view class="section-title">餐次 <text class="required">*</text></view>
+      <view class="meal-selector">
+        <view
+          class="meal-btn {{tempRecord.meal === 'breakfast' ? 'active' : ''}}"
+          data-meal="breakfast"
+          bindtap="setMeal"
+        >🌅 早餐</view>
+        <view
+          class="meal-btn {{tempRecord.meal === 'lunch' ? 'active' : ''}}"
+          data-meal="lunch"
+          bindtap="setMeal"
+        >☀️ 午餐</view>
+        <view
+          class="meal-btn {{tempRecord.meal === 'dinner' ? 'active' : ''}}"
+          data-meal="dinner"
+          bindtap="setMeal"
+        >🌙 晚餐</view>
+      </view>
+    </view>
+
+    <!-- 评分 -->
+    <view class="form-section">
+      <view class="section-title">评分</view>
+      <view class="rating-selector">
+        <text
+          class="star {{index < tempRecord.rating ? 'filled' : ''}}"
+          wx:for="{{5}}"
+          wx:key="*this"
+          data-rating="{{index + 1}}"
+          bindtap="setRating"
+        >⭐</text>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-section">
+      <view class="section-title">备注（选填）</view>
+      <textarea
+        class="notes-input"
+        placeholder="今天的牛肉很嫩！"
+        value="{{tempRecord.notes}}"
+        bindinput="inputNotes"
+        maxlength="200"
+      />
+      <view class="notes-count">{{tempRecord.notes.length || 0}}/200</view>
+    </view>
+
+    <!-- 底部占位 -->
+    <view class="bottom-placeholder"></view>
+  </scroll-view>
+</view>
