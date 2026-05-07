@@ -28,6 +28,7 @@
   font-weight: 600;
   color: #5D4A4A;
   letter-spacing: 2rpx;
+  margin-top: 15rpx;
 }
 
 .date-title {
@@ -524,18 +525,22 @@
 .pie-chart {
   width: 160px;
   height: 160px;
+  position: relative;
+  z-index: 1;
 }
 
 .pie-center {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .pie-total {
