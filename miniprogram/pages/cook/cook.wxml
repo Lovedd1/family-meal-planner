@@ -132,7 +132,7 @@
         <text class="modal-title">🍳 记录做饭</text>
         <text class="modal-close" bindtap="closeCameraModal">×</text>
       </view>
-      <view class="modal-body">
+      <view class="modal-body" catchtap="">
         <!-- 图片选择 -->
         <view class="image-section">
           <block wx:if="{{tempRecord.imagePath}}">
@@ -157,7 +157,7 @@
         <!-- 餐次选择 -->
         <view class="form-item">
           <label>餐次</label>
-          <view class="meal-selector">
+          <view class="meal-selector" catchtap="preventBubble">
             <view
               class="meal-btn {{tempRecord.meal === 'breakfast' ? 'active' : ''}}"
               data-meal="breakfast"
@@ -179,7 +179,7 @@
         <!-- 评分 -->
         <view class="form-item">
           <label>评分</label>
-          <view class="rating-selector">
+          <view class="rating-selector" catchtap="preventBubble">
             <text
               class="star {{index <= tempRecord.rating ? 'filled' : ''}}"
               wx:for="{{5}}"
@@ -198,6 +198,7 @@
             placeholder="今天的牛肉很嫩！"
             value="{{tempRecord.notes}}"
             bindinput="inputNotes"
+            catchtap=""
           />
         </view>
       </view>
@@ -215,7 +216,7 @@
         <text class="modal-title">选择菜品</text>
         <text class="modal-close" bindtap="closeDishPicker">×</text>
       </view>
-      <view class="modal-body">
+      <view class="modal-body" catchtap="">
         <view class="dish-search">
           <input
             class="search-input"
@@ -251,7 +252,7 @@
         <text class="modal-title">🍳 {{currentRecord.menuItemName}}</text>
         <text class="modal-close" bindtap="closeDetailModal">×</text>
       </view>
-      <view class="modal-body">
+      <view class="modal-body" catchtap="">
         <image class="detail-image" src="{{currentRecord.imagePath}}" mode="aspectFill"/>
         <view class="detail-meta">
           <text class="meal-badge meal-{{currentRecord.meal}}">{{getMealLabel(currentRecord.meal)}}</text>

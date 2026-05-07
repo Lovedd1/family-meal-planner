@@ -20,6 +20,7 @@
   color: #C48B8B;
   font-weight: 300;
   padding: 0 16rpx;
+  margin-top: 40rpx;
 }
 
 .nav-title {
@@ -318,6 +319,19 @@
 }
 
 /* 弹窗样式 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(93, 74, 74, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
 .modal-content {
   width: 90%;
   max-height: 85vh;

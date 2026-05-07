@@ -107,6 +107,10 @@ Page({
     wx.navigateBack()
   },
 
+  preventBubble() {
+    // 阻止冒泡
+  },
+
   initMonth() {
     const now = new Date()
     this.setData({
