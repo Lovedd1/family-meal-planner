@@ -86,19 +86,14 @@
     <!-- 评分 -->
     <view class="form-section">
       <view class="section-title">评分</view>
-      <view class="rating-wrapper">
-        <view class="rating-selector" wx:if="{{tempRecord.rating > 0}}">
-          <text
-            class="star {{index < tempRecord.rating ? 'filled' : ''}}"
-            wx:for="{{5}}"
-            wx:key="*this"
-            data-rating="{{index + 1}}"
-            bindtap="setRating"
-          >⭐</text>
-        </view>
-        <view class="rating-placeholder" wx:else bindtap="setRating">
-          <text>点击选择评分</text>
-        </view>
+      <view class="rating-grid">
+        <view
+          class="rating-item {{tempRecord.rating === item ? 'selected' : ''}}"
+          wx:for="{{10}}"
+          wx:key="*this"
+          data-rating="{{item}}"
+          bindtap="setRating"
+        >{{item}}</view>
       </view>
     </view>
 

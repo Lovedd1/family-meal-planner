@@ -91,11 +91,14 @@
 
 .rating {
   font-size: 32rpx;
-  color: #ddd;
+  color: #C48B8B;
+  font-weight: 600;
 }
 
-.rating .filled {
-  color: #FFD700;
+.rating.no-rating {
+  color: #ccc;
+  font-size: 28rpx;
+  font-weight: normal;
 }
 
 .time-info {

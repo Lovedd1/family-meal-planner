@@ -24,9 +24,10 @@
         <text class="dish-emoji">{{record.emoji}}</text>
         <text class="dish-name">{{record.menuItemName}}</text>
       </view>
-      <view class="rating">
-        <text wx:for="{{5}}" wx:key="*this" class="{{index < record.rating ? 'filled' : ''}}">⭐</text>
+      <view class="rating" wx:if="{{record.rating > 0}}">
+        <text class="rating-num">{{record.rating}}分</text>
       </view>
+      <view class="rating no-rating" wx:else>未评分</view>
     </view>
 
     <!-- 时间信息 -->

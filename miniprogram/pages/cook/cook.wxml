@@ -36,8 +36,8 @@
                 <text class="card-name">{{item.menuItemName}}</text>
               </view>
               <view class="card-rating">
-                <text wx:for="{{item.rating}}" wx:key="*this" class="star">⭐</text>
-                <text wx:if="{{item.rating === 0}}" class="no-rating">未评分</text>
+                <text wx:if="{{item.rating > 0}}" class="rating-num">{{item.rating}}分</text>
+                <text wx:else class="no-rating">未评分</text>
               </view>
               <view class="card-notes" wx:if="{{item.notes}}">"{{item.notes}}"</view>
               <view class="card-meta">

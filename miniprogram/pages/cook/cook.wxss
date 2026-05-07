@@ -108,13 +108,20 @@
 }
 
 .card-rating {
-  font-size: 24rpx;
-  color: #FFD700;
+  font-size: 26rpx;
+  color: #C48B8B;
   margin-bottom: 8rpx;
+  font-weight: 600;
 }
 
-.card-rating .star {
-  margin-right: 2rpx;
+.card-rating .rating-num {
+  color: #C48B8B;
+}
+
+.card-rating .no-rating {
+  color: #ccc;
+  font-size: 22rpx;
+  font-weight: normal;
 }
 
 .card-notes {

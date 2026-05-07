@@ -171,17 +171,9 @@ Page({
 
   setRating(e) {
     const rating = e.currentTarget.dataset.rating
-    if (rating) {
-      // 点击的是星级，直接设置该星级
-      this.setData({
-        'tempRecord.rating': rating
-      })
-    } else {
-      // 点击的是空白区域，设为1星
-      this.setData({
-        'tempRecord.rating': 1
-      })
-    }
+    this.setData({
+      'tempRecord.rating': rating
+    })
     this.checkCanSave()
   },
 
