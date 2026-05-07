@@ -558,15 +558,23 @@ class StorageAdapter {
   startPartnerPolling() {
     if (this.partnerPollingTimer) return
 
-    // 今日菜单轮询 - 3秒
-    this.partnerPollingTimer = setInterval(() => {
-      this.checkPartnerUpdates(['todayMenu'])
-    }, 3000)
+    // 共享数据key列表
+const SHARED_KEYS = ['fridgeItems', 'customFoods', 'todayMenu', 'cookingRecords']
 
-    // 冰箱和自定义菜品轮询 - 5秒
-    this.partnerPollingTimer2 = setInterval(() => {
-      this.checkPartnerUpdates(['fridgeItems', 'customFoods'])
-    }, 5000)
+// 今日菜单轮询 - 3秒
+this.partnerPollingTimer = setInterval(() => {
+  this.checkPartnerUpdates(['todayMenu'])
+}, 3000)
+
+// 冰箱和自定义菜品轮询 - 5秒
+this.partnerPollingTimer2 = setInterval(() => {
+  this.checkPartnerUpdates(['fridgeItems', 'customFoods'])
+}, 5000)
+
+// 做饭记录轮询 - 8秒
+this.partnerPollingTimer3 = setInterval(() => {
+  this.checkPartnerUpdates(['cookingRecords'])
+}, 8000)
   }
 
   /**
@@ -580,6 +588,10 @@ class StorageAdapter {
     if (this.partnerPollingTimer2) {
       clearInterval(this.partnerPollingTimer2)
       this.partnerPollingTimer2 = null
+    }
+    if (this.partnerPollingTimer3) {
+      clearInterval(this.partnerPollingTimer3)
+      this.partnerPollingTimer3 = null
     }
   }
 
@@ -596,7 +608,7 @@ class StorageAdapter {
 
     try {
       // 1. 先推送本地共享数据到云端
-      const sharedKeys = ['fridgeItems', 'customFoods', 'todayMenu']
+      const sharedKeys = ['fridgeItems', 'customFoods', 'todayMenu', 'cookingRecords']
       for (const key of sharedKeys) {
         const data = wx.getStorageSync(key)
         if (data) {
