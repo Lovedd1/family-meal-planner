@@ -103,6 +103,10 @@ Page({
     this.loadRecords()
   },
 
+  goBack() {
+    wx.navigateBack()
+  },
+
   initMonth() {
     const now = new Date()
     this.setData({

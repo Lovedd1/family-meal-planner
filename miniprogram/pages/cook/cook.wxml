@@ -2,6 +2,7 @@
 <view class="page">
   <!-- 顶部导航 -->
   <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">‹</view>
     <view class="nav-title">做饭记录</view>
   </view>
 

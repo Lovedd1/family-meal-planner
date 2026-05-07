@@ -10,15 +10,25 @@
   height: 88rpx;
   display: flex;
   align-items: center;
-  justify-content: center;
   background: #fff;
   border-bottom: 1rpx solid #f0e9e9;
+  padding: 0 24rpx;
+}
+
+.nav-back {
+  font-size: 56rpx;
+  color: #C48B8B;
+  font-weight: 300;
+  padding: 0 16rpx;
 }
 
 .nav-title {
+  flex: 1;
+  text-align: center;
   font-size: 34rpx;
   font-weight: 600;
   color: #333;
+  margin-right: 60rpx;
 }
 
 /* TabBar */
