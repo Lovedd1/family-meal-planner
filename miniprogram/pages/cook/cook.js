@@ -82,6 +82,10 @@ Page({
     })
   },
 
+  goBack() {
+    wx.navigateBack()
+  },
+
   showDeleteMenu(e) {
     const record = e.currentTarget.dataset.record
     this.setData({
