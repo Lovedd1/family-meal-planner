@@ -1,11 +1,5 @@
 <!-- 做饭记录编辑页 -->
 <view class="page">
-  <!-- 顶部操作栏 -->
-  <view class="top-bar">
-    <view class="cancel-btn" bindtap="cancel">× 取消</view>
-    <view class="save-btn {{canSave ? 'active' : ''}}" bindtap="saveRecord">保存 ✓</view>
-  </view>
-
   <!-- 页面标题 -->
   <view class="page-header">
     <text class="page-title">{{isEdit ? '编辑记录' : '新增加录'}}</text>
@@ -119,4 +113,10 @@
     <!-- 底部占位 -->
     <view class="bottom-placeholder"></view>
   </scroll-view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar">
+    <view class="cancel-btn" bindtap="cancel">取消</view>
+    <view class="save-btn {{canSave ? 'active' : ''}}" bindtap="saveRecord">保存 ✓</view>
+  </view>
 </view>
