@@ -227,6 +227,12 @@
   color: #FFD700;
 }
 
+.rating-hint {
+  font-size: 22rpx;
+  color: #999;
+  font-weight: normal;
+}
+
 /* 备注 */
 .notes-input {
   width: 100%;

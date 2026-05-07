@@ -27,6 +27,7 @@
             wx:key="id"
             data-record="{{item}}"
             bindtap="goToDetail"
+            bindlongpress="showDeleteMenu"
           >
             <image class="card-image" src="{{item.imagePath}}" mode="aspectFill"/>
             <view class="card-content">
@@ -36,6 +37,7 @@
               </view>
               <view class="card-rating">
                 <text wx:for="{{item.rating}}" wx:key="*this" class="star">⭐</text>
+                <text wx:if="{{item.rating === 0}}" class="no-rating">未评分</text>
               </view>
               <view class="card-notes" wx:if="{{item.notes}}">"{{item.notes}}"</view>
               <view class="card-meta">
@@ -55,5 +57,13 @@
   <!-- 悬浮添加按钮 -->
   <view class="fab" bindtap="goToAdd">
     <text class="fab-icon">+</text>
+  </view>
+
+  <!-- 删除菜单 -->
+  <view class="delete-menu-mask" wx:if="{{showDeleteMenu}}" bindtap="hideDeleteMenu">
+    <view class="delete-menu" catchtap="">
+      <view class="menu-item danger" bindtap="deleteRecord">删除记录</view>
+      <view class="menu-item" bindtap="hideDeleteMenu">取消</view>
+    </view>
   </view>
 </view>

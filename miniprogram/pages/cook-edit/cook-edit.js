@@ -170,9 +170,17 @@ Page({
   },
 
   setRating(e) {
-    this.setData({
-      'tempRecord.rating': e.currentTarget.dataset.rating
-    })
+    const rating = e.currentTarget.dataset.rating
+    // 如果点击的是已选中的星级，则取消选择（设为0）
+    if (this.data.tempRecord.rating === rating) {
+      this.setData({
+        'tempRecord.rating': 0
+      })
+    } else {
+      this.setData({
+        'tempRecord.rating': rating
+      })
+    }
     this.checkCanSave()
   },
 

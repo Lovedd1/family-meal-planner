@@ -85,7 +85,7 @@
 
     <!-- 评分 -->
     <view class="form-section">
-      <view class="section-title">评分</view>
+      <view class="section-title">评分 <text class="rating-hint">（点击星级选择，点击已选可清除）</text></view>
       <view class="rating-selector">
         <text
           class="star {{index < tempRecord.rating ? 'filled' : ''}}"

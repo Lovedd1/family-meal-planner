@@ -182,3 +182,47 @@
   font-weight: 300;
   line-height: 1;
 }
+
+/* 删除菜单 */
+.delete-menu-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.delete-menu {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
+  padding: 0 32rpx 32rpx;
+}
+
+.delete-menu .menu-item {
+  height: 100rpx;
+  line-height: 100rpx;
+  text-align: center;
+  font-size: 32rpx;
+  color: #333;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.delete-menu .menu-item:last-child {
+  border-bottom: none;
+  color: #999;
+}
+
+.delete-menu .menu-item.danger {
+  color: #E57373;
+}
+
+.card-rating .no-rating {
+  color: #ccc;
+  font-size: 22rpx;
+}

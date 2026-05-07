@@ -14,7 +14,9 @@ function generateId() {
 Page({
   data: {
     records: [],
-    groupedRecords: []
+    groupedRecords: [],
+    showDeleteMenu: false,
+    selectedRecord: null
   },
 
   onLoad() {
@@ -77,6 +79,43 @@ Page({
   goToAdd() {
     wx.navigateTo({
       url: '/pages/cook-edit/cook-edit'
+    })
+  },
+
+  showDeleteMenu(e) {
+    const record = e.currentTarget.dataset.record
+    this.setData({
+      showDeleteMenu: true,
+      selectedRecord: record
+    })
+  },
+
+  hideDeleteMenu() {
+    this.setData({
+      showDeleteMenu: false,
+      selectedRecord: null
+    })
+  },
+
+  deleteRecord() {
+    const { selectedRecord } = this.data
+    if (!selectedRecord) return
+
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后无法恢复，确定要删除这条记录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          const records = storageAdapter.get('cookingRecords') || []
+          const filtered = records.filter(r => r.id !== selectedRecord.id)
+          storageAdapter.set('cookingRecords', filtered)
+          wx.showToast({ title: '已删除', icon: 'success' })
+          this.hideDeleteMenu()
+          this.loadRecords()
+        } else {
+          this.hideDeleteMenu()
+        }
+      }
     })
   },
 
