@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/cook/cook",
     "pages/today/today",
     "pages/health/health",
     "pages/order/order",
