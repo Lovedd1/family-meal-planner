@@ -213,6 +213,10 @@
 }
 
 /* 评分 */
+.rating-wrapper {
+  min-height: 80rpx;
+}
+
 .rating-selector {
   display: flex;
   gap: 8rpx;
@@ -227,10 +231,14 @@
   color: #FFD700;
 }
 
-.rating-hint {
-  font-size: 22rpx;
+.rating-placeholder {
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  background: #f8f8f8;
+  border-radius: 12rpx;
+  font-size: 28rpx;
   color: #999;
-  font-weight: normal;
 }
 
 /* 备注 */

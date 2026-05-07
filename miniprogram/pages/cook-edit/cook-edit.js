@@ -171,14 +171,15 @@ Page({
 
   setRating(e) {
     const rating = e.currentTarget.dataset.rating
-    // 如果点击的是已选中的星级，则取消选择（设为0）
-    if (this.data.tempRecord.rating === rating) {
-      this.setData({
-        'tempRecord.rating': 0
-      })
-    } else {
+    if (rating) {
+      // 点击的是星级，直接设置该星级
       this.setData({
         'tempRecord.rating': rating
+      })
+    } else {
+      // 点击的是空白区域，设为1星
+      this.setData({
+        'tempRecord.rating': 1
       })
     }
     this.checkCanSave()
