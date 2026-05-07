@@ -1,11 +1,11 @@
 {
   "pages": [
-    "pages/cook/cook",
     "pages/today/today",
     "pages/health/health",
     "pages/order/order",
     "pages/fridge/fridge",
-    "pages/settings/settings"
+    "pages/settings/settings",
+    "pages/cook/cook"
   ],
   "window": {
     "navigationStyle": "custom",
@@ -44,6 +44,12 @@
         "text": "设置",
         "iconPath": "static/tab-settings.png",
         "selectedIconPath": "static/tab-settings-active.png"
+      },
+      {
+        "pagePath": "pages/cook/cook",
+        "text": "做饭",
+        "iconPath": "static/tab-cook.png",
+        "selectedIconPath": "static/tab-cook-active.png"
       }
     ],
     "color": "#999999",
