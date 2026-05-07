@@ -1,0 +1,60 @@
+<!-- 做饭记录详情页 -->
+<view class="page">
+  <!-- 顶部导航 -->
+  <view class="nav-bar">
+    <view class="nav-back" bindtap="goBack">‹</view>
+    <view class="nav-title">做饭记录</view>
+    <view class="nav-more" bindtap="showMoreMenu">···</view>
+  </view>
+
+  <!-- 图片浏览区域 -->
+  <view class="image-viewer">
+    <swiper class="image-swiper" indicator-dots="{{true}}" circular="{{true}}">
+      <swiper-item>
+        <image class="detail-image" src="{{record.imagePath}}" mode="aspectFill"/>
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <!-- 信息区域 -->
+  <view class="info-section">
+    <!-- 菜品名 + 评分 -->
+    <view class="info-header">
+      <view class="dish-info">
+        <text class="dish-emoji">{{record.emoji}}</text>
+        <text class="dish-name">{{record.menuItemName}}</text>
+      </view>
+      <view class="rating">
+        <text wx:for="{{5}}" wx:key="*this" class="{{index < record.rating ? 'filled' : ''}}">⭐</text>
+      </view>
+    </view>
+
+    <!-- 时间信息 -->
+    <view class="time-info">
+      <text>{{record.displayDate}}</text>
+      <text class="separator">·</text>
+      <text>{{record.displayTime}}</text>
+      <text class="separator">·</text>
+      <text class="meal-badge meal-{{record.meal}}">{{getMealLabel(record.meal)}}</text>
+    </view>
+
+    <!-- 备注区域 -->
+    <view class="notes-section" wx:if="{{record.notes}}">
+      <view class="section-label">备注</view>
+      <view class="notes-content">{{record.notes}}</view>
+    </view>
+  </view>
+
+  <!-- 编辑按钮 -->
+  <view class="bottom-bar">
+    <view class="edit-btn" bindtap="goToEdit">编辑</view>
+  </view>
+
+  <!-- 更多菜单 -->
+  <view class="more-menu-mask" wx:if="{{showMoreMenu}}" bindtap="hideMoreMenu">
+    <view class="more-menu" catchtap="">
+      <view class="menu-item danger" bindtap="deleteRecord">删除记录</view>
+      <view class="menu-item" bindtap="hideMoreMenu">取消</view>
+    </view>
+  </view>
+</view>

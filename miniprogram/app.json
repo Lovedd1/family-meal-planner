@@ -5,7 +5,9 @@
     "pages/order/order",
     "pages/fridge/fridge",
     "pages/settings/settings",
-    "pages/cook/cook"
+    "pages/cook/cook",
+    "pages/cook-edit/cook-edit",
+    "pages/cook-detail/cook-detail"
   ],
   "window": {
     "navigationStyle": "custom",
