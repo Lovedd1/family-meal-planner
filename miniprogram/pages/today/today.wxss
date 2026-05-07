@@ -557,6 +557,7 @@
 .nutrition-legend {
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
 }
 
 .legend-item {
@@ -564,6 +565,28 @@
   flex-direction: column;
   align-items: center;
   gap: 8rpx;
+}
+
+.legend-total {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f0e9e9;
+}
+
+.total-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.total-count {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #4A90D9;
 }
 
 .legend-item .dot {

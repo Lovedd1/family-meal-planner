@@ -83,10 +83,6 @@
       <!-- 饼状图 -->
       <view class="pie-chart-container">
         <canvas class="pie-chart" canvas-id="nutritionPieChart" style="width:160px;height:160px;"></canvas>
-        <view class="pie-center">
-          <text class="pie-total">{{nutritionStats.totalCount}}</text>
-          <text class="pie-label">道菜</text>
-        </view>
       </view>
       <!-- 图例 -->
       <view class="nutrition-legend">
@@ -110,6 +106,10 @@
           <text class="legend-label">膳食纤维</text>
           <text class="legend-count">{{nutritionStats.fiberCount}}道</text>
         </view>
+      </view>
+      <view class="legend-total">
+        <text class="total-label">总计</text>
+        <text class="total-count">{{nutritionStats.totalCount}}道</text>
       </view>
     </view>
 
