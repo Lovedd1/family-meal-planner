@@ -1,0 +1,272 @@
+<!-- 做饭记录页面 -->
+<view class="page">
+  <!-- 顶部导航 -->
+  <view class="nav-bar">
+    <view class="nav-title">做饭记录</view>
+  </view>
+
+  <!-- TabBar -->
+  <view class="tab-bar">
+    <view
+      class="tab-item {{currentTab === 'record' ? 'active' : ''}}"
+      data-tab="record"
+      bindtap="switchTab"
+    >
+      <text>📝 记录</text>
+    </view>
+    <view
+      class="tab-item {{currentTab === 'stats' ? 'active' : ''}}"
+      data-tab="stats"
+      bindtap="switchTab"
+    >
+      <text>📊 统计</text>
+    </view>
+  </view>
+
+  <!-- 记录 Tab -->
+  <view wx:if="{{currentTab === 'record'}}">
+    <!-- 月份切换 -->
+    <view class="month-selector">
+      <text class="month-btn" bindtap="prevMonth">◀</text>
+      <text class="month-label">{{displayMonth}}</text>
+      <text class="month-btn" bindtap="nextMonth">▶</text>
+    </view>
+
+    <!-- 历史记录列表 -->
+    <scroll-view class="record-list" scroll-y>
+      <block wx:if="{{groupedRecords.length > 0}}">
+        <view
+          class="record-group"
+          wx:for="{{groupedRecords}}"
+          wx:key="label"
+        >
+          <view class="group-label">{{item.label}}</view>
+          <view
+            class="record-card"
+            wx:for="{{item.records}}"
+            wx:key="id"
+            data-record="{{item}}"
+            bindtap="showRecordDetail"
+          >
+            <image class="record-image" src="{{item.imagePath}}" mode="aspectFill"/>
+            <view class="record-info">
+              <view class="record-header">
+                <text class="record-emoji">{{item.emoji}}</text>
+                <text class="record-name">{{item.menuItemName}}</text>
+                <view class="record-rating">
+                  <text wx:for="{{item.rating}}" wx:key="*this">⭐</text>
+                </view>
+              </view>
+              <view class="record-meta">
+                <text class="meal-badge meal-{{item.meal}}">{{getMealLabel(item.meal)}}</text>
+                <text class="record-time">{{item.displayTime}}</text>
+              </view>
+              <view class="record-notes" wx:if="{{item.notes}}">{{item.notes}}</view>
+            </view>
+          </view>
+        </view>
+      </block>
+      <view class="empty-state" wx:else>
+        <text class="icon">🍳</text>
+        <text class="text">还没有做饭记录</text>
+        <text class="text-small">点击下方按钮记录第一道菜</text>
+      </view>
+    </scroll-view>
+
+    <!-- 拍照按钮 -->
+    <view class="camera-btn-wrap">
+      <view class="camera-btn" bindtap="showCameraModal">
+        <text class="camera-icon">📷</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计 Tab -->
+  <view wx:if="{{currentTab === 'stats'}}" class="stats-tab">
+    <scroll-view scroll-y>
+      <!-- 本月做菜数 -->
+      <view class="stats-card">
+        <view class="stats-label">本月做菜数</view>
+        <view class="stats-value">{{stats.monthCount}}</view>
+        <view class="stats-unit">道</view>
+      </view>
+
+      <!-- 最爱菜品 TOP3 -->
+      <view class="stats-card">
+        <view class="stats-label">最爱菜品 TOP3</view>
+        <view class="top-dishes">
+          <view
+            class="top-dish-item"
+            wx:for="{{stats.topDishes}}"
+            wx:key="name"
+          >
+            <text class="top-num">{{index + 1}}</text>
+            <text class="top-emoji">{{item.emoji}}</text>
+            <text class="top-name">{{item.name}}</text>
+            <text class="top-count">{{item.count}}次</text>
+          </view>
+          <view class="empty-top" wx:if="{{stats.topDishes.length === 0}}">
+            <text>暂无数据</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 平均评分 -->
+      <view class="stats-card">
+        <view class="stats-label">平均评分</view>
+        <view class="avg-rating">
+          <text class="rating-value">{{stats.avgRating}}</text>
+          <text class="rating-stars">
+            <text wx:for="{{5}}" wx:key="*this" class="{{index < stats.avgRating ? 'filled' : ''}}">⭐</text>
+          </text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 拍照/添加记录弹窗 -->
+  <view class="modal" wx:if="{{showCameraModal}}" bindtap="closeCameraModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">🍳 记录做饭</text>
+        <text class="modal-close" bindtap="closeCameraModal">×</text>
+      </view>
+      <view class="modal-body">
+        <!-- 图片选择 -->
+        <view class="image-section">
+          <block wx:if="{{tempRecord.imagePath}}">
+            <image class="preview-image" src="{{tempRecord.imagePath}}" mode="aspectFill"/>
+            <view class="change-image-btn" bindtap="chooseImage">更换图片</view>
+          </block>
+          <view class="choose-image-btn" wx:else bindtap="chooseImage">
+            <text class="icon">📷</text>
+            <text>点击拍照或选择图片</text>
+          </view>
+        </view>
+
+        <!-- 关联菜品 -->
+        <view class="form-item">
+          <label>关联菜品</label>
+          <view class="dish-picker" bindtap="showDishPicker">
+            <text wx:if="{{tempRecord.menuItemName}}">{{tempRecord.emoji}} {{tempRecord.menuItemName}}</text>
+            <text wx:else class="placeholder">请选择关联的菜品</text>
+          </view>
+        </view>
+
+        <!-- 餐次选择 -->
+        <view class="form-item">
+          <label>餐次</label>
+          <view class="meal-selector">
+            <view
+              class="meal-btn {{tempRecord.meal === 'breakfast' ? 'active' : ''}}"
+              data-meal="breakfast"
+              bindtap="setMeal"
+            >🌅 早餐</view>
+            <view
+              class="meal-btn {{tempRecord.meal === 'lunch' ? 'active' : ''}}"
+              data-meal="lunch"
+              bindtap="setMeal"
+            >☀️ 午餐</view>
+            <view
+              class="meal-btn {{tempRecord.meal === 'dinner' ? 'active' : ''}}"
+              data-meal="dinner"
+              bindtap="setMeal"
+            >🌙 晚餐</view>
+          </view>
+        </view>
+
+        <!-- 评分 -->
+        <view class="form-item">
+          <label>评分</label>
+          <view class="rating-selector">
+            <text
+              class="star {{index <= tempRecord.rating ? 'filled' : ''}}"
+              wx:for="{{5}}"
+              wx:key="*this"
+              data-rating="{{index + 1}}"
+              bindtap="setRating"
+            >⭐</text>
+          </view>
+        </view>
+
+        <!-- 备注 -->
+        <view class="form-item">
+          <label>备注（可选）</label>
+          <input
+            class="notes-input"
+            placeholder="今天的牛肉很嫩！"
+            value="{{tempRecord.notes}}"
+            bindinput="inputNotes"
+          />
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="btn btn-default" catchtap="closeCameraModal">取消</button>
+        <button class="btn btn-primary" bindtap="saveRecord">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 菜品选择器弹窗 -->
+  <view class="modal" wx:if="{{showDishPicker}}" bindtap="closeDishPicker">
+    <view class="modal-content dish-picker-modal" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">选择菜品</text>
+        <text class="modal-close" bindtap="closeDishPicker">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="dish-search">
+          <input
+            class="search-input"
+            placeholder="搜索菜品..."
+            value="{{dishSearchKey}}"
+            bindinput="searchDish"
+          />
+        </view>
+        <scroll-view class="dish-list" scroll-y>
+          <view
+            class="dish-item"
+            wx:for="{{filteredDishes}}"
+            wx:key="id"
+            data-dish="{{item}}"
+            bindtap="selectDish"
+          >
+            <text class="dish-emoji">{{item.emoji}}</text>
+            <text class="dish-name">{{item.name}}</text>
+            <view class="dish-tag tag-info" wx:if="{{item.isCustom}}">自定义</view>
+          </view>
+          <view class="empty-dish" wx:if="{{filteredDishes.length === 0}}">
+            <text>未找到匹配的菜品</text>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 记录详情弹窗 -->
+  <view class="modal" wx:if="{{showDetailModal}}" bindtap="closeDetailModal">
+    <view class="modal-content detail-modal" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">🍳 {{currentRecord.menuItemName}}</text>
+        <text class="modal-close" bindtap="closeDetailModal">×</text>
+      </view>
+      <view class="modal-body">
+        <image class="detail-image" src="{{currentRecord.imagePath}}" mode="aspectFill"/>
+        <view class="detail-meta">
+          <text class="meal-badge meal-{{currentRecord.meal}}">{{getMealLabel(currentRecord.meal)}}</text>
+          <text class="detail-date">{{currentRecord.date}} {{currentRecord.displayTime}}</text>
+        </view>
+        <view class="detail-rating">
+          <text wx:for="{{currentRecord.rating}}" wx:key="*this">⭐</text>
+        </view>
+        <view class="detail-notes" wx:if="{{currentRecord.notes}}">
+          {{currentRecord.notes}}
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="btn btn-danger" catchtap="deleteRecord">删除</button>
+        <button class="btn btn-default" bindtap="closeDetailModal">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>
