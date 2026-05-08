@@ -21,6 +21,10 @@ Page({
     weightRecords: [],
     chartData: [],
     allergyList: [],
+    weightChartMin: 0,
+    weightChartMax: 100,
+    weightChartMid: 50,
+    weightChartData: [],
     weightStats: {
       current: 0,
       target: 0,
@@ -62,6 +66,10 @@ Page({
     dietHistory: [],
     showDietHistory: false,
 
+    // 饮食记录详情
+    showDietDetailModal: false,
+    dietDetailData: null,
+
     // AI分析结果
     aiAnalysis: null,
     isAnalyzing: false
@@ -94,6 +102,9 @@ Page({
     const records = storageAdapter.get('weightRecords') || []
     this.setData({ weightRecords: records })
     this.updateWeightStats()
+
+    // 绘制柱状图
+    this.drawWeightChart()
 
     // 加载生理期设置
     const menstrual = storageAdapter.get('menstrualSettings') || {}
@@ -144,6 +155,67 @@ Page({
 
     // 检测平台期
     this.checkPlateau(records)
+  },
+
+  // 绘制体重柱状图（CSS版本）
+  drawWeightChart() {
+    const records = this.data.weightRecords
+    if (records.length === 0) return
+
+    // 取最近30天数据
+    const recentRecords = records.slice(-30)
+
+    // 计算体重范围
+    const weights = recentRecords.map(r => r.weight)
+    const minWeight = Math.min(...weights) - 1
+    const maxWeight = Math.max(...weights) + 1
+    const weightRange = maxWeight - minWeight || 1
+
+    // 柱子高度范围：50px - 200px
+    const minBarHeight = 50
+    const maxBarHeight = 200
+
+    // 构建图表数据
+    const chartData = recentRecords.map((record, index) => {
+      // 计算柱子高度
+      const barHeightRatio = (record.weight - minWeight) / weightRange
+      const barHeight = minBarHeight + barHeightRatio * (maxBarHeight - minBarHeight)
+
+      // 计算颜色
+      let color = '#C48B8B'  // 默认粉色
+      if (index === 0) {
+        color = '#E8D5D8'  // 第一天灰色
+      } else {
+        const prevWeight = recentRecords[index - 1].weight
+        if (record.weight > prevWeight) {
+          color = '#C45C5C'  // 上涨红色
+        } else if (record.weight < prevWeight) {
+          color = '#5A8A6A'  // 下降绿色
+        }
+      }
+
+      // 日期标签
+      const date = new Date(record.date)
+      const dateLabel = `${date.getMonth() + 1}/${date.getDate()}`
+
+      return {
+        date: record.date,
+        weight: record.weight,
+        barHeight: Math.round(barHeight),
+        color,
+        dateLabel
+      }
+    })
+
+    // 计算Y轴刻度
+    const midWeight = ((maxWeight + minWeight) / 2).toFixed(1)
+
+    this.setData({
+      weightChartData: chartData,
+      weightChartMin: minWeight.toFixed(1),
+      weightChartMax: maxWeight.toFixed(1),
+      weightChartMid: midWeight
+    })
   },
 
   // 生成健康报告（基于体重记录和饮食计划）
@@ -325,6 +397,8 @@ Page({
             currentWeight: weight.toString()
           })
           this.updateWeightStats()
+          // 重新绘制柱状图
+          this.drawWeightChart()
           wx.showToast({ title: '体重已记录', icon: 'success' })
         }
       }
@@ -730,5 +804,35 @@ Page({
       return 'warning'
     }
     return ''
+  },
+
+  showDietDetail(e) {
+    const index = e.currentTarget.dataset.index
+    const dietHistory = this.data.dietHistory
+    if (index >= 0 && index < dietHistory.length) {
+      const item = dietHistory[index]
+      // 格式化日期显示
+      const dateObj = new Date(item.date)
+      const formattedDate = dateObj.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+      this.setData({
+        showDietDetailModal: true,
+        dietDetailData: {
+          ...item,
+          date: formattedDate
+        }
+      })
+    }
+  },
+
+  closeDietDetailModal() {
+    this.setData({ showDietDetailModal: false, dietDetailData: null })
+  },
+
+  closePlateauAlert() {
+    this.setData({ showPlateauAlert: false })
   }
 })

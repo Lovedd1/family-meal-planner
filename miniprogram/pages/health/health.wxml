@@ -115,13 +115,14 @@
       </button>
     </view>
 
-    <!-- 体重趋势折线图 -->
-    <view class="card" wx:if="{{weightRecords.length > 0}}">
+    <!-- 体重趋势柱状图 -->
+    <view class="card weight-chart-card" wx:if="{{weightRecords.length > 0}}">
       <view class="card-header">
         <text class="card-title">📊 30天体重趋势</text>
       </view>
+
+      <!-- 进度条（保留作为概览） -->
       <view class="chart-container">
-        <!-- 进度条 -->
         <view class="progress-bar">
           <view class="progress-inner" style="width: {{weightStats.progress}}%"></view>
         </view>
@@ -129,6 +130,49 @@
           <text>当前 {{weightStats.current}}kg</text>
           <text class="text-success">{{weightStats.diff > 0 ? '距目标还有' : '已达标'}}{{weightStats.absDiff}}kg</text>
           <text>目标 {{weightStats.target}}kg</text>
+        </view>
+      </view>
+
+      <!-- 柱状图滚动容器 -->
+      <scroll-view class="weight-scroll-container" scroll-x>
+        <view class="weight-chart-wrapper">
+          <!-- Y轴刻度 -->
+          <view class="weight-y-axis">
+            <text class="y-label">{{weightChartMax}}kg</text>
+            <text class="y-label">{{weightChartMid}}kg</text>
+            <text class="y-label">{{weightChartMin}}kg</text>
+          </view>
+          <!-- 柱子区域 -->
+          <view class="weight-bars-area">
+            <view class="weight-bar-item" wx:for="{{weightChartData}}" wx:key="date">
+              <!-- 体重数值 -->
+              <text class="bar-value">{{item.weight}}kg</text>
+              <!-- 柱子 -->
+              <view class="weight-bar" style="height: {{item.barHeight}}px; background: {{item.color}};"></view>
+              <!-- 日期 -->
+              <text class="bar-date">{{item.dateLabel}}</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <!-- 图例 -->
+      <view class="weight-chart-legend">
+        <view class="legend-item">
+          <view class="legend-dot" style="background: #E8D5D8;"></view>
+          <text>第一天</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot" style="background: #C45C5C;"></view>
+          <text>上涨</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot" style="background: #5A8A6A;"></view>
+          <text>下降</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-dot" style="background: #C48B8B;"></view>
+          <text>不变</text>
         </view>
       </view>
     </view>
@@ -338,11 +382,13 @@
       </view>
       <view class="history-list" wx:if="{{showDietHistory}}">
         <view class="history-item" wx:for="{{dietHistory}}" wx:key="date">
-          <view class="history-date">{{item.date}}</view>
-          <view class="history-dishes">
-            <text wx:for="{{item.menu.breakfast}}" wx:key="id">{{item.emoji}}</text>
-            <text wx:for="{{item.menu.lunch}}" wx:key="id">{{item.emoji}}</text>
-            <text wx:for="{{item.menu.dinner}}" wx:key="id">{{item.emoji}}</text>
+          <view class="history-info" data-index="{{index}}" bindtap="showDietDetail">
+            <view class="history-date">{{item.date}}</view>
+            <view class="history-dishes">
+              <text wx:for="{{item.menu.breakfast}}" wx:key="id">{{item.emoji}}</text>
+              <text wx:for="{{item.menu.lunch}}" wx:key="id">{{item.emoji}}</text>
+              <text wx:for="{{item.menu.dinner}}" wx:key="id">{{item.emoji}}</text>
+            </view>
           </view>
         </view>
       </view>
@@ -364,7 +410,7 @@
 
   <!-- 编辑档案弹窗 -->
   <view class="modal" wx:if="{{showEditProfile}}">
-    <view class="modal-content" catchtap="">
+    <view class="modal-content" catchtap="preventBubble">
       <view class="modal-header">
         <text class="modal-title">编辑健康档案</text>
         <text class="modal-close" bindtap="closeEditProfile">×</text>
@@ -398,7 +444,7 @@
 
   <!-- 一日分析弹窗 -->
   <view class="modal" wx:if="{{showDietPlan}}">
-    <view class="modal-content" catchtap="">
+    <view class="modal-content" catchtap="preventBubble">
       <view class="modal-header">
         <text class="modal-title">📊 一日分析</text>
         <text class="modal-close" bindtap="closeDietPlan">×</text>
@@ -478,15 +524,15 @@
         <text class="plateau-tip">是否需要调整热量目标？</text>
       </view>
       <view class="modal-footer">
-        <button bindtap="setData({showPlateauAlert: false})">暂不调整</button>
-        <button type="primary" bindtap="setData({showPlateauAlert: false})">调整计划</button>
+        <button bindtap="closePlateauAlert">暂不调整</button>
+        <button type="primary" bindtap="closePlateauAlert">调整计划</button>
       </view>
     </view>
   </view>
 
   <!-- 健康报告详情弹窗 -->
   <view class="modal" wx:if="{{showReportModal}}">
-    <view class="modal-content" catchtap="">
+    <view class="modal-content" catchtap="preventBubble">
       <view class="modal-header">
         <text class="modal-title">{{currentReport.title}}</text>
         <text class="modal-close" bindtap="closeReportModal">×</text>
@@ -509,9 +555,53 @@
     </view>
   </view>
 
+  <!-- 饮食记录详情弹窗 -->
+  <view class="modal" wx:if="{{showDietDetailModal}}">
+    <view class="modal-content" catchtap="preventBubble">
+      <view class="modal-header">
+        <text class="modal-title">{{dietDetailData.date}}</text>
+        <text class="modal-close" bindtap="closeDietDetailModal">×</text>
+      </view>
+      <scroll-view class="modal-body" scroll-y>
+        <block wx:if="{{dietDetailData.menu}}">
+          <!-- 早餐 -->
+          <view class="diet-detail-section" wx:if="{{dietDetailData.menu.breakfast.length > 0}}">
+            <view class="diet-detail-meal-label">🌅 早餐</view>
+            <view class="diet-detail-dishes">
+              <view class="diet-detail-dish" wx:for="{{dietDetailData.menu.breakfast}}" wx:key="id">
+                <text class="dish-emoji">{{item.emoji}}</text>
+                <text class="dish-name">{{item.name}}</text>
+              </view>
+            </view>
+          </view>
+          <!-- 午餐 -->
+          <view class="diet-detail-section" wx:if="{{dietDetailData.menu.lunch.length > 0}}">
+            <view class="diet-detail-meal-label">☀️ 午餐</view>
+            <view class="diet-detail-dishes">
+              <view class="diet-detail-dish" wx:for="{{dietDetailData.menu.lunch}}" wx:key="id">
+                <text class="dish-emoji">{{item.emoji}}</text>
+                <text class="dish-name">{{item.name}}</text>
+              </view>
+            </view>
+          </view>
+          <!-- 晚餐 -->
+          <view class="diet-detail-section" wx:if="{{dietDetailData.menu.dinner.length > 0}}">
+            <view class="diet-detail-meal-label">🌙 晚餐</view>
+            <view class="diet-detail-dishes">
+              <view class="diet-detail-dish" wx:for="{{dietDetailData.menu.dinner}}" wx:key="id">
+                <text class="dish-emoji">{{item.emoji}}</text>
+                <text class="dish-name">{{item.name}}</text>
+              </view>
+            </view>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+
   <!-- 生理期设置弹窗 -->
   <view class="modal" wx:if="{{showMenstrualSettings}}">
-    <view class="modal-content" catchtap="">
+    <view class="modal-content" catchtap="preventBubble">
       <view class="modal-header">
         <text class="modal-title">🌸 生理期设置</text>
         <text class="modal-close" bindtap="closeMenstrualSettings">×</text>
