@@ -190,7 +190,12 @@ Page({
   // 绘制体重柱状图（CSS版本）
   drawWeightChart() {
     const records = this.data.weightRecords
-    if (records.length === 0) return
+
+    // 无数据时清空图表
+    if (records.length === 0) {
+      this.setData({ weightChartData: [] })
+      return
+    }
 
     // 取最近30天数据
     const recentRecords = records.slice(-30)

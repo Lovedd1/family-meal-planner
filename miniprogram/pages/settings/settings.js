@@ -9,7 +9,7 @@ Page({
     myPin: '',
     partnerConnected: false,
     partnerNickname: '',
-    version: 'V2.2.0',
+    version: 'V2.5.3',
 
     // 同步状态
     syncStatus: 'disconnected', // disconnected | connected | syncing
@@ -360,8 +360,11 @@ Page({
       success: (res) => {
         if (res.confirm) {
           wx.clearStorageSync()
-          this.loadSettings()
           wx.showToast({ title: '数据已重置', icon: 'success' })
+          // 返回上一页，健康页面的 onShow 会自动刷新数据
+          setTimeout(() => {
+            wx.navigateBack({ delta: 1 })
+          }, 500)
         }
       }
     })
