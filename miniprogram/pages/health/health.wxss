@@ -284,11 +284,45 @@
   padding-bottom: 20rpx;
 }
 
+.weight-progress-section {
+  margin-top: 20rpx;
+}
+
+.weight-progress-bar {
+  height: 16rpx;
+  background: #E8E8E8;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.weight-progress-inner {
+  height: 100%;
+  background: linear-gradient(to right, #C45C5C, #E88080);
+  border-radius: 8rpx;
+  transition: width 0.3s;
+}
+
+.weight-progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+}
+
+.weight-current {
+  color: #5D4A4A;
+  font-weight: 600;
+}
+
+.weight-target {
+  color: #8A6A6A;
+}
+
 .weight-scroll-container {
   width: 100%;
   overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
-  margin-top: 20rpx;
+  margin-top: 24rpx;
 }
 
 .weight-chart-wrapper {

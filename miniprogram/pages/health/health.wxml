@@ -121,15 +121,14 @@
         <text class="card-title">📊 30天体重趋势</text>
       </view>
 
-      <!-- 进度条（保留作为概览） -->
-      <view class="chart-container">
-        <view class="progress-bar">
-          <view class="progress-inner" style="width: {{weightStats.progress}}%"></view>
+      <!-- 进度条 -->
+      <view class="weight-progress-section">
+        <view class="weight-progress-bar">
+          <view class="weight-progress-inner" style="width: {{weightStats.progress}}%"></view>
         </view>
-        <view class="progress-label">
-          <text>当前 {{weightStats.current}}kg</text>
-          <text class="text-success">{{weightStats.diff > 0 ? '距目标还有' : '已达标'}}{{weightStats.absDiff}}kg</text>
-          <text>目标 {{weightStats.target}}kg</text>
+        <view class="weight-progress-info">
+          <text class="weight-current">{{weightStats.current}}kg</text>
+          <text class="weight-target">目标 {{weightStats.target}}kg</text>
         </view>
       </view>
 

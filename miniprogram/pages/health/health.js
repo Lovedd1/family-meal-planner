@@ -142,14 +142,44 @@ Page({
     const current = records[records.length - 1]?.weight || 0
     const target = parseFloat(this.data.targetWeight) || 0
     const initial = records[0]?.weight || current
+    const goal = this.data.dietGoal
+
+    let progress = 0
+    let diff = current - target
+
+    if (target > 0 && initial !== target) {
+      if (goal === 'lose') {
+        // 减肥：初始值 > 目标值，current 越接近目标进度越大
+        // 进度 = (初始 - 当前) / (初始 - 目标) * 100
+        if (initial > target) {
+          progress = Math.round(((initial - current) / (initial - target)) * 100)
+        }
+      } else if (goal === 'gain') {
+        // 增肥：初始值 < 目标值，current 越接近目标进度越大
+        // 进度 = (当前 - 初始) / (目标 - 初始) * 100
+        if (initial < target) {
+          progress = Math.round(((current - initial) / (target - initial)) * 100)
+        }
+      } else {
+        // 维持：current 越接近目标进度越大
+        const totalDist = Math.abs(initial - target)
+        if (totalDist > 0) {
+          const currentDist = Math.abs(current - target)
+          progress = Math.round(((totalDist - currentDist) / totalDist) * 100)
+        }
+      }
+    }
+
+    // 进度范围 0-100
+    progress = Math.max(0, Math.min(100, progress))
 
     this.setData({
       weightStats: {
         current,
         target,
-        progress: target > 0 ? Math.round(((initial - current) / (initial - target)) * 100) : 0,
-        diff: current - target,
-        absDiff: Math.abs(current - target)
+        progress,
+        diff,
+        absDiff: Math.abs(diff)
       }
     })
 
